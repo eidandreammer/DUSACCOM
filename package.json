@@ -1,0 +1,12 @@
+{
+  "name": "dusaccom",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The Dominican USA Chamber of Commerce website",
+  "scripts": {
+    "dev": "python3 -m http.server 8080 --directory dist",
+    "start": "python3 -m http.server 8080 --directory dist",
+    "test": "node --test tests/forms.test.cjs && python3 scripts/check-site.py",
+    "build": "python3 scripts/check-site.py"
+  }
+}
