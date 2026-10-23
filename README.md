@@ -1,53 +1,67 @@
-# DUSACCOM
+# DUSACCOM — Next.js
 
-A dependency-free, responsive corporate website for the Dominican USA Chamber of Commerce. All runtime assets are served locally. The entire site is approximately 520 KB before transfer compression.
+Production-oriented chamber website built with **Next.js 16 App Router, React, strict TypeScript, and Tailwind CSS 4**. Existing DUSACCOM branding and the official contact details are preserved.
 
-## Run locally
+## Start
 
-From this directory:
-
-```sh
-python3 -m http.server 8080 --directory dist
-```
-
-Open `http://localhost:8080`. No installation or build step is required. Node is optional for development tests, and is not required to host the site.
-
-## Verify
+Requires Node.js 22.16+ and npm.
 
 ```sh
-node tests/forms.test.cjs
-python3 scripts/check-site.py
-node --check dist/app.js
+npm ci
+npm run dev
 ```
 
-## Implemented
+Pages: `/`, `/about`, `/programs`, `/membership`, `/contact`, `/resources/[slug]`, `/privacy`, `/terms`. The membership and programs pages are server-rendered with validated URL selections. Other public content is prerendered. All routes retain an SSR/static HTML baseline with small client components for forms, filters, navigation, and consent.
 
-- Mobile navigation, program details, membership inquiries, proposed event interest forms, and an events/resources switcher with keyboard navigation.
-- Client-side validation, accessible field errors, explicit consent, loading indicators, error recovery, email-draft preparation, and a copy-message fallback.
-- Real chamber contact information: **646-326-6052** and **dusaccom1@gmail.com**.
-- Independent `/privacy/` and `/terms/` pages, policy dialogs, and a persistent consent banner with analytics opt-in and withdrawal.
-- SEO description, OpenGraph image, Twitter card, organization structured data, sitemap, favicon, and robots file.
-- Local photography, a preloaded hero image, lazy-loaded supporting photography, zero third-party runtime packages, cache/security header declarations, reduced-motion support, semantic landmarks, keyboard focus states, and native dialog focus containment.
+```sh
+npm run typecheck
+npm test
+npm run build
+npm start
+```
 
-## Inquiry delivery
+## Inquiries and persistence
 
-The default flow prepares an email to `dusaccom1@gmail.com`. It never says a message was sent or a registration confirmed. Visitors review and send the draft from their own email app. Form entries are not persisted by the website.
+`POST /api/inquiries` validates JSON with the same Zod/TypeScript schema used by the browser. It accepts contact, membership, and initiative inquiries and persists them to Cloudflare D1 before issuing a receipt. It includes bounded streaming body reads, same-origin checks, a honeypot, database-backed rate limits, idempotent submission IDs, parameterized SQL, and privacy-conscious structured logs. It never returns a successful receipt without durable acceptance.
 
-For direct delivery, configure a real HTTPS service in `dist/config.js` under `inquiryEndpoint`. The service must accept JSON POST requests containing `name`, `email`, `company`, `interest`, `message`, and `consent`. Return a successful HTTP status only once the inquiry has been durably accepted. Add server validation, abuse controls, appropriate CORS, retention settings, and reliable delivery in that service. Update privacy copy and visible form instructions before enabling it. No payment processing is connected or claimed.
+D1 is provisioned by Sites from `.openai/hosting.json` (`d1: "DB"`). Schema-only migrations are in `drizzle/`. To initialize the **local** database and preview the Worker:
 
-## Analytics
+```sh
+npm run db:local
+npm run build:sites
+npm run preview
+```
 
-`dist/config.js` accepts an optional Google Analytics `G-…` ID and an `onAnalyticsEvent` callback for conversion pixels. They are disabled by default and invoked only with consent. Hooks include membership CTA clicks, program/resource views, event interest starts, inquiry drafts, and direct-delivery submissions. Form contents are never passed to analytics. Keep any added pixel implementation consent-aware.
+`npm run dev` and a standard `next start` do not implicitly start a database emulator. Without a D1 binding, inquiries correctly return HTTP 503 and show the chamber’s email and phone as alternatives. Use the Worker preview to exercise local persistence. A conventional Node/Vercel deployment should supply an `InquiryStore` adapter for its own persistent database; the route business logic is independent of D1.
 
-## Content awaiting chamber approval
+New submissions are stored in the `inquiries` table with status `new`. An authorized database operator can review these records using the hosting provider’s D1 tooling. **No automatic email notifications, staff dashboard, payment processor, member authentication, or recurring marketing subscription is configured.** There is no public route that lists inquiry records. Agree an operator review process, access policy, and retention schedule before opening submissions to the public.
 
-- Membership pathways and listed benefits are proposed; prices are intentionally omitted. Current availability and dues must be confirmed with the chamber.
-- Event concepts are labeled as proposed, with dates to be announced. Interest inquiries do not reserve a place.
-- No member testimonials or endorsement logos have been invented. Add verified quotes and permissions when supplied.
-- Review and approve the website policy copy before a public launch. This initial publication is private.
+A receipt confirms inquiry acceptance, not membership, event attendance, a payment, or an outgoing email. If a request times out, the visitor can retry with the same submission ID without creating duplicate records.
 
-## Verification limits
+## Hosting
 
-Form utility tests and static asset/semantic reference checks are included. Browser automation was unavailable in the build environment, so visual browser QA, measured Core Web Vitals, and a full WCAG audit remain unverified. Sub-two-second loading depends on hosting and visitor network conditions; no unmeasured performance guarantee is made.
+The source is portable Next.js. OpenNext adapts its output for the existing private Cloudflare/Sites deployment. `npm run build:sites` runs the standard Next.js production build, then packages the Cloudflare Worker in `dist/server/index.js` and hashed local assets in `dist/client`. Publishing uses the Sites source/version workflow and applies schema migrations before deployment.
 
-Photography: New York City by Wojtek Witkowski (`photo-1480714378408-67cf0d13bc1b`) and community discussion (`photo-1515187029135-18ee286d815b`), sourced from Unsplash. These are illustrative photographs, not representations of a DUSACCOM event or endorsement.
+Do not run a raw `wrangler deploy` against the Sites-managed project or change its audience implicitly. `wrangler.jsonc` is a **local preview** configuration; the placeholder ID is not a production database ID.
+
+## Branding and approved content
+
+Official contact: **646-326-6052** · **dusaccom1@gmail.com**.
+
+Edit typed content in `src/lib/content.ts`. Board profiles, member milestones, testimonials, and partners have explicit typed collections, initially empty because no approved names, quotes, logos, or milestones were supplied. The layouts support approved records without fabricated endorsements. Membership benefits/pathways and event concepts are clearly described as proposed; pricing, dates, venues, registration, and approval must be confirmed by the Chamber.
+
+Photographs are illustrative community/business imagery, not evidence of DUSACCOM events or endorsements. Source photos are local Unsplash assets (`photo-1480714378408-67cf0d13bc1b`, `photo-1515187029135-18ee286d815b`).
+
+## Performance and accessibility
+
+`next/image` uses a custom loader for build-time optimized local WebP variants; no third-party image or font request is needed. Hero images are prioritized, secondary images are lazy loaded, layouts reserve image dimensions, and client interactions respect reduced motion. Server components keep marketing content out of client feature bundles.
+
+Semantic landmarks, a skip link, keyboard-visible focus, native form controls, accessible errors/status messages, and generous interaction targets are included. Browser automation was unavailable in the build environment. Visual responsive QA, a full WCAG audit, and field Core Web Vitals must be measured before claiming compliance or sub-two-second loads.
+
+## SEO, analytics, and operational readiness
+
+Next Metadata config supplies title templates, descriptions, canonical URLs, OpenGraph/Twitter cards, and organization structured data. `sitemap.ts` and `robots.ts` generate public crawl metadata. `GET /api/health` is a minimal liveness endpoint that exposes no database or private data.
+
+Copy `.env.example` for site-origin configuration. Set `NEXT_PUBLIC_GA_ID` only when an approved Google Analytics property is ready. No tracking is enabled by default. Analytics load only after consent; form contents never enter conversion events. Optional pixel integrations can listen to the `dusaccom:analytics` custom event, emitted only after consent. Respect later consent withdrawal. Conversions include page views, inquiry option selection, and confirmed inquiry acceptance.
+
+Server logs use event names, status codes, timings, request IDs, and receipt references. They exclude form bodies, raw IP addresses, and error stacks. Native Next.js error, loading, and not-found boundaries cover visitor failures. Review policy copy, database handling, content approvals, operator access, and your chosen analytics configuration before a public launch.

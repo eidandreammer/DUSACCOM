@@ -1,5 +1,11 @@
 node_modules/
+.next/
+.open-next/
+.wrangler/
+dist/
+*.tsbuildinfo
 .DS_Store
 *.log
-.env
-.env.*
+.env*
+!.env.example
+.dev.vars*

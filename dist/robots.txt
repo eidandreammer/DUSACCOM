@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://dusaccom-business-community.bluesole13.chatgpt.site/sitemap.xml
