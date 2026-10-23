@@ -65,3 +65,4 @@ Next Metadata config supplies title templates, descriptions, canonical URLs, Ope
 Copy `.env.example` for site-origin configuration. Set `NEXT_PUBLIC_GA_ID` only when an approved Google Analytics property is ready. No tracking is enabled by default. Analytics load only after consent; form contents never enter conversion events. Optional pixel integrations can listen to the `dusaccom:analytics` custom event, emitted only after consent. Respect later consent withdrawal. Conversions include page views, inquiry option selection, and confirmed inquiry acceptance.
 
 Server logs use event names, status codes, timings, request IDs, and receipt references. They exclude form bodies, raw IP addresses, and error stacks. Native Next.js error, loading, and not-found boundaries cover visitor failures. Review policy copy, database handling, content approvals, operator access, and your chosen analytics configuration before a public launch.
+# DUSACCOM

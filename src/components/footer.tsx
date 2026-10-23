@@ -1,8 +1,99 @@
+'use client';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight, ShieldCheck } from 'lucide-react';
-import { Brand } from './header';
 import { CookieSettings } from './privacy-controls';
 import { site } from '@/lib/site';
+import { useLanguage } from '@/lib/language-context';
+import { translations } from '@/lib/translations';
+
 export function Footer() {
-  return <footer className="bg-navy-deep pt-14 text-slate-300"><div className="container grid gap-10 pb-12 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr]"><div className="sm:col-span-2 lg:col-span-1"><Brand light /><p className="mt-6 text-sm leading-7 text-slate-400">Connecting people. Championing business.<br />Creating opportunity across borders.</p><div className="mt-6 flex items-center gap-3 text-[9px] tracking-wider"><span className="flag flag-dr" role="img" aria-label="Dominican Republic flag" /> DOMINICAN REPUBLIC <span className="text-slate-500">/</span><span className="flag flag-us" role="img" aria-label="United States flag" /> UNITED STATES</div></div><div className="footer-links"><h2>The Chamber</h2><Link href="/about">About DUSACCOM</Link><Link href="/programs">Programs & events</Link><Link href="/membership">Become a member</Link><Link href="/contact#resources">Business resources</Link></div><div className="footer-links"><h2>Let’s connect</h2><a href={`mailto:${site.email}`}>{site.email}</a><a href={`tel:${site.phoneHref}`}>{site.phone}</a><Link href="/contact" className="flex items-center gap-3">Contact our team<ArrowUpRight size={14} aria-hidden="true" /></Link><span className="mt-3 flex items-center gap-2 text-[10px] text-slate-400"><ShieldCheck size={15} aria-hidden="true" />No online payments requested</span></div></div><div className="container flex flex-col justify-between gap-2 border-t border-white/10 py-5 text-[10px] text-slate-400 lg:flex-row lg:items-center"><span>© {new Date().getFullYear()} {site.fullName}. All rights reserved.</span><div className="flex flex-wrap gap-5"><Link className="flex min-h-11 items-center hover:text-white" href="/privacy">Privacy Policy</Link><Link className="flex min-h-11 items-center hover:text-white" href="/terms">Terms of Service</Link><CookieSettings /></div></div></footer>;
+  const { lang } = useLanguage();
+  const t = translations[lang];
+
+  return (
+    <footer className="bg-navy-deep pt-14 text-slate-300">
+      <div className="container grid gap-10 pb-12 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr]">
+        {/* Brand column */}
+        <div className="sm:col-span-2 lg:col-span-1">
+          <Link href="/" aria-label="DUSACCOM home" className="inline-block">
+            <div className="inline-block rounded-[8px] bg-white p-3 shadow-sm transition hover:shadow-md">
+              <Image
+                src="/imgs/DUSACCOM complete logo.png"
+                alt="DUSACCOM complete logo"
+                width={220}
+                height={80}
+                className="h-14 w-auto object-contain"
+              />
+            </div>
+          </Link>
+          <p className="mt-6 text-sm leading-7 text-slate-400">
+            {t.footer.description}
+          </p>
+          <div className="mt-6 flex items-center gap-3 text-[10px] tracking-wider">
+            <span className="flag flag-dr rounded-[8px]" role="img" aria-label="Dominican Republic flag" />
+            {t.footer.dominicanRepublic}
+            <span className="text-slate-500">/</span>
+            <span className="flag flag-us rounded-[8px]" role="img" aria-label="United States flag" />
+            {t.footer.unitedStates}
+          </div>
+        </div>
+
+        {/* The Chamber links */}
+        <div className="footer-links">
+          <h2>{t.footer.chamberTitle}</h2>
+          <Link href="/about">{t.footer.about}</Link>
+          <Link href="/about#mission">{t.footer.mission}</Link>
+          <Link href="/membership">{t.footer.becomeMember}</Link>
+          <Link href="/membership#apply">{t.footer.cart}</Link>
+          <Link href="/infotep">{t.footer.infotep}</Link>
+          <Link href="/fotos">
+            {t.footer.fotos}
+          </Link>
+        </div>
+
+        {/* Let's connect links */}
+        <div className="footer-links">
+          <h2>{t.footer.connectTitle}</h2>
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+          <a href={`tel:${site.phoneHref}`}>{site.phone}</a>
+          <Link href="/contact" className="flex items-center gap-3">
+            <span>{t.footer.contactTeam}</span>
+            <ArrowUpRight size={14} aria-hidden="true" />
+          </Link>
+          <Link href="/enviar-fotos">{t.footer.enviarFotos}</Link>
+          <Link href="/agendar-cita">{t.footer.agendarCita}</Link>
+          <div className="mt-2 flex gap-4 text-xs">
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white">
+              Instagram
+            </a>
+            <span className="text-slate-600">·</span>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-white">
+              Facebook
+            </a>
+          </div>
+          <span className="mt-4 flex items-center gap-2 text-[10px] text-slate-400">
+            <ShieldCheck size={15} aria-hidden="true" />
+            {t.footer.noPayments}
+          </span>
+        </div>
+      </div>
+
+      {/* Bottom bar */}
+      <div className="container flex flex-col justify-between gap-2 border-t border-white/10 py-5 text-[10px] text-slate-400 lg:flex-row lg:items-center">
+        <span>
+          © {new Date().getFullYear()} {site.fullName}. {t.footer.rightsReserved}
+        </span>
+        <div className="flex flex-wrap gap-5">
+          <Link className="flex min-h-11 items-center hover:text-white" href="/privacy">
+            {t.footer.privacy}
+          </Link>
+          <Link className="flex min-h-11 items-center hover:text-white" href="/terms">
+            {t.footer.terms}
+          </Link>
+          <CookieSettings />
+        </div>
+      </div>
+    </footer>
+  );
 }
