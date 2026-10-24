@@ -78,9 +78,10 @@ export function Header() {
   }, []);
 
   useEffect(() => {
-    const hero = isHome ? document.querySelector('.home-hero') : null;
-    const footer = document.querySelector('footer');
+    let hero = isHome ? document.querySelector('.home-hero') : null;
+    const element = header.current;
     let previousY = window.scrollY;
+    let previousInHero: boolean | undefined;
 
     let hideTimer: ReturnType<typeof setTimeout> | undefined;
     let frame = 0;
@@ -88,16 +89,14 @@ export function Header() {
       clearTimeout(hideTimer);
       hideTimer = undefined;
     };
-    const footerVisible = () => {
-      const bounds = footer?.getBoundingClientRect();
-      return !!bounds && bounds.top < window.innerHeight && bounds.bottom > 0;
-    };
-    const heroVisible = () => !!hero && hero.getBoundingClientRect().bottom > 0;
+    // The homepage may finish streaming after this header hydrates.
+    const heroVisible = () => isHome && (!hero || hero.getBoundingClientRect().bottom > 0);
+    const headerHasFocus = () => !!element?.contains(document.activeElement);
     const scheduleHide = () => {
       if (hideTimer !== undefined) return;
       hideTimer = setTimeout(() => {
         hideTimer = undefined;
-        if (!heroVisible() && !open && !dropdownOpen) setHidden(true);
+        if (!heroVisible() && !open && !dropdownOpen && !headerHasFocus()) setHidden(true);
       }, 2000);
     };
     const update = () => {
@@ -105,19 +104,19 @@ export function Header() {
       const currentY = window.scrollY;
       const delta = currentY - previousY;
       const inHero = heroVisible();
+      const exitedHero = previousInHero === true && !inHero;
+      const initialUpdate = previousInHero === undefined;
+      previousInHero = inHero;
       setOverHero(inHero);
-      if (footerVisible()) {
-        clearHideTimer();
-        setHidden(true);
-      } else if (inHero || currentY <= 0 || open || dropdownOpen) {
+      if (inHero || currentY <= 0 || open || dropdownOpen || headerHasFocus()) {
         clearHideTimer();
         setHidden(false);
       } else if (delta < -2) {
         clearHideTimer();
         setHidden(false);
-        scheduleHide();
-      } else {
-        // Start on hero exit even if scrolling has already stopped.
+      } else if (delta > 2 || exitedHero || initialUpdate) {
+        // Hide two seconds after leaving the hero or resuming a downward scroll.
+        // After an upward scroll, stay visible until the next downward scroll.
         scheduleHide();
       }
       if (Math.abs(delta) > 2) previousY = currentY;
@@ -126,15 +125,28 @@ export function Header() {
     update();
     const observer = new IntersectionObserver(onScroll);
     if (hero) observer.observe(hero);
-    if (footer) observer.observe(footer);
+    const pendingHero = isHome && !hero ? new MutationObserver(() => {
+      hero = document.querySelector('.home-hero');
+      if (hero) {
+        observer.observe(hero);
+        pendingHero?.disconnect();
+        onScroll();
+      }
+    }) : null;
+    pendingHero?.observe(document.querySelector('main') ?? document.body, { childList: true, subtree: true });
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
+    element?.addEventListener('focusin', onScroll);
+    element?.addEventListener('focusout', onScroll);
     return () => {
       clearHideTimer();
       cancelAnimationFrame(frame);
       observer.disconnect();
+      pendingHero?.disconnect();
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
+      element?.removeEventListener('focusin', onScroll);
+      element?.removeEventListener('focusout', onScroll);
     };
   }, [isHome, pathname, open, dropdownOpen]);
 
@@ -145,7 +157,7 @@ export function Header() {
     <>
     {!isHome && <div aria-hidden="true" style={{ height: headerHeight }} />}
     <header ref={header} inert={hidden} className={`site-header ${overHero ? 'home-header text-white' : 'solid-header text-navy'} ${hidden ? 'is-hidden' : ''}`}>
-      <div className={`header-information text-slate-200 ${overHero ? 'border-b border-white/15' : ''}`}>
+      <div className="header-information border-b">
         <div className="container flex min-h-9 items-center justify-between gap-4 py-2 text-[10px]">
           <span>{t.tagline}</span>
           <div className="flex shrink-0 gap-6">
@@ -173,9 +185,9 @@ export function Header() {
             <Link href="/infotep" aria-current={pathname === '/infotep' ? 'page' : undefined} className={navLinkClass('/infotep')}>{t.nav.infotep}</Link>
             <Link href="/contact" aria-current={pathname === '/contact' ? 'page' : undefined} className={navLinkClass('/contact')}>{t.nav.contact}</Link>
           </nav>
-          <div className="ml-auto flex items-center gap-2 lg:ml-0">
+          <div className="header-controls ml-auto flex items-center gap-2 lg:ml-0">
             <button onClick={toggleLang} aria-label={t.nav.shiftLangAria} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-200 px-3 text-[13px] font-bold hover:border-crimson">
-              <Globe size={16} className="text-crimson" aria-hidden="true" /><span>{lang === 'en' ? 'EN / ES' : 'ES / EN'}</span>
+              <Globe size={16} aria-hidden="true" /><span>{lang === 'en' ? 'EN / ES' : 'ES / EN'}</span>
             </button>
             <button ref={toggle} className="icon-button lg:hidden" aria-label={open ? t.nav.closeMenu : t.nav.openMenu} aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen(!open)}>{open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}</button>
           </div>

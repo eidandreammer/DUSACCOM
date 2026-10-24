@@ -454,33 +454,43 @@
   inset: 0 0 auto;
   z-index: 40;
   transform: translateY(0);
-  transition: transform 350ms ease, visibility 350ms, color 1s ease;
+  background-color: transparent;
 }
 .site-header.is-hidden {
   transform: translateY(-100%);
   visibility: hidden;
   pointer-events: none;
 }
-.site-header .header-surface {
+.site-header .header-surface,
+.site-header .header-information {
   background-color: transparent;
-  border-color: rgb(255 255 255 / 15%);
-  transition: background-color 1s ease, border-color 1s ease, box-shadow 1s ease;
+  border-color: transparent;
 }
-.site-header.solid-header .header-surface {
+.site-header.solid-header {
   background-color: white;
-  border-color: #e2e8f0;
   box-shadow: 0 8px 24px rgb(12 35 52 / 8%);
 }
-.site-header .header-information {
-  background-color: rgb(12 35 52 / 30%);
-  transition: background-color 1s ease;
+.site-header.solid-header .header-surface,
+.site-header.solid-header .header-information {
+  border-color: #e2e8f0;
 }
-.site-header.solid-header .header-information { background-color: var(--color-navy-deep); }
-.site-header .header-brand-image,
-.site-header nav[aria-label="Main navigation"] > a,
-.site-header nav[aria-label="Main navigation"] > div > div > a,
-.site-header nav[aria-label="Main navigation"] > div > div > button {
-  transition: color 1s ease, filter 1s ease !important;
+
+/* Override the base layer's global 1.5s transitions only within the header. */
+@layer base {
+  .site-header {
+    transition: background-color 1s ease, box-shadow 1s ease, transform 350ms ease, visibility 350ms !important;
+  }
+
+  .site-header :is(.header-information, .header-surface, .header-brand-image, .header-information a, .header-controls > button, nav[aria-label="Main navigation"] a, nav[aria-label="Main navigation"] button) {
+    transition: color 1s ease, background-color 1s ease, border-color 1s ease, box-shadow 1s ease, filter 1s ease !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-header,
+    .site-header :is(.header-information, .header-surface, .header-brand-image, .header-information a, .header-controls > button, nav[aria-label="Main navigation"] a, nav[aria-label="Main navigation"] button) {
+      transition: none !important;
+    }
+  }
 }
 .footer-logo { width: 210px; height: 165px; }
 .footer-logo .footer-logo-image {
@@ -495,8 +505,14 @@
 
 
 /* Explicit colors keep every control readable as the hero leaves view. */
+.site-header.home-header .header-information,
+.site-header.home-header .header-information a,
+.site-header.home-header .header-controls > button { color: #fff; }
 .site-header.solid-header { color: #000; }
-.site-header.solid-header .header-surface { color: #000; background-color: #fff; }
+.site-header.solid-header .header-information,
+.site-header.solid-header .header-information a,
+.site-header.solid-header .header-controls > button { color: #000; }
+.site-header.solid-header .header-surface { color: #000; }
 .site-header.solid-header nav[aria-label="Main navigation"] > a,
 .site-header.solid-header nav[aria-label="Main navigation"] > div > div > a,
 .site-header.solid-header nav[aria-label="Main navigation"] > div > div > button {

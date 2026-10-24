@@ -1,0 +1,434 @@
+/* Every rule stays inside the homepage; the shared shell keeps its own system. */
+.home {
+  color: var(--color-navy);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, Helvetica, sans-serif;
+}
+
+.home .container {
+  width: min(1248px, calc(100% - 96px));
+  margin-inline: auto;
+}
+
+.home .label {
+  margin: 0 0 24px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.6;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.home .accent {
+  color: var(--color-crimson);
+}
+
+.home .body {
+  margin: 0;
+  max-width: 52ch;
+  color: #465766;
+  font-size: 18px;
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+
+.home .hero {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  /* Content can grow freely, including at zoom and in Spanish. */
+  width: 100%;
+  min-height: 100vh;
+  background: var(--color-navy-deep);
+  color: white;
+}
+
+.home .heroImage {
+  z-index: -2;
+  object-fit: cover;
+  object-position: 65% center;
+}
+
+.home .heroShade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgb(8 27 42 / 70%), transparent 35%, rgb(8 27 42 / 45%)),
+    linear-gradient(90deg, rgb(8 27 42 / 97%) 0%, rgb(8 27 42 / 86%) 38%, rgb(8 27 42 / 30%) 75%, rgb(8 27 42 / 18%));
+}
+
+.home .heroLayout {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 64px;
+  padding-block: clamp(232px, 26vh, 284px) 40px;
+}
+
+.home .heroCopy {
+  max-width: 840px;
+  margin-block: auto;
+  animation: home-enter 600ms ease-out both;
+}
+
+.home .hero .label {
+  max-width: 60ch;
+  color: #e0e7ed;
+}
+
+.home .heroTitle {
+  margin: 0;
+  font-size: clamp(40px, 6.1vw, 84px);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+
+.home .statement {
+  max-width: 24ch;
+  margin: 28px 0 0;
+  color: #fff;
+  font-size: clamp(25px, 2.6vw, 36px);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.home .heroDescription {
+  max-width: 50ch;
+  margin-top: 28px;
+  color: #e0e7ed;
+  font-size: 18px;
+}
+
+.home .link,
+.home .primaryAction,
+.home .secondaryAction {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-decoration: none;
+}
+
+.home a svg {
+  flex-shrink: 0;
+}
+
+.home .heroLink {
+  margin-top: 30px;
+  color: white;
+}
+
+.home .heroLink:hover {
+  color: #f8cbd2;
+}
+
+.home .heroFootnote {
+  margin: 0;
+  padding-top: 24px;
+  border-top: 1px solid rgb(255 255 255 / 24%);
+  color: #d9e2e9;
+  font-size: 13px;
+  line-height: 1.6;
+  letter-spacing: 0.025em;
+}
+
+/* 116px replaces the previous 88px rhythm, with smaller mobile intervals. */
+.home .purpose,
+.home .training {
+  padding-block: 116px;
+}
+
+.home .purpose {
+  scroll-margin-top: 176px;
+  background: white;
+}
+
+.home .sectionIntro {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  align-items: end;
+  gap: 96px;
+}
+
+.home .sectionTitle {
+  max-width: 18ch;
+  margin: 0;
+  font-size: clamp(36px, 4.2vw, 58px);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.home .purposeIntro {
+  max-width: 43ch;
+}
+
+.home .purposeColumns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 96px;
+  margin-top: 72px;
+}
+
+.home .purposeIdea {
+  padding-top: 32px;
+  border-top: 1px solid #d5dce1;
+}
+
+.home .ideaTitle {
+  margin: 0 0 20px;
+  font-size: 27px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+}
+
+.home .involvement {
+  padding-block: 88px;
+  background: var(--color-navy);
+  color: white;
+}
+
+.home .involvementColumns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.home .path {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-right: 80px;
+}
+
+.home .path + .path {
+  padding-right: 0;
+  padding-left: 80px;
+  border-left: 1px solid rgb(255 255 255 / 22%);
+}
+
+.home .path .label {
+  margin-bottom: 24px;
+  color: #d4dee6;
+}
+
+.home .pathTitle {
+  max-width: 20ch;
+  margin: 0 0 24px;
+  font-size: clamp(32px, 3vw, 42px);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.home .path .body {
+  margin-bottom: 36px;
+  color: #d4dee6;
+  font-size: 17px;
+}
+
+.home .primaryAction,
+.home .secondaryAction {
+  margin-top: auto;
+  padding: 13px 22px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+
+.home .primaryAction {
+  background: var(--color-crimson);
+  color: white;
+}
+
+.home .primaryAction:hover {
+  background: #a32537;
+}
+
+.home .secondaryAction {
+  border-color: #9aaeba;
+  color: white;
+}
+
+.home .secondaryAction:hover {
+  background: white;
+  border-color: white;
+  color: var(--color-navy);
+}
+
+.home .training {
+  background: #f5f6f7;
+}
+
+.home .trainingIntro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 64px;
+}
+
+.home .trainingCopy {
+  max-width: 720px;
+}
+
+.home .trainingCopy .sectionTitle {
+  max-width: 21ch;
+}
+
+.home .trainingCopy .body {
+  max-width: 61ch;
+  margin-top: 28px;
+}
+
+.home .trainingLink {
+  flex-shrink: 0;
+  color: var(--color-crimson);
+}
+
+.home .trainingLink:hover {
+  color: #8f2030;
+}
+
+.home .trainingAreas {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 64px;
+}
+
+.home .trainingArea {
+  padding: 4px 32px 0;
+  border-left: 1px solid #d5dce1;
+}
+
+.home .trainingArea:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.home .trainingArea:last-child {
+  padding-right: 0;
+}
+
+.home .trainingAreaTitle {
+  max-width: 18ch;
+  min-height: 2.6em;
+  margin: 0 0 16px;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.home .trainingArea .body {
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+@keyframes home-enter {
+  from { opacity: 0.5; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* The global base layer forces 1.5s transitions with !important. Override in
+   that same layer, only for homepage links, without affecting shared controls. */
+@layer base {
+  .home a {
+    transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease !important;
+  }
+
+  .home a:hover {
+    transition-duration: 180ms !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home a,
+    .home a:hover {
+      transition: none !important;
+    }
+  }
+}
+
+@media (min-width: 1800px) {
+  .home .container { width: min(1440px, calc(100% - 120px)); }
+}
+
+@media (max-width: 1100px) {
+  .home .sectionIntro,
+  .home .purposeColumns { gap: 64px; }
+  .home .path { padding-right: 48px; }
+  .home .path + .path { padding-left: 48px; }
+  .home .trainingIntro { align-items: flex-start; flex-direction: column; gap: 24px; }
+  .home .trainingArea { padding-inline: 24px; }
+}
+
+@media (max-width: 900px) {
+  .home .heroLayout { padding-top: 224px; }
+  .home .sectionIntro { grid-template-columns: 1fr; gap: 28px; }
+  .home .purposeIntro { max-width: 60ch; }
+  .home .trainingAreas { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 40px; }
+  .home .trainingArea { padding-inline: 32px; }
+  .home .trainingArea:nth-child(odd) { padding-left: 0; border-left: 0; }
+  .home .trainingArea:nth-child(even) { padding-right: 0; }
+}
+
+@media (max-width: 760px) {
+  .home .container { width: calc(100% - 40px); }
+  .home .label { font-size: 13px; margin-bottom: 20px; }
+  .home .body { font-size: 17px; line-height: 1.75; }
+  .home .heroLayout { gap: 48px; padding-block: 216px 28px; }
+  .home .heroCopy { max-width: 600px; }
+  .home .heroShade {
+    background: linear-gradient(180deg, rgb(8 27 42 / 84%), rgb(8 27 42 / 76%) 60%, rgb(8 27 42 / 88%));
+  }
+  .home .heroTitle { font-size: clamp(35px, 8vw, 60px); }
+  .home .statement { max-width: 25ch; margin-top: 24px; font-size: 28px; }
+  .home .heroDescription { max-width: 48ch; margin-top: 24px; font-size: 17px; }
+  .home .heroLink { margin-top: 24px; }
+  .home .heroFootnote { font-size: 12px; }
+  .home .purpose,
+  .home .training { padding-block: 76px; }
+  .home .sectionTitle { font-size: clamp(35px, 6vw, 46px); }
+  .home .purposeColumns { grid-template-columns: 1fr; gap: 36px; margin-top: 44px; }
+  .home .purposeIdea { padding-top: 28px; }
+  .home .ideaTitle { font-size: 25px; margin-bottom: 16px; }
+  .home .involvement { padding-block: 64px; }
+  .home .involvementColumns { grid-template-columns: 1fr; gap: 44px; }
+  .home .path { padding: 0; }
+  .home .path + .path { padding: 44px 0 0; border-top: 1px solid rgb(255 255 255 / 22%); border-left: 0; }
+  .home .pathTitle { max-width: 22ch; margin-bottom: 20px; font-size: 34px; }
+  .home .path .body { max-width: 48ch; margin-bottom: 28px; }
+  .home .trainingIntro { gap: 24px; }
+  .home .trainingCopy .body { margin-top: 24px; }
+  .home .trainingAreas { margin-top: 44px; }
+}
+
+@media (max-width: 540px) {
+  .home .trainingAreas { grid-template-columns: 1fr; gap: 0; }
+  .home .trainingArea,
+  .home .trainingArea:nth-child(even),
+  .home .trainingArea:nth-child(odd) {
+    padding: 28px 0;
+    border-top: 1px solid #d5dce1;
+    border-left: 0;
+  }
+  .home .trainingArea:last-child { padding-bottom: 0; }
+  .home .trainingAreaTitle { max-width: none; min-height: 0; margin-bottom: 12px; font-size: 23px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home .heroCopy { animation: none; }
+}
