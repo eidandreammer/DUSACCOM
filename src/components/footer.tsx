@@ -17,13 +17,13 @@ export function Footer() {
         {/* Brand column */}
         <div className="sm:col-span-2 lg:col-span-1">
           <Link href="/" aria-label="DUSACCOM home" className="inline-block">
-            <div className="inline-block rounded-[8px] bg-white p-3 shadow-sm transition hover:shadow-md">
+            <div className="footer-logo relative overflow-hidden">
               <Image
                 src="/imgs/DUSACCOM complete logo.png"
                 alt="DUSACCOM complete logo"
-                width={220}
-                height={80}
-                className="h-14 w-auto object-contain"
+                width={2048}
+                height={1117}
+                className="footer-logo-image"
               />
             </div>
           </Link>

@@ -18,7 +18,7 @@ export function Brand({ light = false, large = false }: { light?: boolean; large
         height={1117}
         priority
         className={large ? 'header-brand-image' : 'h-12 w-auto object-contain'}
-        style={light ? { filter: 'brightness(0) invert(1)' } : undefined}
+        style={light ? { filter: 'brightness(0) invert(1)' } : { filter: 'none' }}
       />
     </Link>
   );
@@ -27,6 +27,10 @@ export function Brand({ light = false, large = false }: { light?: boolean; large
 export function Header() {
   const pathname = usePathname();
   const isHome = pathname === '/';
+  const [overHero, setOverHero] = useState(isHome);
+  const [hidden, setHidden] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(140);
+  const header = useRef<HTMLElement>(null);
   const { lang, toggleLang } = useLanguage();
   const t = translations[lang];
   const [open, setOpen] = useState(false);
@@ -65,12 +69,83 @@ export function Header() {
     };
   }, [dropdownOpen, open]);
 
+  useEffect(() => {
+    const element = header.current;
+    if (!element) return;
+    const observer = new ResizeObserver(() => setHeaderHeight(element.offsetHeight));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const hero = isHome ? document.querySelector('.home-hero') : null;
+    const footer = document.querySelector('footer');
+    let previousY = window.scrollY;
+
+    let hideTimer: ReturnType<typeof setTimeout> | undefined;
+    let frame = 0;
+    const clearHideTimer = () => {
+      clearTimeout(hideTimer);
+      hideTimer = undefined;
+    };
+    const footerVisible = () => {
+      const bounds = footer?.getBoundingClientRect();
+      return !!bounds && bounds.top < window.innerHeight && bounds.bottom > 0;
+    };
+    const heroVisible = () => !!hero && hero.getBoundingClientRect().bottom > 0;
+    const scheduleHide = () => {
+      if (hideTimer !== undefined) return;
+      hideTimer = setTimeout(() => {
+        hideTimer = undefined;
+        if (!heroVisible() && !open && !dropdownOpen) setHidden(true);
+      }, 2000);
+    };
+    const update = () => {
+      frame = 0;
+      const currentY = window.scrollY;
+      const delta = currentY - previousY;
+      const inHero = heroVisible();
+      setOverHero(inHero);
+      if (footerVisible()) {
+        clearHideTimer();
+        setHidden(true);
+      } else if (inHero || currentY <= 0 || open || dropdownOpen) {
+        clearHideTimer();
+        setHidden(false);
+      } else if (delta < -2) {
+        clearHideTimer();
+        setHidden(false);
+        scheduleHide();
+      } else {
+        // Start on hero exit even if scrolling has already stopped.
+        scheduleHide();
+      }
+      if (Math.abs(delta) > 2) previousY = currentY;
+    };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
+    update();
+    const observer = new IntersectionObserver(onScroll);
+    if (hero) observer.observe(hero);
+    if (footer) observer.observe(footer);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      clearHideTimer();
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, [isHome, pathname, open, dropdownOpen]);
+
   const navLinkClass = (href: string) =>
     `flex min-h-12 items-center text-[15px] font-semibold transition-colors hover:text-crimson ${pathname === href ? 'text-crimson' : 'text-slate-600'}`;
 
   return (
-    <header className={isHome ? 'home-header absolute inset-x-0 top-0 z-40 text-white' : 'relative z-40'}>
-      <div className={isHome ? 'border-b border-white/15 bg-navy-deep/30 text-slate-200' : 'bg-navy-deep text-slate-200'}>
+    <>
+    {!isHome && <div aria-hidden="true" style={{ height: headerHeight }} />}
+    <header ref={header} inert={hidden} className={`site-header ${overHero ? 'home-header text-white' : 'solid-header text-navy'} ${hidden ? 'is-hidden' : ''}`}>
+      <div className={`header-information text-slate-200 ${overHero ? 'border-b border-white/15' : ''}`}>
         <div className="container flex min-h-9 items-center justify-between gap-4 py-2 text-[10px]">
           <span>{t.tagline}</span>
           <div className="flex shrink-0 gap-6">
@@ -79,9 +154,9 @@ export function Header() {
           </div>
         </div>
       </div>
-      <div className={isHome ? 'relative border-b border-white/15' : 'relative border-b border-slate-200/80 bg-white/95 backdrop-blur-xl'}>
+      <div className="header-surface relative border-b">
         <div className="container flex min-h-26 items-center gap-3 sm:gap-6">
-          <Brand light={isHome} large />
+          <Brand light={overHero} large />
           <nav aria-label="Main navigation" className="ml-auto hidden items-center gap-7 lg:flex">
             <Link href="/about" aria-current={pathname === '/about' ? 'page' : undefined} className={navLinkClass('/about')}>{t.nav.about}</Link>
             <div ref={registration} className="relative" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setDropdownOpen(false); }}>
@@ -117,5 +192,6 @@ export function Header() {
         </nav>
       </div>
     </header>
+    </>
   );
 }

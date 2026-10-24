@@ -448,3 +448,60 @@
 @media (max-width: 380px) {
   .header-brand { width: 145px; }
 }
+
+.site-header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 40;
+  transform: translateY(0);
+  transition: transform 350ms ease, visibility 350ms, color 1s ease;
+}
+.site-header.is-hidden {
+  transform: translateY(-100%);
+  visibility: hidden;
+  pointer-events: none;
+}
+.site-header .header-surface {
+  background-color: transparent;
+  border-color: rgb(255 255 255 / 15%);
+  transition: background-color 1s ease, border-color 1s ease, box-shadow 1s ease;
+}
+.site-header.solid-header .header-surface {
+  background-color: white;
+  border-color: #e2e8f0;
+  box-shadow: 0 8px 24px rgb(12 35 52 / 8%);
+}
+.site-header .header-information {
+  background-color: rgb(12 35 52 / 30%);
+  transition: background-color 1s ease;
+}
+.site-header.solid-header .header-information { background-color: var(--color-navy-deep); }
+.site-header .header-brand-image,
+.site-header nav[aria-label="Main navigation"] > a,
+.site-header nav[aria-label="Main navigation"] > div > div > a,
+.site-header nav[aria-label="Main navigation"] > div > div > button {
+  transition: color 1s ease, filter 1s ease !important;
+}
+.footer-logo { width: 210px; height: 165px; }
+.footer-logo .footer-logo-image {
+  position: absolute;
+  width: 310px;
+  height: auto;
+  max-width: none;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+/* Explicit colors keep every control readable as the hero leaves view. */
+.site-header.solid-header { color: #000; }
+.site-header.solid-header .header-surface { color: #000; background-color: #fff; }
+.site-header.solid-header nav[aria-label="Main navigation"] > a,
+.site-header.solid-header nav[aria-label="Main navigation"] > div > div > a,
+.site-header.solid-header nav[aria-label="Main navigation"] > div > div > button {
+  color: #000;
+}
+.site-header.solid-header .header-brand-image { filter: none; }
+.site-header.home-header .header-brand-image { filter: brightness(0) invert(1); }
+.footer-logo { background: transparent; box-shadow: none; }
