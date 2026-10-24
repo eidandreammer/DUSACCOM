@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, Globe2, TrendingUp, UsersRound, MoveRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Globe2, TrendingUp, UsersRound, Sparkles } from 'lucide-react';
 import { Eyebrow, ButtonLink, ProgramGrid, SectionHeading, MembershipCards, ClosingCTA } from '@/components/ui';
 import { InitiativeCard } from '@/components/program-list';
 import { initiatives, memberMilestones, testimonials, partners } from '@/lib/content';
@@ -14,69 +14,32 @@ export default function Home() {
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="overflow-hidden bg-mist">
-        <div className="container grid items-center gap-12 pt-12 pb-18 lg:grid-cols-[1.07fr_1fr] lg:gap-14 lg:pt-16 lg:pb-21">
-          <div>
-            <Eyebrow>{t.home.eyebrow1}</Eyebrow>
-            <h1 className="max-w-2xl text-[clamp(2.75rem,4.65vw,4.7rem)] leading-[1.075] font-semibold tracking-[-.055em]">
+      {/* Full-viewport city hero */}
+      <section className="home-hero relative isolate flex min-h-screen w-full flex-col justify-center overflow-hidden bg-navy text-white" aria-labelledby="hero-title">
+        <Image
+          src="/assets/new-york.jpg"
+          alt="Golden sunlight between the buildings of the Midtown Manhattan skyline"
+          fill
+          sizes="100vw"
+          priority
+          className="-z-20 object-cover object-[60%_center]"
+        />
+        <div className="hero-shade absolute inset-0 -z-10" />
+        <div className="container hero-layout">
+          <div className="hero-copy">
+            <Eyebrow light>{t.home.eyebrow1}</Eyebrow>
+            <h1 id="hero-title" className="text-[clamp(2.6rem,5.2vw,5.5rem)] leading-[1.06] font-semibold tracking-[-.05em]">
               {t.home.heroTitle1}
               <br />
               {t.home.heroTitle2}
               <br />
-              <span className="text-crimson">{t.home.heroTitle3}</span>
+              <span className="text-rose-300">{t.home.heroTitle3}</span>
             </h1>
-            <p className="mt-7 max-w-md text-sm leading-8 text-slate-600 md:text-base">
-              {t.home.heroDesc}
-            </p>
-            <div className="mt-7 flex flex-wrap gap-3">
-              <ButtonLink href="/membership#apply">{t.home.joinBtn}</ButtonLink>
-              <ButtonLink href="/programs" variant="outline">
-                {t.home.exploreBtn}
-              </ButtonLink>
-            </div>
-            <div className="mt-8 flex items-center gap-2 text-[10px] leading-5 text-slate-600">
-              <span className="flag flag-dr" role="img" aria-label="Dominican Republic flag" />
-              <span className="flag flag-us" role="img" aria-label="United States flag" />
-              <span className="ml-1">{t.home.twoCultures}</span>
-            </div>
+            <p className="hero-description mt-6 max-w-xl text-slate-200">{t.home.heroDesc}</p>
           </div>
-
-          <div className="hero-photo relative isolate mx-2 mb-5 h-[370px] rounded-[8px] sm:h-[440px] lg:mx-0 lg:mb-0 lg:h-[510px]">
-            <Image
-              src="/assets/new-york.jpg"
-              alt="Golden sunlight between the buildings of the Midtown Manhattan skyline"
-              fill
-              sizes="(max-width: 1023px) 100vw, 50vw"
-              priority
-              className="rounded-[8px] object-cover object-[57%_center]"
-            />
-            <div className="absolute inset-0 rounded-[8px] bg-gradient-to-t from-navy/80 via-navy/5 to-transparent" />
-            <span className="absolute top-6 left-6 flex items-center gap-2 rounded-[8px] bg-navy/75 px-3 py-2 text-[8px] font-semibold tracking-widest text-white">
-              <span className="size-1.5 rounded-full bg-white" />
-              {t.home.localRoots}
-            </span>
-            <div className="absolute right-7 bottom-20 left-8 flex items-end justify-between text-white">
-              <p className="text-[28px] leading-9 tracking-tight">
-                {t.home.buildingBridges}
-                <br />
-                <strong className="font-semibold">{t.home.creatingOpportunity}</strong>
-              </p>
-              <ArrowUpRight size={34} strokeWidth={1.2} aria-hidden="true" />
-            </div>
-            <div className="absolute -bottom-6 -left-3 flex items-center gap-3 rounded-[8px] bg-white p-4 pr-6 shadow-lg shadow-navy/5 md:-left-5">
-              <span className="flex size-11 items-center justify-center rounded-full bg-red-50 text-crimson">
-                <Globe2 size={27} strokeWidth={1.3} aria-hidden="true" />
-              </span>
-              <p className="text-[11px] leading-5">
-                {t.home.fromDrToUs}
-              </p>
-            </div>
-            <div className="absolute right-0 -bottom-12 flex items-center gap-2 text-[8px] tracking-wider text-slate-600">
-              DOMINICAN REPUBLIC
-              <MoveRight size={15} className="text-crimson" aria-hidden="true" />
-              UNITED STATES
-            </div>
+          <div className="hero-actions flex flex-wrap justify-end gap-3">
+            <ButtonLink href="/membership#apply">{t.home.joinBtn}</ButtonLink>
+            <ButtonLink href="/programs" variant="outline">{t.home.exploreBtn}</ButtonLink>
           </div>
         </div>
       </section>

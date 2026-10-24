@@ -391,3 +391,60 @@
     transform: none;
   }
 }
+
+/* The homepage header and hero share one full-viewport city backdrop. */
+.header-brand {
+  position: relative;
+  overflow: hidden;
+  width: 320px;
+  height: 76px;
+}
+.header-brand .header-brand-image {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.home-header nav[aria-label="Main navigation"] > a,
+.home-header nav[aria-label="Main navigation"] > div > div > a,
+.home-header nav[aria-label="Main navigation"] > div > div > button {
+  color: white;
+}
+.home-header nav[aria-label="Main navigation"] > a:hover,
+.home-header nav[aria-label="Main navigation"] > div > div > a:hover { color: #fda4af; }
+.home-header .icon-button:hover { background: rgb(255 255 255 / 12%); }
+.home-hero {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+.hero-shade {
+  background: linear-gradient(90deg, rgb(8 27 42 / 94%) 0%, rgb(8 27 42 / 78%) 42%, rgb(8 27 42 / 24%) 100%), linear-gradient(0deg, rgb(8 27 42 / 85%), transparent 45%);
+}
+.hero-layout {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 40px;
+  padding-block: clamp(190px, 22vh, 240px) 40px;
+}
+.hero-copy { max-width: 800px; margin-block: auto; }
+.home-hero .hero-description { font-size: clamp(17px, 1.3vw, 21px); line-height: 1.7; }
+.hero-actions { align-self: flex-end; }
+.home-hero .button-outline { border-color: rgb(255 255 255 / 55%); color: white; background: rgb(255 255 255 / 6%); }
+.home-hero .button-outline:hover { background: white; color: var(--color-navy); border-color: white; }
+@media (max-width: 1023px) {
+  .header-brand { width: 260px; }
+}
+@media (max-width: 760px) {
+  .header-brand { width: 180px; height: 64px; }
+  .hero-layout { padding-block: 180px 28px; gap: 32px; }
+  .hero-shade { background: linear-gradient(90deg, rgb(8 27 42 / 90%), rgb(8 27 42 / 55%)), linear-gradient(0deg, rgb(8 27 42 / 80%), transparent); }
+  .hero-actions { width: 100%; }
+  .hero-actions .button { width: 100%; justify-content: space-between; font-size: 16px; }
+}
+@media (max-width: 380px) {
+  .header-brand { width: 145px; }
+}
