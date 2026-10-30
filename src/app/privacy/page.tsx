@@ -28,6 +28,7 @@ export default function Privacy() {
                 review and respond. Membership inquiries and event expressions of interest do not establish membership, make
                 a payment, or reserve attendance.
               </p>
+              <p>Event registration forms collect the same contact details to record your registration for a scheduled chapter event. A confirmation reference is shown after the registration is saved.</p>
               <h2>How we use your information</h2>
               <p>
                 Information you provide is used to handle your inquiry, discuss relevant membership or program options, and
@@ -79,6 +80,7 @@ export default function Privacy() {
                 la Cámara para que el equipo pueda revisar y responder. Las consultas de membresía y expresiones de interés en
                 eventos no establecen una membresía, no realizan ningún pago ni garantizan reserva de asistencia.
               </p>
+              <p>Los formularios de inscripción a eventos recopilan los mismos datos de contacto para guardar tu registro en un evento programado del capítulo. Se muestra un número de referencia después de guardar la inscripción.</p>
               <h2>Cómo usamos tu información</h2>
               <p>
                 La información facilitada se utiliza exclusivamente para atender tu consulta, dialogar sobre opciones de

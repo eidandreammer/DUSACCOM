@@ -92,3 +92,58 @@ test('opaque and malformed origins are rejected', async () => {
   assert.equal((await handle(request(input(), { origin: 'null' }))).status, 403);
   assert.equal((await handle(request(input(), { origin: 'not-a-url' }))).status, 403);
 });
+
+test('event registration is saved and returns a receipt, with an optional message', async () => {
+  const { initiatives } = await import('../src/lib/content');
+  const event = { ...initiatives[0], status: 'confirmed' as const, schedule: { startsAt: new Date(Date.now() + 86400000).toISOString(), timeZone: 'America/New_York', registration: 'open' as const } };
+  const store = new MemoryStore();
+  const handle = createInquiryHandler(async () => store, origin, [event]);
+  const data = input({ kind: 'event-registration', interest: event.id, message: '' });
+  const response = await handle(request(data));
+  assert.equal(response.status, 201);
+  assert.equal((await response.json()).ok, true);
+  assert.equal(store.messages.get(data.submissionId)?.kind, 'event-registration');
+  assert.equal(store.messages.get(data.submissionId)?.interest, event.id);
+});
+
+test('registration rejects proposed, closed, past, invalid, and unscheduled events without saving', async () => {
+  const { initiatives } = await import('../src/lib/content');
+  const schedule = { startsAt: new Date(Date.now() + 86400000).toISOString(), timeZone: 'America/New_York', registration: 'open' as const };
+  for (const event of [
+    { ...initiatives[0] },
+    { ...initiatives[0], status: 'confirmed' as const },
+    { ...initiatives[0], status: 'confirmed' as const, schedule: { ...schedule, registration: 'closed' as const } },
+    { ...initiatives[0], status: 'confirmed' as const, schedule: { ...schedule, startsAt: new Date(Date.now() - 86400000).toISOString() } },
+    { ...initiatives[0], status: 'confirmed' as const, schedule: { ...schedule, timeZone: 'not-a-time-zone' } },
+    { ...initiatives[0], status: 'confirmed' as const, schedule: { ...schedule, startsAt: '2099-12-01T12:00:00' } },
+  ]) {
+    const store = new MemoryStore();
+    const handle = createInquiryHandler(async () => store, origin, [event]);
+    const response = await handle(request(input({ kind: 'event-registration', interest: event.id, message: '' })));
+    assert.equal(response.status, 422);
+    assert.equal(store.messages.size, 0);
+  }
+});
+
+test('a registration retry retains its receipt after registration closes', async () => {
+  const { initiatives } = await import('../src/lib/content');
+  const event = { ...initiatives[0], status: 'confirmed' as const, schedule: { startsAt: new Date(Date.now() + 86400000).toISOString(), timeZone: 'America/New_York', registration: 'open' as 'open' | 'closed' } };
+  const store = new MemoryStore();
+  const handle = createInquiryHandler(async () => store, origin, [event]);
+  const data = input({ kind: 'event-registration', interest: event.id, message: '' });
+  const first = await (await handle(request(data))).json();
+  event.schedule.registration = 'closed';
+  const retry = await handle(request(data));
+  assert.equal(retry.status, 200);
+  assert.equal((await retry.json()).reference, first.reference);
+  assert.equal(store.messages.size, 1);
+});
+
+test('registration is never confirmed when durable storage is unavailable', async () => {
+  const { initiatives } = await import('../src/lib/content');
+  const event = { ...initiatives[0], status: 'confirmed' as const, schedule: { startsAt: new Date(Date.now() + 86400000).toISOString(), timeZone: 'America/New_York', registration: 'open' as const } };
+  const handle = createInquiryHandler(async () => { throw new ServiceUnavailable(); }, origin, [event]);
+  const response = await handle(request(input({ kind: 'event-registration', interest: event.id, message: '' })));
+  assert.equal(response.status, 503);
+  assert.equal((await response.json()).ok, false);
+});

@@ -38,6 +38,8 @@ export default function Terms() {
                 Unless explicitly marked as confirmed, initiatives are proposed concepts. Dates, locations, admission
                 requirements, and registration details are confirmed separately. An inquiry receipt confirms that the website
                 received your message; it does not reserve a place or constitute event registration.
+                A form labeled Event Registration records your registration for a confirmed chapter event and provides a
+                reference after it is saved.
               </p>
               <h2>No online payments</h2>
               <p>
@@ -76,6 +78,8 @@ export default function Terms() {
                 A menos que se señale explícitamente como confirmado, las iniciativas son conceptos propuestos. Las fechas,
                 sedes, requisitos de admisión y detalles de registro se coordinan por separado. El acuse de recibo confirma que
                 el sitio recibió tu mensaje, pero no garantiza un cupo ni sustituye la inscripción formal a un evento.
+                Un formulario identificado como Registro para Eventos guarda tu inscripción en un evento confirmado del
+                capítulo y proporciona un número de referencia después de guardarla.
               </p>
               <h2>Sin pagos en línea</h2>
               <p>

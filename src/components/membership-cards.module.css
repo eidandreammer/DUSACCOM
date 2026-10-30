@@ -1,0 +1,15 @@
+.grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
+.card { --card-padding: 24px; display: flex; flex-direction: column; border: 1px solid #d5dce1; border-radius: 8px; padding: var(--card-padding); background: white; color: #102c41; }
+.featured { border-color: #bd3042; }
+.icon { flex-shrink: 0; margin-bottom: 24px; color: #bd3042; }
+.eyebrow { display: block; font-size: 9px; line-height: 1.6; letter-spacing: .08em; color: #586b7b; font-weight: 600; }
+.card h3 { margin: 12px 0 24px; font-size: 24px; line-height: 1.25; font-weight: 600; letter-spacing: -.035em; }
+.content { display: flex; flex-direction: column; flex: 1; }
+.content p { margin: 18px 0 24px; color: #465766; font-size: 15px; line-height: 1.8; }
+.content ul { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+.content li { display: flex; align-items: flex-start; gap: 8px; color: #465766; font-size: 13px; line-height: 1.7; }
+.content li svg { margin-top: 3px; flex-shrink: 0; color: #bd3042; }
+.apply { margin-top: auto; width: 100%; min-height: 48px; padding: 12px; gap: 8px; font-size: 12px; }
+.apply svg { flex-shrink: 0; width: 15px; }
+@media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 540px) { .grid { grid-template-columns: 1fr; gap: 16px; } .card { --card-padding: 22px; } .icon { flex-shrink: 0; margin-bottom: 16px; } }

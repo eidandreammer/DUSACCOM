@@ -2,7 +2,7 @@ import { integer, sqliteTable, text, index } from 'drizzle-orm/sqlite-core';
 export const inquiries = sqliteTable('inquiries', {
   id: text('id').primaryKey(),
   reference: text('reference').notNull().unique(),
-  kind: text('kind', { enum: ['contact', 'membership', 'event'] }).notNull(),
+  kind: text('kind', { enum: ['contact', 'membership', 'event', 'event-registration'] }).notNull(),
   name: text('name').notNull(), email: text('email').notNull(), company: text('company').notNull(),
   interest: text('interest').notNull(), message: text('message').notNull(),
   consent: integer('consent', { mode: 'boolean' }).notNull(),

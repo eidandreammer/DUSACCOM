@@ -12,10 +12,10 @@ for (const path of paths) {
   assert.match(html, /rel="canonical"/, `${path}: canonical`);
   assert.match(html, /dusaccom1@gmail.com/, `${path}: official contact`);
   assert.doesNotMatch(html, /<script[^>]+src="https:\/\/www.googletagmanager.com/, `${path}: no analytics before consent`);
-  for (const match of html.matchAll(/(?:src|href)="(\/(?:_next\/static|assets)\/[^"?]+)/g)) assets.add(match[1].replaceAll('&amp;', '&'));
+  for (const match of html.matchAll(/(?:src|href)="(\/(?:_next\/static|assets|imgs)\/[^"?]+)/g)) assets.add(match[1].replaceAll('&amp;', '&').replaceAll('&#x27;', "'"));
   if (path === '/contact') assert.match(html, /method="post"/, 'No-JavaScript forms never expose fields in a GET URL');
   if (path === '/') {
-    const sections = ['about', 'mission', 'membership', 'register', 'infotep', 'register-form'];
+    const sections = ['about', 'mission', 'membership', 'register', 'infotep', 'events', 'register-form'];
     const positions = sections.map(id => html.indexOf(`<section id="${id}"`));
     assert.ok(positions.every((position, index) => position >= 0 && (index === 0 || position > positions[index - 1])), 'Landing sections follow the requested order');
     const anchors = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]));
@@ -28,6 +28,18 @@ for (const path of paths) {
     assert.match(html, /id="registration-submenu"/, 'Registration dropdown is preserved');
     assert.match(html, /id="mobile-navigation"/, 'Mobile navigation is preserved');
     assert.match(html, /Switch language to Spanish/, 'Language control is preserved');
+    assert.match(html, />DUS<\/span><span[^>]*>AC<\/span><span[^>]*>COM<\/span>/, 'Hero renders the three flag-colored name segments');
+    assert.match(html, /INFOTEP logos/, 'Supplied INFOTEP logo is displayed');
+    const training = html.match(/<section id="infotep"[\s\S]*?<\/section>/)?.[0] || '';
+    assert.match(training, /English Lessons/);
+    assert.match(training, /Spanish Lessons/);
+    assert.doesNotMatch(training, /Finance &amp; Accounting|Digital Marketing/);
+    const membership = html.match(/<section id="membership"[\s\S]*?<\/section>/)?.[0] || '';
+    assert.equal((membership.match(/<article\b/g) || []).length, 4, 'All four membership cards are displayed');
+    assert.doesNotMatch(membership, /<details\b|<summary\b/, 'Membership content is always visible without a details toggle');
+    assert.equal((membership.match(/<ul\b/g) || []).length, 4, 'Every card displays its benefits');
+    assert.match(html, /aria-label="Chapter event calendar"/, 'Event calendar is available');
+    assert.match(html, /Date to be announced/, 'Unscheduled events do not invent dates');
     const footer = html.match(/<footer\b[\s\S]*?<\/footer>/)?.[0] || '';
     assert.ok(footer, 'Footer is present');
     assert.doesNotMatch(footer, /href="\/(fotos|enviar-fotos|agendar-cita)"|href="https:\/\/(instagram|facebook)\.com"/, 'Footer omits extra photo-service links and placeholder social profiles');

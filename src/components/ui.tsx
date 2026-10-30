@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 import { type Program } from '@/lib/content';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
+import membershipStyles from './membership-cards.module.css';
 
 export function Eyebrow({ children, light = false }: { children: ReactNode; light?: boolean }) {
   return (
@@ -103,48 +104,23 @@ export function MembershipCards({ registrationHref, onSelect }: { registrationHr
   const tiersList = translations[lang].membershipTiers;
 
   return (
-    <div className="grid gap-8 pt-3 md:grid-cols-2 lg:gap-6">
+    <div className={membershipStyles.grid}>
       {tiersList.map((tier) => {
         const Icon = { startup: Sparkles, 'small-business': BriefcaseBusiness, corporate: Globe2, nonprofit: HeartHandshake }[tier.id];
-        const isFeatured = 'featuredBadge' in tier && Boolean(tier.featuredBadge);
-
+        const featured = 'featuredBadge' in tier;
         return (
-          <article
-            key={tier.id}
-            className={`relative flex flex-col rounded-[8px] border p-7 ${
-              isFeatured ? 'border-crimson bg-red-50/20' : 'border-slate-200 bg-white'
-            }`}
-          >
-            {isFeatured && (
-              <div className="absolute -top-3.5 -right-px -left-px rounded-t-[8px] bg-crimson py-1.5 text-center text-[9px] font-semibold tracking-widest text-white">
-                {tier.featuredBadge}
-              </div>
-            )}
-            <Icon
-              size={29}
-              strokeWidth={1.4}
-              className={`mb-7 ${isFeatured ? 'text-crimson' : 'text-slate-600'}`}
-              aria-hidden="true"
-            />
-            <span className="text-[9px] font-semibold tracking-widest text-slate-600">{tier.eyebrow}</span>
-            <h3 className="mt-3 mb-4 text-[28px] font-semibold tracking-tight">{tier.name}</h3>
-            <p className="mb-6 min-h-14 text-sm leading-7 text-slate-600">{tier.description}</p>
-            <ul className="mb-7 space-y-4 border-t border-slate-200 pt-6">
-              {tier.benefits.map((benefit) => (
-                <li className="flex items-start gap-2 text-xs leading-6 text-slate-600" key={benefit}>
-                  <Check className="mt-1 shrink-0 text-crimson" size={15} aria-hidden="true" />
-                  {benefit}
-                </li>
-              ))}
-            </ul>
-            <ButtonLink
-              className="mt-auto w-full text-xs"
-              href={registrationHref || `/?tier=${tier.id}#register-form`}
-              onClick={onSelect ? () => onSelect(tier.id) : undefined}
-              variant={isFeatured ? 'red' : 'outline'}
-            >
-              {tier.btnText}
-            </ButtonLink>
+          <article key={tier.id} className={`${membershipStyles.card} ${featured ? membershipStyles.featured : ''}`}>
+            <Icon size={25} strokeWidth={1.5} className={membershipStyles.icon} aria-hidden="true" />
+            <span className={membershipStyles.eyebrow}>{tier.eyebrow}</span>
+            <h3>{tier.name}</h3>
+            <div className={membershipStyles.content}>
+              <p>{tier.description}</p>
+              <ul>{tier.benefits.map(benefit => <li key={benefit}><Check size={15} aria-hidden="true" /><span>{benefit}</span></li>)}</ul>
+              <ButtonLink className={membershipStyles.apply} href={registrationHref || `/?tier=${tier.id}#register-form`}
+                onClick={onSelect ? () => onSelect(tier.id) : undefined} variant={featured ? 'red' : 'outline'}>
+                {tier.btnText}
+              </ButtonLink>
+            </div>
           </article>
         );
       })}

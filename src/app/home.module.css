@@ -478,3 +478,24 @@
   .home .registrationSteps { grid-template-columns: 1fr; gap: 32px; margin-top: 40px; }
   .home .trainingNext { margin-top: 32px; }
 }
+
+.home .heroBrand { display: inline-block; white-space: nowrap; }
+.home .brandBlue { color: #4d91ff; }
+.home .brandWhite { color: #fff; }
+.home .brandRed { color: #f45b70; }
+.home .trainingIntro { flex-direction: row; align-items: flex-start; }
+.home .trainingCopy { min-width: 0; }
+.home .infotepLogo { flex-shrink: 0; width: 180px; height: 180px; object-fit: contain; border-radius: 8px; }
+.home .trainingAreas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.home .trainingArea { padding-inline: 40px; }
+@media (max-width: 760px) {
+  .home .trainingIntro { gap: 24px; }
+  .home .infotepLogo { width: 112px; height: 112px; }
+  .home .trainingCopy .sectionTitle { font-size: clamp(28px, 5vw, 36px); }
+}
+@media (max-width: 540px) {
+  .home .trainingAreas { grid-template-columns: 1fr; }
+  .home .trainingArea { padding-inline: 0; }
+  .home .trainingIntro { gap: 16px; }
+  .home .infotepLogo { width: 88px; height: 88px; }
+}

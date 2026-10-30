@@ -47,6 +47,7 @@ export function Footer() {
           <Link href="/#membership">{t.footer.becomeMember}</Link>
           <Link href="/#register-form">{t.nav.registration}</Link>
           <Link href="/#infotep">{t.footer.infotep}</Link>
+          <Link href="/#events">{t.nav.events}</Link>
         </div>
 
         {/* Let's connect links */}

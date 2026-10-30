@@ -13,7 +13,7 @@ npm run dev
 
 Pages: `/`, `/about`, `/programs`, `/membership`, `/contact`, `/resources/[slug]`, `/privacy`, `/terms`. The membership and programs pages are server-rendered with validated URL selections. Other public content is prerendered. All routes retain an SSR/static HTML baseline with small client components for forms, filters, navigation, and consent.
 
-The main page summarizes the Chamber in this order after the existing hero: About, Mission & Vision, Become a Member, Register, INFOTEP, and Registration Form. Navbar and footer section links return to this landing page; supporting detail pages and member quick links remain available. Membership cards preselect the pathway in the main-page form without clearing entered contact details. Direct links can use `/?tier=nonprofit#register-form` (or another valid tier ID).
+The main page summarizes the Chamber in this order after the existing hero: About, Mission & Vision, Become a Member, Register, INFOTEP English and Spanish lessons, Events Calendar, and Registration Form. Navbar and footer section links return to this landing page; supporting detail pages and member quick links remain available. Membership cards always show their description, benefits, and signup link, with equal heights and bottom-aligned buttons within each row. Membership cards preselect the pathway in the main-page form without clearing entered contact details. Direct links can use `/?tier=nonprofit#register-form` (or another valid tier ID).
 
 ```sh
 npm run typecheck
@@ -24,7 +24,7 @@ npm start
 
 ## Inquiries and persistence
 
-`POST /api/inquiries` validates JSON with the same Zod/TypeScript schema used by the browser. It accepts contact, membership, and initiative inquiries and persists them to Cloudflare D1 before issuing a receipt. It includes bounded streaming body reads, same-origin checks, a honeypot, database-backed rate limits, idempotent submission IDs, parameterized SQL, and privacy-conscious structured logs. It never returns a successful receipt without durable acceptance.
+`POST /api/inquiries` validates JSON with the same Zod/TypeScript schema used by the browser. It accepts contact, membership, and initiative inquiries, plus event registrations and persists them to Cloudflare D1 before issuing a receipt. It includes bounded streaming body reads, same-origin checks, a honeypot, database-backed rate limits, idempotent submission IDs, parameterized SQL, and privacy-conscious structured logs. It never returns a successful receipt without durable acceptance.
 
 D1 is provisioned by Sites from `.openai/hosting.json` (`d1: "DB"`). Schema-only migrations are in `drizzle/`. To initialize the **local** database and preview the Worker:
 
@@ -38,7 +38,7 @@ npm run preview
 
 New submissions are stored in the `inquiries` table with status `new`. An authorized database operator can review these records using the hosting provider’s D1 tooling. **No automatic email notifications, staff dashboard, payment processor, member authentication, or recurring marketing subscription is configured.** There is no public route that lists inquiry records. Agree an operator review process, access policy, and retention schedule before opening submissions to the public.
 
-A receipt confirms inquiry acceptance, not membership, event attendance, a payment, or an outgoing email. If a request times out, the visitor can retry with the same submission ID without creating duplicate records.
+Inquiry receipts confirm inquiry acceptance. Event registration receipts confirm a saved registration for the selected scheduled event. Receipts do not establish membership, collect a payment, or send an outgoing email. If a request times out, the visitor can retry with the same submission ID without creating duplicate records.
 
 ## Hosting
 
@@ -68,3 +68,11 @@ Copy `.env.example` for site-origin configuration. Set `NEXT_PUBLIC_GA_ID` only 
 
 Server logs use event names, status codes, timings, request IDs, and receipt references. They exclude form bodies, raw IP addresses, and error stacks. Native Next.js error, loading, and not-found boundaries cover visitor failures. Review policy copy, database handling, content approvals, operator access, and your chosen analytics configuration before a public launch.
 # DUSACCOM
+
+## Chapter event calendar
+
+The landing page calendar serves the chapter supporting Latinos in the United States. It includes month navigation, date selection, event time zones, and inline registration. Existing proposed initiatives have no confirmed dates and appear separately under “Dates to be announced”; their form records interest rather than reserving attendance. No live dates are fabricated.
+
+To publish an event in `src/lib/content.ts`, keep its stable ID, set `status: 'confirmed'`, provide a `location`, and add `schedule` with `startsAt` (an ISO timestamp including `Z` or an explicit UTC offset), `timeZone` (an IANA time zone), and `registration: 'open'` or `'closed'`. Optional `titleEs` and `descriptionEs` supply Spanish event text. The calendar groups each event by its local date and displays its local time zone. An event link can use `/?event=<id>#events`.
+
+Registrations use the existing database-backed inquiry service with `kind: 'event-registration'` and the event ID in `interest`. The name, email, and consent are required; a message is optional. The server rejects registration for unscheduled, proposed, past, or closed events and returns a receipt only after durable storage succeeds. Retries use the same submission ID and receipt. The existing SQLite `kind` column is plain text, so the added kind requires no SQL schema migration. Online submission still requires the configured D1 binding; a conventional Next.js development server without D1 returns a recoverable error rather than a false confirmation.

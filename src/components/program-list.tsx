@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { ArrowRight, CalendarDays, TrendingUp, Search, X } from 'lucide-react';
 import { initiatives, type Initiative } from '@/lib/content';
+import { eventDateKey } from '@/lib/events';
 import { useLanguage } from '@/lib/language-context';
 
 export function InitiativeCard({ initiative }: { initiative: Initiative }) {
@@ -57,7 +58,9 @@ export function InitiativeCard({ initiative }: { initiative: Initiative }) {
   const desc = descTranslations[initiative.id]?.[lang] || initiative.description;
 
   const dateText =
-    initiative.status === 'confirmed' && initiative.date
+    eventDateKey(initiative)
+      ? new Intl.DateTimeFormat(lang === 'es' ? 'es-US' : 'en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: initiative.schedule!.timeZone }).format(new Date(initiative.schedule!.startsAt))
+      : initiative.status === 'confirmed' && initiative.date
       ? initiative.date
       : lang === 'en'
       ? 'PROPOSED · DATE TO BE ANNOUNCED'
@@ -111,7 +114,7 @@ export function InitiativeCard({ initiative }: { initiative: Initiative }) {
         <h3 className="mt-4 mb-3 text-xl leading-7 font-semibold tracking-tight">{title}</h3>
         <p className="mb-5 text-[13px] leading-7 text-slate-600">{desc}</p>
         <Link
-          href={`/programs?initiative=${initiative.id}#interest`}
+          href={`/?event=${initiative.id}#events`}
           className="text-link mt-auto w-full justify-between border-t border-slate-200 pt-3"
         >
           <span>{actionText}</span>

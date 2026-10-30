@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { ArrowDown, ArrowRight } from 'lucide-react';
 import { InquiryForm } from '@/components/inquiry-form';
 import { MembershipCards } from '@/components/ui';
+import { EventCalendar } from '@/components/event-calendar';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
 import { site } from '@/lib/site';
@@ -38,7 +39,9 @@ export default function Home() {
         <div className={`${styles.container} ${styles.heroLayout}`}>
           <div className={styles.heroCopy}>
             <p className={styles.label}>{copy.aboutEyebrow}</p>
-            <h1 id="about-title" className={styles.heroTitle}>{copy.aboutTitle}</h1>
+            <h1 id="about-title" className={styles.heroTitle}>
+              <span className={styles.heroBrand} aria-label="DUSACCOM"><span className={styles.brandBlue}>DUS</span><span className={styles.brandWhite}>AC</span><span className={styles.brandRed}>COM</span></span>
+            </h1>
             <p className={styles.statement}>{copy.aboutStatement}</p>
             <p className={`${styles.body} ${styles.heroDescription}`}>{t.aboutPage.description}</p>
             <Link href="#mission" className={`${styles.link} ${styles.heroLink}`}>
@@ -141,10 +144,7 @@ export default function Home() {
               <h2 id="training-title" className={styles.sectionTitle}>{copy.trainingTitle}</h2>
               <p className={styles.body}>{copy.trainingDescription}</p>
             </div>
-            <Link href="/infotep" className={`${styles.link} ${styles.trainingLink}`}>
-              {copy.trainingButton}
-              <ArrowRight size={18} aria-hidden="true" />
-            </Link>
+            <Image src="/imgs/INFOTEP logos's.png" alt="INFOTEP" width={800} height={800} sizes="(max-width: 760px) 112px, 180px" className={styles.infotepLogo} />
           </div>
           <div className={styles.trainingAreas}>
             {copy.trainingAreas.map((area) => (
@@ -162,6 +162,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <EventCalendar />
 
       <section id="register-form" className={styles.registrationForm} aria-labelledby="registration-form-title">
         <div className={`${styles.container} ${styles.formLayout}`}>

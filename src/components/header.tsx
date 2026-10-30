@@ -43,7 +43,7 @@ export function Header() {
     { href: '/enviar-fotos', label: t.nav.enviarFotos },
     { href: '/agendar-cita', label: t.nav.agendarCita },
   ];
-  const registrationLinks = [{ href: '/#membership', label: t.nav.viewTiers }, ...photoLinks];
+  const registrationLinks = [{ href: '/#membership', label: t.nav.viewTiers }, { href: '/#events', label: t.nav.events }, ...photoLinks];
   const registrationActive = pathname === '/membership' || photoLinks.some(({ href }) => pathname === href);
   const closeNavigation = () => { setOpen(false); setDropdownOpen(false); };
 

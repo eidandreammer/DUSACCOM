@@ -1,5 +1,6 @@
 import { inquirySchema, validationErrors, type Inquiry, type InquiryResponse } from '@/lib/inquiry';
-import { initiatives, tiers } from '@/lib/content';
+import { initiatives, tiers, type Initiative } from '@/lib/content';
+import { isEventRegistrationOpen } from '@/lib/events';
 import { log } from './logger';
 export type StoredReceipt = { reference: string; receivedAt: string; payloadHash: string };
 export interface InquiryStore {
@@ -11,7 +12,7 @@ export class ServiceUnavailable extends Error {}
 const MAX_BYTES = 12000;
 const RATE_WINDOW = 10 * 60 * 1000;
 async function hash(value: string) { const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value)); return Array.from(new Uint8Array(bytes), byte => byte.toString(16).padStart(2, '0')).join(''); }
-export function createInquiryHandler(getStore: () => Promise<InquiryStore>, canonicalOrigin: string) {
+export function createInquiryHandler(getStore: () => Promise<InquiryStore>, canonicalOrigin: string, events: readonly Initiative[] = initiatives) {
   return async function handle(request: Request): Promise<Response> {
     const requestId = crypto.randomUUID();
     const started = Date.now();
@@ -44,7 +45,8 @@ export function createInquiryHandler(getStore: () => Promise<InquiryStore>, cano
       const parsed = inquirySchema.safeParse(input);
       if (!parsed.success) return reply({ ok: false, message: 'Please check the highlighted fields.', errors: validationErrors(parsed.error), requestId }, 422);
       const inquiry = parsed.data;
-      if ((inquiry.kind === 'membership' && !tiers.some(tier => tier.id === inquiry.interest)) || (inquiry.kind === 'event' && !initiatives.some(event => event.id === inquiry.interest))) return reply({ ok: false, message: 'Please choose one of the available options.', errors: { interest: 'Please choose a listed option.' }, requestId }, 422);
+      const event = events.find(item => item.id === inquiry.interest);
+      if ((inquiry.kind === 'membership' && !tiers.some(tier => tier.id === inquiry.interest)) || (['event', 'event-registration'].includes(inquiry.kind) && !event)) return reply({ ok: false, message: 'Please choose one of the available options.', errors: { interest: 'Please choose a listed option.' }, requestId }, 422);
       const store = await getStore();
       const payloadHash = await hash(JSON.stringify({ ...inquiry, submissionId: undefined }));
       const existing = await store.find(inquiry.submissionId);
@@ -52,6 +54,7 @@ export function createInquiryHandler(getStore: () => Promise<InquiryStore>, cano
         if (existing.payloadHash !== payloadHash) return reject('This inquiry has already been received with different details. Refresh the page to send a new inquiry.', 409);
         return reply({ ok: true, reference: existing.reference, receivedAt: existing.receivedAt }, 200);
       }
+      if (inquiry.kind === 'event-registration' && (!event || !isEventRegistrationOpen(event))) return reply({ ok: false, message: 'Registration is not open for this event. Please check the event calendar.', errors: { interest: 'Please choose an upcoming event with open registration.' }, requestId }, 422);
       const now = Date.now(); const window = Math.floor(now / RATE_WINDOW);
       // Cloudflare overwrites CF-Connecting-IP. Other runtimes share a conservative fallback bucket.
       const network = request.headers.get('cf-connecting-ip') || 'unidentified-network';

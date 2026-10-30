@@ -4,7 +4,8 @@ import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { ArrowRight, CheckCircle2, LoaderCircle, Mail, ShieldCheck } from 'lucide-react';
 import { inquirySchema, validationErrors, type FieldErrors, type InquiryKind, type InquiryResponse } from '@/lib/inquiry';
 import { site } from '@/lib/site';
-import { initiatives } from '@/lib/content';
+import { initiatives, type Initiative } from '@/lib/content';
+import { eventTitle, isEventRegistrationOpen } from '@/lib/events';
 import { track } from './privacy-controls';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
@@ -23,13 +24,17 @@ export function InquiryForm({
   kind = 'contact',
   initialInterest = '',
   onInterestChange,
+  eventOptions = initiatives,
 }: {
   kind?: InquiryKind;
   initialInterest?: string;
   onInterestChange?: (interest: string) => void;
+  eventOptions?: readonly Initiative[];
 }) {
   const { lang } = useLanguage();
   const f = translations[lang].form;
+  const isEvent = kind === 'event' || kind === 'event-registration';
+  const isRegistration = kind === 'event-registration';
   const id = useId();
   const [values, setValues] = useState<Values>({
     name: '',
@@ -56,13 +61,13 @@ export function InquiryForm({
     setValues(current => ({ ...current, interest: initialInterest }));
     setErrors(current => ({ ...current, interest: undefined }));
     setResult(null);
-  }, [initialInterest]);
+  }, [initialInterest, kind]);
 
   const options =
     kind === 'membership'
       ? translations[lang].membershipTiers.map((tier) => ({ value: tier.id, label: tier.name }))
-      : kind === 'event'
-      ? initiatives.map((event) => ({ value: event.id, label: event.title }))
+      : isEvent
+      ? eventOptions.filter(event => !isRegistration || isEventRegistrationOpen(event)).map((event) => ({ value: event.id, label: eventTitle(event, lang) }))
       : f.contactTopics.map((topic) => ({ value: topic, label: topic }));
 
   function check(next: Values): FieldErrors {
@@ -146,21 +151,21 @@ export function InquiryForm({
   }
 
   const title =
-    kind === 'membership'
+    isRegistration ? f.titleEventRegistration : kind === 'membership'
       ? f.titleMembership
       : kind === 'event'
       ? f.titleEvent
       : f.titleContact;
 
   const desc =
-    kind === 'membership'
+    isRegistration ? f.descEventRegistration : kind === 'membership'
       ? f.descMembership
       : kind === 'event'
       ? f.descEvent
       : f.descContact;
 
   const submitBtnText =
-    kind === 'membership'
+    isRegistration ? f.submitEventRegistration : kind === 'membership'
       ? f.submitMembership
       : kind === 'event'
       ? f.submitEvent
@@ -229,7 +234,7 @@ export function InquiryForm({
         </label>
 
         <label className="block text-xs font-semibold">
-          {kind === 'membership' ? f.pathwayLabel : kind === 'event' ? f.eventLabel : f.helpLabel}{' '}
+          {kind === 'membership' ? f.pathwayLabel : isEvent ? f.eventLabel : f.helpLabel}{' '}
           <span className="text-crimson" aria-hidden="true">*</span>
           <select
             {...fieldProps('interest')}
@@ -256,7 +261,7 @@ export function InquiryForm({
         </label>
 
         <label className="block text-xs font-semibold">
-          {f.messageLabel} <span className="text-crimson" aria-hidden="true">*</span>
+          {isRegistration ? f.optionalMessage : f.messageLabel} {!isRegistration && <span className="text-crimson" aria-hidden="true">*</span>}
           <textarea
             {...fieldProps('message')}
             value={values.message}
@@ -264,8 +269,8 @@ export function InquiryForm({
             className="form-field min-h-32 resize-y"
             placeholder={f.messagePlaceholder}
             rows={4}
-            required
-            minLength={10}
+            required={!isRegistration}
+            minLength={isRegistration ? undefined : 10}
             maxLength={3000}
           />
           <ErrorMessage name="message" />
@@ -347,7 +352,7 @@ export function InquiryForm({
           (result.ok ? (
             <>
               <CheckCircle2 size={24} className="mb-3 text-emerald-700" aria-hidden="true" />
-              <h3 className="text-lg font-semibold">{f.thankYou}</h3>
+              <h3 className="text-lg font-semibold">{isRegistration ? f.eventRegistrationSuccess : f.thankYou}</h3>
               <p className="mt-2 text-sm leading-7 text-slate-700">
                 {f.refText} <strong>{result.reference}</strong> {f.forFollowUp}
               </p>
