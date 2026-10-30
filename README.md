@@ -13,6 +13,8 @@ npm run dev
 
 Pages: `/`, `/about`, `/programs`, `/membership`, `/contact`, `/resources/[slug]`, `/privacy`, `/terms`. The membership and programs pages are server-rendered with validated URL selections. Other public content is prerendered. All routes retain an SSR/static HTML baseline with small client components for forms, filters, navigation, and consent.
 
+The main page summarizes the Chamber in this order after the existing hero: About, Mission & Vision, Become a Member, Register, INFOTEP, and Registration Form. Navbar and footer section links return to this landing page; supporting detail pages and member quick links remain available. Membership cards preselect the pathway in the main-page form without clearing entered contact details. Direct links can use `/?tier=nonprofit#register-form` (or another valid tier ID).
+
 ```sh
 npm run typecheck
 npm test

@@ -11,11 +11,12 @@ export const initiatives: readonly Initiative[] = [
   { id: 'next-chapter', title: 'Ready for Your Next Chapter', category: 'Workshop', description: 'Practical conversations for entrepreneurs ready to move their business forward.', art: 'light', tagline: ['Small steps.', 'Big ambitions.'], status: 'proposed' },
   { id: 'beyond-borders', title: 'Business Beyond Borders', category: 'Cross-border', description: 'Explore doing business between the Dominican Republic and the United States.', art: 'red', tagline: ['Two markets.', 'One conversation.'], status: 'proposed' }
 ];
-export type Tier = { id: 'startup' | 'small-business' | 'corporate'; name: string; eyebrow: string; description: string; benefits: readonly string[]; featured?: boolean };
+export type Tier = { id: 'startup' | 'small-business' | 'corporate' | 'nonprofit'; name: string; eyebrow: string; description: string; benefits: readonly string[]; featured?: boolean };
 export const tiers: readonly Tier[] = [
   { id: 'startup', name: 'Startup', eyebrow: 'FOR THE NEXT BIG IDEA', description: 'Turn ambition into momentum with a community in your corner.', benefits: ['Entrepreneur community connections', 'Business learning opportunities', 'Guidance for your next steps'] },
   { id: 'small-business', name: 'Small Business', eyebrow: 'FOR GROWING AMBITIONS', description: 'Make valuable connections and put your business in a stronger position to grow.', benefits: ['Business-to-business introductions', 'Networking and development resources', 'Community visibility opportunities'], featured: true },
-  { id: 'corporate', name: 'Corporate Partner', eyebrow: 'FOR A GREATER IMPACT', description: 'Connect across markets and empower the next generation of business leaders.', benefits: ['Strategic partnership conversations', 'Cross-border business connections', 'Community engagement opportunities'] }
+  { id: 'corporate', name: 'Corporate Partner', eyebrow: 'FOR A GREATER IMPACT', description: 'Connect across markets and empower the next generation of business leaders.', benefits: ['Strategic partnership conversations', 'Cross-border business connections', 'Community engagement opportunities'] },
+  { id: 'nonprofit', name: 'Nonprofit', eyebrow: 'FOR A STRONGER COMMUNITY', description: 'Connect your mission with a community of businesses and organizations working toward a shared future.', benefits: ['Connections with businesses and community organizations', 'Mission-focused collaboration opportunities', 'Community visibility and engagement opportunities'] }
 ];
 export type ApprovedMilestone = { title: string; business: string; summary: string };
 export type BoardMember = { name: string; title: string; bio: string };

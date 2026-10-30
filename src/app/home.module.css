@@ -432,3 +432,49 @@
 @media (prefers-reduced-motion: reduce) {
   .home .heroCopy { animation: none; }
 }
+
+/* Landing-page sections share the existing visual system and header offsets. */
+.home :is(.about, .register, .registrationForm) { padding-block: 116px; }
+.home section[id] { scroll-margin-top: 176px; }
+.home .about { background: white; }
+.home .purpose { background: #f5f6f7; }
+.home .aboutLink { margin-top: 24px; color: var(--color-crimson); }
+.home .aboutLink:hover { color: #8f2030; }
+.home .membershipIntro { display: flex; align-items: flex-end; justify-content: space-between; gap: 64px; }
+.home .membershipIntro > div { max-width: 720px; }
+.home .membershipIntro .label { color: #d4dee6; }
+.home .membershipIntro .pathTitle { max-width: 24ch; }
+.home .membershipIntro .body { color: #d4dee6; }
+.home .membershipIntro .secondaryAction { flex-shrink: 0; margin-top: 0; }
+.home .membershipCards { margin-top: 56px; color: var(--color-navy); }
+.home .membershipCards article { background: white; }
+.home .membershipDisclaimer { max-width: 82ch; margin: 28px 0 0; color: #d4dee6; font-size: 14px; line-height: 1.8; }
+.home .register { background: white; }
+.home .registrationSteps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; margin-top: 56px; padding: 0; list-style: none; }
+.home .registrationSteps li { border-top: 1px solid #d5dce1; padding-top: 24px; }
+.home .stepNumber { display: block; margin-bottom: 24px; color: var(--color-crimson); font-size: 14px; }
+.home .registrationSteps .ideaTitle { font-size: 24px; }
+.home .registrationSteps .body { font-size: 17px; }
+.home .trainingNext { display: flex; align-items: center; justify-content: space-between; gap: 48px; margin-top: 48px; padding-top: 32px; border-top: 1px solid #d5dce1; }
+.home .trainingNext .body { max-width: 65ch; font-size: 16px; }
+.home .registrationForm { background: white; }
+.home .formLayout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); align-items: start; gap: 80px; }
+.home .formDescription { margin-top: 28px; }
+.home .formNote { margin-top: 36px; padding: 28px; border: 1px solid #d5dce1; border-radius: 8px; background: #f5f6f7; }
+.home .formNote .ideaTitle { font-size: 23px; }
+.home .formNote .body { font-size: 16px; }
+@media (max-width: 1100px) {
+  .home .membershipIntro { align-items: flex-start; flex-direction: column; gap: 28px; }
+  .home .formLayout { gap: 40px; }
+  .home .trainingNext { align-items: flex-start; flex-direction: column; gap: 20px; }
+}
+@media (max-width: 900px) {
+  .home .formLayout { grid-template-columns: 1fr; gap: 44px; }
+  .home .registrationSteps { gap: 24px; }
+}
+@media (max-width: 760px) {
+  .home :is(.about, .register, .registrationForm) { padding-block: 76px; }
+  .home .membershipCards { margin-top: 40px; }
+  .home .registrationSteps { grid-template-columns: 1fr; gap: 32px; margin-top: 40px; }
+  .home .trainingNext { margin-top: 32px; }
+}

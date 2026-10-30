@@ -42,14 +42,11 @@ export function Footer() {
         {/* The Chamber links */}
         <div className="footer-links">
           <h2>{t.footer.chamberTitle}</h2>
-          <Link href="/about">{t.footer.about}</Link>
-          <Link href="/about#mission">{t.footer.mission}</Link>
-          <Link href="/membership">{t.footer.becomeMember}</Link>
-          <Link href="/membership#apply">{t.footer.cart}</Link>
-          <Link href="/infotep">{t.footer.infotep}</Link>
-          <Link href="/fotos">
-            {t.footer.fotos}
-          </Link>
+          <Link href="/#about">{t.footer.about}</Link>
+          <Link href="/#mission">{t.footer.mission}</Link>
+          <Link href="/#membership">{t.footer.becomeMember}</Link>
+          <Link href="/#register-form">{t.nav.registration}</Link>
+          <Link href="/#infotep">{t.footer.infotep}</Link>
         </div>
 
         {/* Let's connect links */}
@@ -61,17 +58,6 @@ export function Footer() {
             <span>{t.footer.contactTeam}</span>
             <ArrowUpRight size={14} aria-hidden="true" />
           </Link>
-          <Link href="/enviar-fotos">{t.footer.enviarFotos}</Link>
-          <Link href="/agendar-cita">{t.footer.agendarCita}</Link>
-          <div className="mt-2 flex gap-4 text-xs">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white">
-              Instagram
-            </a>
-            <span className="text-slate-600">·</span>
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-white">
-              Facebook
-            </a>
-          </div>
           <span className="mt-4 flex items-center gap-2 text-[10px] text-slate-400">
             <ShieldCheck size={15} aria-hidden="true" />
             {t.footer.noPayments}

@@ -20,15 +20,18 @@ export function ButtonLink({
   href,
   variant = 'red',
   className = '',
+  onClick,
 }: {
   children: ReactNode;
   href: string;
   variant?: 'red' | 'outline' | 'white';
   className?: string;
+  onClick?: () => void;
 }) {
   return (
     <Link
       href={href}
+      onClick={onClick}
       className={`button ${
         variant === 'outline' ? 'button-outline' : variant === 'white' ? 'button-white' : ''
       } ${className}`}
@@ -95,14 +98,14 @@ export function ProgramGrid() {
   );
 }
 
-export function MembershipCards() {
+export function MembershipCards({ registrationHref, onSelect }: { registrationHref?: string; onSelect?: (tier: string) => void } = {}) {
   const { lang } = useLanguage();
   const tiersList = translations[lang].membershipTiers;
 
   return (
-    <div className="grid gap-8 pt-3 lg:grid-cols-3 lg:gap-6">
-      {tiersList.map((tier, i) => {
-        const Icon = [Sparkles, BriefcaseBusiness, Globe2][i];
+    <div className="grid gap-8 pt-3 md:grid-cols-2 lg:gap-6">
+      {tiersList.map((tier) => {
+        const Icon = { startup: Sparkles, 'small-business': BriefcaseBusiness, corporate: Globe2, nonprofit: HeartHandshake }[tier.id];
         const isFeatured = 'featuredBadge' in tier && Boolean(tier.featuredBadge);
 
         return (
@@ -136,7 +139,8 @@ export function MembershipCards() {
             </ul>
             <ButtonLink
               className="mt-auto w-full text-xs"
-              href={`/membership?tier=${tier.id}#apply`}
+              href={registrationHref || `/?tier=${tier.id}#register-form`}
+              onClick={onSelect ? () => onSelect(tier.id) : undefined}
               variant={isFeatured ? 'red' : 'outline'}
             >
               {tier.btnText}
@@ -193,7 +197,7 @@ export function ClosingCTA() {
             {cta.title1} <span className="text-red-100">{cta.title2}</span>
           </h2>
         </div>
-        <ButtonLink href="/membership#apply" variant="white">
+        <ButtonLink href="/#register-form" variant="white">
           {cta.btn}
         </ButtonLink>
       </div>

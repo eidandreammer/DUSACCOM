@@ -14,6 +14,24 @@ for (const path of paths) {
   assert.doesNotMatch(html, /<script[^>]+src="https:\/\/www.googletagmanager.com/, `${path}: no analytics before consent`);
   for (const match of html.matchAll(/(?:src|href)="(\/(?:_next\/static|assets)\/[^"?]+)/g)) assets.add(match[1].replaceAll('&amp;', '&'));
   if (path === '/contact') assert.match(html, /method="post"/, 'No-JavaScript forms never expose fields in a GET URL');
+  if (path === '/') {
+    const sections = ['about', 'mission', 'membership', 'register', 'infotep', 'register-form'];
+    const positions = sections.map(id => html.indexOf(`<section id="${id}"`));
+    assert.ok(positions.every((position, index) => position >= 0 && (index === 0 || position > positions[index - 1])), 'Landing sections follow the requested order');
+    const anchors = new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]));
+    for (const match of html.matchAll(/href="\/?#([^"]+)"/g)) assert.ok(anchors.has(match[1]), `Landing link #${match[1]} has a target`);
+    assert.match(html, /<section id="register-form"[\s\S]*?<form[^>]*method="post"/, 'Registration form is available on the landing page');
+    assert.match(html, /<option value="nonprofit">/, 'Nonprofit registration is available');
+    assert.match(html, /href="#register-form"/, 'Membership cards lead to the main-page form');
+    assert.match(html, /home-hero/, 'Header visibility hook is preserved');
+    assert.match(html, /\/assets\/new-york-/, 'Existing hero image is preserved');
+    assert.match(html, /id="registration-submenu"/, 'Registration dropdown is preserved');
+    assert.match(html, /id="mobile-navigation"/, 'Mobile navigation is preserved');
+    assert.match(html, /Switch language to Spanish/, 'Language control is preserved');
+    const footer = html.match(/<footer\b[\s\S]*?<\/footer>/)?.[0] || '';
+    assert.ok(footer, 'Footer is present');
+    assert.doesNotMatch(footer, /href="\/(fotos|enviar-fotos|agendar-cita)"|href="https:\/\/(instagram|facebook)\.com"/, 'Footer omits extra photo-service links and placeholder social profiles');
+  }
   console.log(`PASS ${path}`);
 }
 for (const asset of assets) assert.equal((await fetch(`${base}${asset}`)).status, 200, `Asset ${asset}`);

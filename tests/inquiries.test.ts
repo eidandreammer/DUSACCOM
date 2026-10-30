@@ -44,6 +44,7 @@ test('membership and event options must be real content IDs', async () => {
   assert.equal((await handle(request(input({ kind: 'membership', interest: 'invented-tier' })))).status, 422);
   assert.equal((await handle(request(input({ kind: 'event', interest: 'invented-event' })))).status, 422);
   assert.equal((await handle(request(input({ kind: 'membership', interest: 'startup' })))).status, 201);
+  assert.equal((await handle(request(input({ kind: 'membership', interest: 'nonprofit' })))).status, 201);
   assert.equal((await handle(request(input({ kind: 'event', interest: 'beyond-borders' })))).status, 201);
 });
 test('cross-origin and cross-site submissions are rejected', async () => {

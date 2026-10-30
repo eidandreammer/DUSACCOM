@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { ArrowRight, CheckCircle2, LoaderCircle, Mail, ShieldCheck } from 'lucide-react';
 import { inquirySchema, validationErrors, type FieldErrors, type InquiryKind, type InquiryResponse } from '@/lib/inquiry';
 import { site } from '@/lib/site';
-import { tiers, initiatives } from '@/lib/content';
+import { initiatives } from '@/lib/content';
 import { track } from './privacy-controls';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
@@ -22,9 +22,11 @@ type Values = {
 export function InquiryForm({
   kind = 'contact',
   initialInterest = '',
+  onInterestChange,
 }: {
   kind?: InquiryKind;
   initialInterest?: string;
+  onInterestChange?: (interest: string) => void;
 }) {
   const { lang } = useLanguage();
   const f = translations[lang].form;
@@ -50,9 +52,15 @@ export function InquiryForm({
     submissionId.current = crypto.randomUUID();
   }, []);
 
+  useEffect(() => {
+    setValues(current => ({ ...current, interest: initialInterest }));
+    setErrors(current => ({ ...current, interest: undefined }));
+    setResult(null);
+  }, [initialInterest]);
+
   const options =
     kind === 'membership'
-      ? tiers.map((tier) => ({ value: tier.id, label: tier.name }))
+      ? translations[lang].membershipTiers.map((tier) => ({ value: tier.id, label: tier.name }))
       : kind === 'event'
       ? initiatives.map((event) => ({ value: event.id, label: event.title }))
       : f.contactTopics.map((topic) => ({ value: topic, label: topic }));
@@ -228,6 +236,7 @@ export function InquiryForm({
             value={values.interest}
             onChange={(e) => {
               update('interest', e.target.value);
+              onInterestChange?.(e.target.value);
               track('inquiry_interest_selected', {
                 kind,
                 option: options.findIndex((opt) => opt.value === e.target.value),

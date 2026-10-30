@@ -43,6 +43,7 @@ export function Header() {
     { href: '/enviar-fotos', label: t.nav.enviarFotos },
     { href: '/agendar-cita', label: t.nav.agendarCita },
   ];
+  const registrationLinks = [{ href: '/#membership', label: t.nav.viewTiers }, ...photoLinks];
   const registrationActive = pathname === '/membership' || photoLinks.some(({ href }) => pathname === href);
   const closeNavigation = () => { setOpen(false); setDropdownOpen(false); };
 
@@ -170,19 +171,19 @@ export function Header() {
         <div className="container flex min-h-26 items-center gap-3 sm:gap-6">
           <Brand light={overHero} large />
           <nav aria-label="Main navigation" className="ml-auto hidden items-center gap-7 lg:flex">
-            <Link href="/about" aria-current={pathname === '/about' ? 'page' : undefined} className={navLinkClass('/about')}>{t.nav.about}</Link>
+            <Link href="/#about" className={navLinkClass('/about')}>{t.nav.about}</Link>
             <div ref={registration} className="relative" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setDropdownOpen(false); }}>
               <div className="flex items-center">
-                <Link href="/membership#apply" className={navLinkClass(registrationActive ? pathname : '/membership')}>{t.nav.registration}</Link>
+                <Link href="/#register-form" onClick={closeNavigation} className={navLinkClass(registrationActive ? pathname : '/membership')}>{t.nav.registration}</Link>
                 <button ref={registrationToggle} className="flex size-11 items-center justify-center text-slate-600 hover:text-crimson" aria-label={`${t.nav.registration}: ${t.nav.quickLinks}`} aria-expanded={dropdownOpen} aria-controls="registration-submenu" onClick={() => setDropdownOpen(!dropdownOpen)}>
                   <ChevronDown size={16} aria-hidden="true" className={dropdownOpen ? 'rotate-180' : ''} />
                 </button>
               </div>
               <div id="registration-submenu" hidden={!dropdownOpen} className="absolute top-full left-0 w-80 rounded-lg border border-slate-200 bg-white p-2 shadow-xl">
-                {photoLinks.map(({ href, label }) => <Link key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} className="flex min-h-12 items-center rounded-lg px-4 py-3 text-[14px] font-medium leading-6 text-slate-600 hover:bg-slate-50 hover:text-crimson">{label}</Link>)}
+                {registrationLinks.map(({ href, label }) => <Link key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} className="flex min-h-12 items-center rounded-lg px-4 py-3 text-[14px] font-medium leading-6 text-slate-600 hover:bg-slate-50 hover:text-crimson">{label}</Link>)}
               </div>
             </div>
-            <Link href="/infotep" aria-current={pathname === '/infotep' ? 'page' : undefined} className={navLinkClass('/infotep')}>{t.nav.infotep}</Link>
+            <Link href="/#infotep" className={navLinkClass('/infotep')}>{t.nav.infotep}</Link>
             <Link href="/contact" aria-current={pathname === '/contact' ? 'page' : undefined} className={navLinkClass('/contact')}>{t.nav.contact}</Link>
           </nav>
           <div className="header-controls ml-auto flex items-center gap-2 lg:ml-0">
@@ -193,13 +194,13 @@ export function Header() {
           </div>
         </div>
         <nav id="mobile-navigation" aria-label="Mobile navigation" hidden={!open} className="absolute top-full right-0 left-0 max-h-[calc(100dvh-84px)] overflow-y-auto border-t border-slate-200 bg-white px-6 py-4 shadow-xl lg:hidden">
-          <Link href="/about" className={navLinkClass('/about')} onClick={closeNavigation}>{t.nav.about}</Link>
+          <Link href="/#about" className={navLinkClass('/about')} onClick={closeNavigation}>{t.nav.about}</Link>
           <details className="border-y border-slate-100 py-1">
             <summary className="cursor-pointer py-3 text-[15px] font-semibold text-slate-600">{t.nav.registration}</summary>
-            <Link href="/membership#apply" onClick={closeNavigation} className="flex min-h-11 items-center pl-4 text-[14px] font-semibold text-crimson">{t.nav.registration}<ArrowUpRight size={16} className="ml-2" aria-hidden="true" /></Link>
-            {photoLinks.map(({ href, label }) => <Link key={href} href={href} onClick={closeNavigation} className="flex min-h-12 items-center py-2 pl-4 text-[14px] text-slate-600 hover:text-crimson">{label}</Link>)}
+            <Link href="/#register-form" onClick={closeNavigation} className="flex min-h-11 items-center pl-4 text-[14px] font-semibold text-crimson">{t.nav.registration}<ArrowUpRight size={16} className="ml-2" aria-hidden="true" /></Link>
+            {registrationLinks.map(({ href, label }) => <Link key={href} href={href} onClick={closeNavigation} className="flex min-h-12 items-center py-2 pl-4 text-[14px] text-slate-600 hover:text-crimson">{label}</Link>)}
           </details>
-          <Link href="/infotep" className={navLinkClass('/infotep')} onClick={closeNavigation}>{t.nav.infotep}</Link>
+          <Link href="/#infotep" className={navLinkClass('/infotep')} onClick={closeNavigation}>{t.nav.infotep}</Link>
           <Link href="/contact" className={navLinkClass('/contact')} onClick={closeNavigation}>{t.nav.contact}</Link>
         </nav>
       </div>
