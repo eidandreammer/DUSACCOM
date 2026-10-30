@@ -1,6 +1,13 @@
 'use client';
 
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { collection, limit, onSnapshot, query, where } from 'firebase/firestore';
+import { firebaseConfigured, getFirebase } from '@/lib/firebase';
+import { liveEvent } from '@/lib/live-events';
+import { accountCopy } from '@/lib/account-copy';
+import { useAuth } from '@/lib/auth-context';
+import { EventCreator } from './event-creator';
+import { EventActions, EventEditor } from './event-actions';
 import { CalendarDays, ChevronLeft, ChevronRight, MapPin, X } from 'lucide-react';
 import { initiatives, type Initiative } from '@/lib/content';
 import { dateKey, eventDateKey, eventDescription, eventTitle, isEventRegistrationOpen, monthDays, upcomingEvents } from '@/lib/events';
@@ -11,8 +18,26 @@ import styles from './event-calendar.module.css';
 
 type Month = { year: number; month: number };
 
-export function EventCalendar({ events = initiatives }: { events?: readonly Initiative[] }) {
+export function EventCalendar({ events: initialEvents = initiatives }: { events?: readonly Initiative[] }) {
   const { lang } = useLanguage();
+  const { user, isAdmin } = useAuth();
+  const admin = Boolean(user && isAdmin);
+  const [remoteEvents, setRemoteEvents] = useState<Initiative[]>([]);
+  const [liveError, setLiveError] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  const events = useMemo(() => [...initialEvents, ...remoteEvents], [initialEvents, remoteEvents]);
+  useEffect(() => {
+    if (!firebaseConfigured) return;
+    setLiveError(false);
+    // Core operations are required for real-time snapshots (including Enterprise).
+    return onSnapshot(query(collection(getFirebase().db, 'events'), where('status', '==', 'confirmed'), limit(500)), snapshot => {
+      setRemoteEvents(snapshot.docs.flatMap(document => {
+        const event = liveEvent(document.id, document.data());
+        return event ? [event] : [];
+      }));
+      setLiveError(false);
+    }, () => setLiveError(true));
+  }, [attempt]);
   const copy = translations[lang].eventCalendar;
   const locale = lang === 'es' ? 'es-US' : 'en-US';
   const id = useId();
@@ -21,6 +46,10 @@ export function EventCalendar({ events = initiatives }: { events?: readonly Init
   const [now, setNow] = useState(0);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedEventId, setSelectedEventId] = useState('');
+  const [editingEventId, setEditingEventId] = useState('');
+  const [showPast, setShowPast] = useState(false);
+  const [adminMessage, setAdminMessage] = useState('');
+  const eventListHeading = useRef<HTMLHeadingElement>(null);
   const registration = useRef<HTMLDivElement>(null);
   const registrationTrigger = useRef<HTMLButtonElement | null>(null);
 
@@ -34,9 +63,17 @@ export function EventCalendar({ events = initiatives }: { events?: readonly Init
       setMonth(previous => previous || { year, month: monthNumber - 1 });
     }
     updateClock();
+    const timer = setInterval(updateClock, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const resolvedLink = useRef(false);
+  useEffect(() => {
+    if (resolvedLink.current) return;
     const requested = new URLSearchParams(window.location.search).get('event');
     const event = events.find(item => item.id === requested);
     if (event) {
+      resolvedLink.current = true;
       setSelectedEventId(event.id);
       const key = eventDateKey(event);
       if (key) {
@@ -45,8 +82,6 @@ export function EventCalendar({ events = initiatives }: { events?: readonly Init
         setSelectedDate(key);
       }
     }
-    const timer = setInterval(updateClock, 60000);
-    return () => clearInterval(timer);
   }, [events]);
 
   useEffect(() => {
@@ -61,7 +96,10 @@ export function EventCalendar({ events = initiatives }: { events?: readonly Init
   const scheduled = events.filter(event => eventDateKey(event) !== null).sort((a, b) => Date.parse(a.schedule!.startsAt) - Date.parse(b.schedule!.startsAt));
   const upcoming = now > 0 ? upcomingEvents(events, now) : [];
   const monthKey = month ? `${month.year}-${String(month.month + 1).padStart(2, '0')}` : '';
-  const visible = month ? scheduled.filter(event => selectedDate ? eventDateKey(event) === selectedDate : eventDateKey(event)?.startsWith(monthKey)) : [];
+  const includePast = admin && showPast;
+  const listedEvents = includePast ? scheduled : upcoming;
+  const visibleUpcoming = selectedDate ? listedEvents.filter(event => eventDateKey(event) === selectedDate) : listedEvents;
+  const editingEvent = admin ? remoteEvents.find(event => event.id === editingEventId) : undefined;
   const selectedEvent = events.find(event => event.id === selectedEventId);
   const canRegister = selectedEvent && now > 0 ? isEventRegistrationOpen(selectedEvent, now) : false;
   const selectedIsPending = selectedEvent ? eventDateKey(selectedEvent) === null : false;
@@ -81,6 +119,12 @@ export function EventCalendar({ events = initiatives }: { events?: readonly Init
     setSelectedDate(today);
   }
 
+  function showPublishedMonth(startsAt: string, zone: string) {
+    const key = dateKey(new Date(startsAt), zone);
+    const [year, monthNumber] = key.split('-').map(Number);
+    setMonth({ year, month: monthNumber - 1 }); setSelectedDate(null);
+  }
+
   function renderEvent(event: Initiative) {
     const open = now > 0 && isEventRegistrationOpen(event, now);
     const dated = eventDateKey(event) !== null;
@@ -97,6 +141,14 @@ export function EventCalendar({ events = initiatives }: { events?: readonly Init
           <button className={styles.eventButton} aria-expanded={selectedEventId === event.id} aria-controls={`${id}-registration`}
             onClick={click => { registrationTrigger.current = click.currentTarget; setSelectedEventId(event.id); }}>{open ? copy.register : copy.interest}</button>
         ) : <span className={styles.closed}>{copy.closed}</span>}
+        {admin && remoteEvents.some(item => item.id === event.id) && <EventActions event={event}
+          onEdit={() => { setAdminMessage(''); setEditingEventId(event.id); }}
+          onDeleted={() => {
+            if (selectedEventId === event.id) setSelectedEventId('');
+            if (editingEventId === event.id) setEditingEventId('');
+            setAdminMessage(accountCopy[lang].deleted);
+            requestAnimationFrame(() => eventListHeading.current?.focus({ preventScroll: true }));
+          }} />}
       </article>
     );
   }
@@ -140,18 +192,28 @@ export function EventCalendar({ events = initiatives }: { events?: readonly Init
             </table>}
             <p className={styles.timeZone}>{copy.timeZone}</p>
           </div>
-          <div className={styles.eventList}>
-            <div className={styles.listHeading}>
-              <h3>{selectedDate ? `${copy.selectedDay} ${new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(new Date(`${selectedDate}T12:00:00Z`))}` : copy.monthEvents}</h3>
-              {selectedDate && <button onClick={() => setSelectedDate(null)}>{copy.showMonth}</button>}
-            </div>
-            {visible.length ? visible.map(renderEvent) : <p className={styles.empty} role="status">{copy.empty}</p>}
+          <div className={styles.sidebar}>
+            <EventCreator categories={events.map(event => event.category)} onPublished={(startsAt, zone) => { setAdminMessage(''); showPublishedMonth(startsAt, zone); }} />
           </div>
         </div>
-        {upcoming.length > 0 && <div className={styles.upcoming}>
-          <h3>{copy.upcoming}</h3>
-          <div className={styles.upcomingGrid}>{upcoming.map(renderEvent)}</div>
-        </div>}
+        <div className={styles.upcoming}>
+          <div className={styles.listHeading}>
+            <h3 ref={eventListHeading} tabIndex={-1}>{includePast ? accountCopy[lang].allEvents : copy.upcoming}</h3>
+            {admin && <label className={styles.historyToggle}><input type="checkbox" checked={showPast} onChange={event => { setShowPast(event.target.checked); setSelectedDate(null); }} />{accountCopy[lang].includePast}</label>}
+          </div>
+          {admin && adminMessage && <p role="status" className={styles.adminMessage}>{adminMessage}</p>}
+          {liveError && <p className={styles.liveError} role="alert">{accountCopy[lang].liveError} <button onClick={() => setAttempt(value => value + 1)}>{accountCopy[lang].retry}</button></p>}
+          {selectedDate && <div className={styles.listHeading}>
+            <h4>{copy.selectedDay} {new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(new Date(`${selectedDate}T12:00:00Z`))}</h4>
+            <button onClick={() => setSelectedDate(null)}>{includePast ? accountCopy[lang].showAll : copy.showUpcoming}</button>
+          </div>}
+          {now === 0 ? <p role="status">{copy.loading}</p> : visibleUpcoming.length ? <div className={styles.upcomingGrid}>{visibleUpcoming.map(renderEvent)}</div> : <p className={styles.empty} role="status">{copy.empty}</p>}
+        </div>
+        {editingEvent && <EventEditor key={editingEvent.id} event={editingEvent} categories={events.map(event => event.category)}
+          onClose={() => setEditingEventId('')}
+          onSaved={(startsAt, zone) => {
+            setEditingEventId(''); setAdminMessage(accountCopy[lang].updated); showPublishedMonth(startsAt, zone);
+          }} />}
         <div id={`${id}-registration`} hidden={!selectedEvent} className={styles.registration} ref={registration} tabIndex={-1}>
           {selectedEvent && <>
             <div className={styles.registrationIntro}>

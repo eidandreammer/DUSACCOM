@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+const heroImages = JSON.parse(await readFile(new URL('../src/lib/hero-images.json', import.meta.url), 'utf8'));
 const base = process.argv[2] || 'http://127.0.0.1:8787';
-const paths = ['/', '/about', '/programs', '/membership', '/contact', '/privacy', '/terms', '/resources/better-business-networking', '/resources/preparing-for-a-new-market', '/resources/a-community-in-your-corner'];
+const paths = process.argv.length > 3 ? process.argv.slice(3) : ['/', '/about', '/account', '/programs', '/membership', '/contact', '/privacy', '/terms', '/resources/better-business-networking', '/resources/preparing-for-a-new-market', '/resources/a-community-in-your-corner'];
 const assets = new Set();
 for (const path of paths) {
   const response = await fetch(`${base}${path}`);
@@ -24,7 +26,8 @@ for (const path of paths) {
     assert.match(html, /<option value="nonprofit">/, 'Nonprofit registration is available');
     assert.match(html, /href="#register-form"/, 'Membership cards lead to the main-page form');
     assert.match(html, /home-hero/, 'Header visibility hook is preserved');
-    assert.match(html, /\/assets\/new-york-/, 'Existing hero image is preserved');
+    for (const { name } of heroImages) assert.match(html, new RegExp(`/assets/hero-${name}-`), `Cultural hero photo ${name} is present`);
+    for (const photo of ['culture-carnival', 'culture-dance']) assert.doesNotMatch(html, new RegExp(`/assets/hero-${photo}-`), `Removed cultural hero photo ${photo} is absent`);
     assert.match(html, /id="registration-submenu"/, 'Registration dropdown is preserved');
     assert.match(html, /id="mobile-navigation"/, 'Mobile navigation is preserved');
     assert.match(html, /Switch language to Spanish/, 'Language control is preserved');

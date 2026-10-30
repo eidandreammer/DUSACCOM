@@ -332,7 +332,7 @@ export function InquiryForm({
         </button>
       </fieldset>
 
-      <p className="mt-4 flex items-center justify-center gap-2 text-center text-[10px] leading-5 text-slate-600">
+      <p className="mt-4 flex items-center justify-center gap-2 text-center text-xs leading-5 text-slate-600">
         <ShieldCheck size={15} className="shrink-0" aria-hidden="true" />
         {f.noPaymentNote}
       </p>

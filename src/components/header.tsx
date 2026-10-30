@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, ChevronDown, Globe, Mail, Menu, Phone, X } from 'lucide-react';
+import { ProfileMenu } from './profile-menu';
 import { site } from '@/lib/site';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
@@ -35,10 +36,11 @@ export function Header() {
   const t = translations[lang];
   const [open, setOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const toggle = useRef<HTMLButtonElement>(null);
   const registrationToggle = useRef<HTMLButtonElement>(null);
   const registration = useRef<HTMLDivElement>(null);
-  const registrationLinks = [{ href: '/#membership', label: t.nav.viewTiers, accent: 'red' }, { href: '/#events', label: t.nav.events, accent: 'blue' }];
+  const registrationLinks = [{ href: '/#register-form', label: t.nav.viewTiers, accent: 'red' }, { href: '/#events', label: t.nav.events, accent: 'blue' }];
   const registrationActive = pathname === '/membership';
   const closeNavigation = () => { setOpen(false); setDropdownOpen(false); };
 
@@ -92,7 +94,7 @@ export function Header() {
       if (hideTimer !== undefined) return;
       hideTimer = setTimeout(() => {
         hideTimer = undefined;
-        if (!heroVisible() && !open && !dropdownOpen && !headerHasFocus()) setHidden(true);
+        if (!heroVisible() && !open && !dropdownOpen && !profileOpen && !headerHasFocus()) setHidden(true);
       }, 2000);
     };
     const update = () => {
@@ -104,7 +106,7 @@ export function Header() {
       const initialUpdate = previousInHero === undefined;
       previousInHero = inHero;
       setOverHero(inHero);
-      if (inHero || currentY <= 0 || open || dropdownOpen || headerHasFocus()) {
+      if (inHero || currentY <= 0 || open || dropdownOpen || profileOpen || headerHasFocus()) {
         clearHideTimer();
         setHidden(false);
       } else if (delta < -2) {
@@ -144,19 +146,19 @@ export function Header() {
       element?.removeEventListener('focusin', onScroll);
       element?.removeEventListener('focusout', onScroll);
     };
-  }, [isHome, pathname, open, dropdownOpen]);
+  }, [isHome, pathname, open, dropdownOpen, profileOpen]);
 
   const navLinkClass = (href: string) =>
-    `header-nav-link ${href === '/about' || href === '/infotep' ? 'header-nav-link-blue' : ''} flex min-h-12 items-center text-[15px] font-semibold transition-colors ${pathname === href ? 'is-active' : ''}`;
+    `header-nav-link ${href === '/about' || href === '/infotep' ? 'header-nav-link-blue' : ''} flex min-h-12 items-center text-base font-semibold transition-colors ${pathname === href ? 'is-active' : ''}`;
 
   return (
     <>
     {!isHome && <div aria-hidden="true" style={{ height: headerHeight }} />}
     <header ref={header} inert={hidden} className={`site-header ${overHero ? 'home-header text-white' : 'solid-header text-navy'} ${hidden ? 'is-hidden' : ''}`}>
       <div className="header-information border-b">
-        <div className="container flex min-h-9 items-center justify-between gap-4 py-2 text-[10px]">
+        <div className="container flex min-h-9 items-center justify-between gap-4 py-2 text-xs">
           <span>{t.tagline}</span>
-          <div className="flex shrink-0 gap-6">
+          <div className="flex shrink-0 items-center gap-6">
             <a className="hidden items-center gap-2 sm:flex" href={`mailto:${site.email}`}><Mail size={12} aria-hidden="true" />{site.email}</a>
             <a href={`tel:${site.phoneHref}`} className="hidden items-center gap-2 md:flex"><Phone size={12} aria-hidden="true" />{site.phone}</a>
           </div>
@@ -175,25 +177,26 @@ export function Header() {
                 </button>
               </div>
               <div id="registration-submenu" hidden={!dropdownOpen} className="header-menu-panel absolute top-full right-0 w-80 rounded-lg border p-2">
-                {registrationLinks.map(({ href, label, accent }) => <Link key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} data-accent={accent} className="registration-link flex min-h-12 items-center rounded-lg px-4 py-3 text-[14px] font-medium leading-6">{label}</Link>)}
+                {registrationLinks.map(({ href, label, accent }) => <Link key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} data-accent={accent} className="registration-link flex min-h-12 items-center rounded-lg px-4 py-3 text-sm font-medium leading-6">{label}</Link>)}
               </div>
             </div>
             <Link href="/#infotep" className={navLinkClass('/infotep')}>{t.nav.infotep}</Link>
             <Link href="/contact" aria-current={pathname === '/contact' ? 'page' : undefined} className={navLinkClass('/contact')}>{t.nav.contact}</Link>
           </nav>
-          <div className="header-controls ml-auto flex items-center gap-2 lg:ml-0">
-            <button onClick={toggleLang} aria-label={t.nav.shiftLangAria} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-200 px-3 text-[13px] font-bold hover:border-crimson">
+          <div className="header-controls ml-auto flex shrink-0 items-center gap-2 lg:ml-0">
+            <button onClick={toggleLang} aria-label={t.nav.shiftLangAria} className="header-language inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-bold hover:border-crimson">
               <Globe size={16} aria-hidden="true" /><span>{lang === 'en' ? 'EN / ES' : 'ES / EN'}</span>
             </button>
             <button ref={toggle} className="icon-button lg:hidden" aria-label={open ? t.nav.closeMenu : t.nav.openMenu} aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen(!open)}>{open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}</button>
+            <ProfileMenu onOpenChange={setProfileOpen} />
           </div>
         </div>
         <nav id="mobile-navigation" aria-label="Mobile navigation" hidden={!open} className="header-menu-panel absolute top-full right-0 left-0 max-h-[calc(100dvh-84px)] overflow-y-auto border-t px-6 py-4 lg:hidden">
           <Link href="/#about" className={navLinkClass('/about')} onClick={closeNavigation}>{t.nav.about}</Link>
           <details className="registration-details border-y py-1">
-            <summary className="header-nav-link cursor-pointer py-3 text-[15px] font-semibold">{t.nav.registration}</summary>
-            <Link href="/#register-form" onClick={closeNavigation} data-accent="red" className="registration-link flex min-h-11 items-center rounded-lg px-4 text-[14px] font-semibold">{t.nav.registration}<ArrowUpRight size={16} className="ml-2" aria-hidden="true" /></Link>
-            {registrationLinks.map(({ href, label, accent }) => <Link key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} data-accent={accent} className="registration-link flex min-h-12 items-center rounded-lg px-4 py-2 text-[14px]">{label}</Link>)}
+            <summary className="header-nav-link cursor-pointer py-3 text-base font-semibold">{t.nav.registration}</summary>
+            <Link href="/#register-form" onClick={closeNavigation} data-accent="red" className="registration-link flex min-h-11 items-center rounded-lg px-4 text-sm font-semibold">{t.nav.registration}<ArrowUpRight size={16} className="ml-2" aria-hidden="true" /></Link>
+            {registrationLinks.map(({ href, label, accent }) => <Link key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} data-accent={accent} className="registration-link flex min-h-12 items-center rounded-lg px-4 py-2 text-sm">{label}</Link>)}
           </details>
           <Link href="/#infotep" className={navLinkClass('/infotep')} onClick={closeNavigation}>{t.nav.infotep}</Link>
           <Link href="/contact" className={navLinkClass('/contact')} onClick={closeNavigation}>{t.nav.contact}</Link>

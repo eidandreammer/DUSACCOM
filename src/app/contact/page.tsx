@@ -39,7 +39,7 @@ export default function Contact() {
                   <Icon size={23} strokeWidth={1.4} aria-hidden="true" />
                 </span>
                 <span className="flex flex-1 flex-col gap-2">
-                  <span className="text-[9px] tracking-widest text-slate-600">{label}</span>
+                  <span className="text-xs tracking-widest text-slate-600">{label}</span>
                   <span className="text-sm font-medium group-hover:text-crimson md:text-base">{text}</span>
                 </span>
                 <ArrowUpRight size={17} className="shrink-0 text-slate-500" aria-hidden="true" />
@@ -66,7 +66,7 @@ export default function Contact() {
                 key={resource.slug}
                 className="flex flex-col rounded-[8px] border border-slate-200 border-t-2 border-t-crimson bg-white p-7"
               >
-                <span className="text-[9px] tracking-widest text-slate-600 uppercase">{resource.category}</span>
+                <span className="text-xs tracking-widest text-slate-600 uppercase">{resource.category}</span>
                 <h3 className="mt-6 mb-4 text-2xl leading-8 font-semibold tracking-tight">{resource.title}</h3>
                 <p className="mb-6 text-sm leading-7 text-slate-600">{resource.description}</p>
                 <Link href={`/resources/${resource.slug}`} className="text-link mt-auto">

@@ -1,5 +1,5 @@
 'use client';
-import { Award, BookOpen, GraduationCap, CheckCircle2 } from 'lucide-react';
+import { BookOpen, GraduationCap, CheckCircle2 } from 'lucide-react';
 import { PageIntro, Eyebrow, ClosingCTA, ButtonLink } from '@/components/ui';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
@@ -54,11 +54,7 @@ export default function InfotepPage() {
                 <p className="mt-3 text-sm leading-7 text-slate-600">{info.cards[1]?.desc}</p>
               </div>
 
-              <div className="rounded-[8px] border border-slate-200 bg-mist p-7 sm:col-span-2">
-                <Award className="size-10 text-crimson mb-4" />
-                <h3 className="text-xl font-semibold">{info.cards[2]?.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-slate-600">{info.cards[2]?.desc}</p>
-              </div>
+
             </div>
           </div>
         </div>

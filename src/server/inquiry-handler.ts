@@ -12,7 +12,7 @@ export class ServiceUnavailable extends Error {}
 const MAX_BYTES = 12000;
 const RATE_WINDOW = 10 * 60 * 1000;
 async function hash(value: string) { const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value)); return Array.from(new Uint8Array(bytes), byte => byte.toString(16).padStart(2, '0')).join(''); }
-export function createInquiryHandler(getStore: () => Promise<InquiryStore>, canonicalOrigin: string, events: readonly Initiative[] = initiatives) {
+export function createInquiryHandler(getStore: () => Promise<InquiryStore>, canonicalOrigin: string, events: readonly Initiative[] = initiatives, findEvent?: (id: string) => Promise<Initiative | null>) {
   return async function handle(request: Request): Promise<Response> {
     const requestId = crypto.randomUUID();
     const started = Date.now();
@@ -45,7 +45,7 @@ export function createInquiryHandler(getStore: () => Promise<InquiryStore>, cano
       const parsed = inquirySchema.safeParse(input);
       if (!parsed.success) return reply({ ok: false, message: 'Please check the highlighted fields.', errors: validationErrors(parsed.error), requestId }, 422);
       const inquiry = parsed.data;
-      const event = events.find(item => item.id === inquiry.interest);
+      const event = events.find(item => item.id === inquiry.interest) || (['event', 'event-registration'].includes(inquiry.kind) && findEvent ? await findEvent(inquiry.interest) : null);
       if ((inquiry.kind === 'membership' && !tiers.some(tier => tier.id === inquiry.interest)) || (['event', 'event-registration'].includes(inquiry.kind) && !event)) return reply({ ok: false, message: 'Please choose one of the available options.', errors: { interest: 'Please choose a listed option.' }, requestId }, 422);
       const store = await getStore();
       const payloadHash = await hash(JSON.stringify({ ...inquiry, submissionId: undefined }));

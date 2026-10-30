@@ -33,7 +33,7 @@ test('calendar aligns Sundays and includes leap days without extra numbered date
   assert.equal(monthDays(2026, 1).length % 7, 0);
 });
 
-test('upcoming cards show the three soonest start times across time zones and months', () => {
+test('upcoming cards show every future event in start-time order across time zones and months', () => {
   const makeEvent = (id: string, startsAt: string): Initiative => ({ ...event, id, schedule: { ...event.schedule!, startsAt } });
   const events = [
     makeEvent('december', '2026-12-01T09:00:00-05:00'),
@@ -42,7 +42,7 @@ test('upcoming cards show the three soonest start times across time zones and mo
     makeEvent('soonest', '2026-10-31T10:00:00-04:00'),
   ];
   const originalOrder = events.map(item => item.id);
-  assert.deepEqual(upcomingEvents(events, Date.parse('2026-10-30T12:00:00Z')).map(item => item.id), ['soonest', 'later-instant', 'november']);
+  assert.deepEqual(upcomingEvents(events, Date.parse('2026-10-30T12:00:00Z')).map(item => item.id), ['soonest', 'later-instant', 'november', 'december']);
   assert.deepEqual(events.map(item => item.id), originalOrder);
 });
 

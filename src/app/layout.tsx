@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
+import { AuthProvider } from '@/lib/auth-context';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { PrivacyProvider } from '@/components/privacy-controls';
@@ -47,11 +48,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           Skip to main content
         </a>
         <LanguageProvider>
-          <PrivacyProvider>
-            <Header />
-            <main id="main">{children}</main>
-            <Footer />
-          </PrivacyProvider>
+          <AuthProvider>
+            <PrivacyProvider>
+              <Header />
+              <main id="main">{children}</main>
+              <Footer />
+            </PrivacyProvider>
+          </AuthProvider>
         </LanguageProvider>
         <script
           type="application/ld+json"

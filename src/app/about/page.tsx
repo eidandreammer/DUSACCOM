@@ -64,7 +64,7 @@ export default function About() {
               className="rounded-[8px] object-cover"
             />
             <div className="absolute right-5 bottom-5 left-5 rounded-[8px] bg-white/95 p-6 backdrop-blur">
-              <p className="text-[9px] font-semibold tracking-widest text-slate-600">
+              <p className="text-xs font-semibold tracking-widest text-slate-600">
                 {a.tagTwoCultures}
               </p>
               <p className="mt-3 text-2xl leading-8 font-medium tracking-tight">
@@ -113,7 +113,7 @@ export default function About() {
             </p>
           </div>
           <div className="flex flex-col justify-center rounded-[8px] border border-slate-200 bg-mist p-8 lg:p-10">
-            <span className="mb-5 text-[10px] font-semibold tracking-widest text-slate-600">
+            <span className="mb-5 text-xs font-semibold tracking-widest text-slate-600">
               {a.leadershipCalloutTag}
             </span>
             <h3 className="mb-4 text-2xl font-semibold tracking-tight">

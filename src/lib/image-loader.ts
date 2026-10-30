@@ -1,6 +1,7 @@
 'use client';
 import type { ImageLoaderProps } from 'next/image';
-const optimized = new Set(['new-york', 'networking']);
+import heroImages from './hero-images.json';
+const optimized = new Set(['new-york', 'networking', ...heroImages.map(({ name }) => `hero-${name}`)]);
 export default function imageLoader({ src, width }: ImageLoaderProps): string {
   const match = /^\/assets\/([a-z-]+)\.jpg$/.exec(src);
   if (!match || !optimized.has(match[1])) return src;

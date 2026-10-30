@@ -147,3 +147,14 @@ test('registration is never confirmed when durable storage is unavailable', asyn
   assert.equal(response.status, 503);
   assert.equal((await response.json()).ok, false);
 });
+
+test('Firebase event registration resolves the live event on the server', async () => {
+  const { initiatives } = await import('../src/lib/content');
+  const event = { ...initiatives[0], id: 'live-example', status: 'confirmed' as const, schedule: { startsAt: new Date(Date.now() + 86400000).toISOString(), timeZone: 'America/New_York', registration: 'open' as const } };
+  const store = new MemoryStore();
+  const handle = createInquiryHandler(async () => store, origin, [], async id => id === event.id ? event : null);
+  assert.equal((await handle(request(input({ kind: 'event-registration', interest: event.id, message: '' })))).status, 201);
+  assert.equal((await handle(request(input({ kind: 'event-registration', interest: 'live-missing', message: '' })))).status, 422);
+  const unavailable = createInquiryHandler(async () => store, origin, [], async () => { throw new ServiceUnavailable(); });
+  assert.equal((await unavailable(request(input({ kind: 'event-registration', interest: event.id, message: '' })))).status, 503);
+});

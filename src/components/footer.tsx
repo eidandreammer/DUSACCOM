@@ -17,12 +17,12 @@ export function Footer() {
         {/* Brand column */}
         <div className="sm:col-span-2 lg:col-span-1">
           <Link href="/" aria-label="DUSACCOM home" className="inline-block">
-            <div className="footer-logo relative overflow-hidden">
+            <div className="footer-logo">
               <Image
                 src="/imgs/DUSACCOM complete logo.png"
                 alt="DUSACCOM complete logo"
-                width={2048}
-                height={1117}
+                width={2248}
+                height={2048}
                 className="footer-logo-image"
               />
             </div>
@@ -30,7 +30,7 @@ export function Footer() {
           <p className="mt-6 text-sm leading-7 text-slate-400">
             {t.footer.description}
           </p>
-          <div className="mt-6 flex items-center gap-3 text-[10px] tracking-wider">
+          <div className="mt-6 flex items-center gap-3 text-xs tracking-wider">
             <span className="flag flag-dr rounded-[8px]" role="img" aria-label="Dominican Republic flag" />
             {t.footer.dominicanRepublic}
             <span className="text-slate-500">/</span>
@@ -59,7 +59,7 @@ export function Footer() {
             <span>{t.footer.contactTeam}</span>
             <ArrowUpRight size={14} aria-hidden="true" />
           </Link>
-          <span className="mt-4 flex items-center gap-2 text-[10px] text-slate-400">
+          <span className="mt-4 flex items-center gap-2 text-xs text-slate-400">
             <ShieldCheck size={15} aria-hidden="true" />
             {t.footer.noPayments}
           </span>
@@ -67,7 +67,7 @@ export function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div className="container flex flex-col justify-between gap-2 border-t border-white/10 py-5 text-[10px] text-slate-400 lg:flex-row lg:items-center">
+      <div className="container flex flex-col justify-between gap-2 border-t border-white/10 py-5 text-xs text-slate-400 lg:flex-row lg:items-center">
         <span>
           © {new Date().getFullYear()} {site.fullName}. {t.footer.rightsReserved}
         </span>

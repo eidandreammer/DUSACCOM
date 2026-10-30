@@ -66,7 +66,7 @@ function ProgramsContent() {
                     </span>
                     <span className="text-xs text-slate-500">{program.number} /</span>
                   </div>
-                  <span className="text-[10px] font-semibold tracking-widest text-slate-600 uppercase">
+                  <span className="text-xs font-semibold tracking-widest text-slate-600 uppercase">
                     {program.label}
                   </span>
                   <h3 className="mt-3 text-2xl font-semibold tracking-tight">{program.title}</h3>

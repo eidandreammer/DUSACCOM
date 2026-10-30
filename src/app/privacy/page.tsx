@@ -13,8 +13,8 @@ export default function Privacy() {
         title={lang === 'en' ? 'Privacy Policy' : 'Política de Privacidad'}
         description={
           lang === 'en'
-            ? 'Website privacy notice · October 23, 2026'
-            : 'Aviso de privacidad del sitio web · 23 de octubre de 2026'
+            ? 'Website privacy notice · October 30, 2026'
+            : 'Aviso de privacidad del sitio web · 30 de octubre de 2026'
         }
       />
       <article className="section">
@@ -29,6 +29,8 @@ export default function Privacy() {
                 a payment, or reserve attendance.
               </p>
               <p>Event registration forms collect the same contact details to record your registration for a scheduled chapter event. A confirmation reference is shown after the registration is saved.</p>
+              <h2>Your account and the calendar</h2>
+              <p>Accounts use Google Firebase Authentication to process your email, password, and name. Firebase keeps you signed in using browser storage. Administrator permissions and published events are stored in Cloud Firestore. Event details are public; administrator records can only be read by the corresponding user. Creating an account does not establish paid Chamber membership. Contact the Chamber to request account deletion.</p>
               <h2>How we use your information</h2>
               <p>
                 Information you provide is used to handle your inquiry, discuss relevant membership or program options, and
@@ -81,6 +83,8 @@ export default function Privacy() {
                 eventos no establecen una membresía, no realizan ningún pago ni garantizan reserva de asistencia.
               </p>
               <p>Los formularios de inscripción a eventos recopilan los mismos datos de contacto para guardar tu registro en un evento programado del capítulo. Se muestra un número de referencia después de guardar la inscripción.</p>
+              <h2>Tu cuenta y el calendario</h2>
+              <p>Las cuentas utilizan Google Firebase Authentication para procesar tu correo, contraseña y nombre. Firebase mantiene tu sesión mediante el almacenamiento del navegador. Los permisos de administrador y los eventos publicados se almacenan en Cloud Firestore. Los detalles de los eventos son públicos; cada usuario solo puede consultar su propio registro de administrador. Crear una cuenta no establece una membresía de pago en la Cámara. Contacta a la Cámara para solicitar la eliminación de tu cuenta.</p>
               <h2>Cómo usamos tu información</h2>
               <p>
                 La información facilitada se utiliza exclusivamente para atender tu consulta, dialogar sobre opciones de

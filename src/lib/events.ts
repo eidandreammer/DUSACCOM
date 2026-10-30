@@ -22,8 +22,7 @@ export function isEventRegistrationOpen(event: Initiative, now = Date.now()): bo
 export function upcomingEvents(events: readonly Initiative[], now = Date.now()): Initiative[] {
   return events
     .filter(event => eventDateKey(event) !== null && Date.parse(event.schedule!.startsAt) > now)
-    .sort((a, b) => Date.parse(a.schedule!.startsAt) - Date.parse(b.schedule!.startsAt))
-    .slice(0, 3);
+    .sort((a, b) => Date.parse(a.schedule!.startsAt) - Date.parse(b.schedule!.startsAt));
 }
 
 export function monthDays(year: number, month: number): Array<number | null> {

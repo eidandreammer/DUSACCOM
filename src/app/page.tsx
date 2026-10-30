@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { ArrowDown, ArrowRight } from 'lucide-react';
 import { InquiryForm } from '@/components/inquiry-form';
 import { MembershipCards } from '@/components/ui';
+import { HeroCarousel } from '@/components/hero-carousel';
 import { EventCalendar } from '@/components/event-calendar';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
@@ -25,17 +26,9 @@ export default function Home() {
 
   return (
     <div className={styles.home}>
-      {/* Keep this hook: the transparent header tracks the hero's visibility. */}
+      {/* Keep this hook: the header tracks the hero's visibility. */}
       <section className={`home-hero ${styles.hero}`} aria-labelledby="about-title">
-        <Image
-          src="/assets/new-york.jpg"
-          alt=""
-          fill
-          sizes="100vw"
-          priority
-          className={styles.heroImage}
-        />
-        <div className={styles.heroShade} aria-hidden="true" />
+        <HeroCarousel />
         <div className={`${styles.container} ${styles.heroLayout}`}>
           <div className={styles.heroCopy}>
             <p className={styles.label}>{copy.aboutEyebrow}</p>
@@ -175,7 +168,7 @@ export default function Home() {
               <h3 className={styles.ideaTitle}>{t.membershipPage.applyBoxTitle}</h3>
               <p className={styles.body}>{t.membershipPage.applyBoxDesc}</p>
             </div>
-            <Link href="#membership" className={`${styles.link} ${styles.aboutLink}`}>{t.nav.viewTiers}</Link>
+            <a href="#register-form" className={`${styles.link} ${styles.aboutLink}`}>{t.nav.viewTiers}</a>
           </div>
           <InquiryForm kind="membership" initialInterest={selectedTier} onInterestChange={setSelectedTier} />
         </div>

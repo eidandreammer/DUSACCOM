@@ -87,7 +87,7 @@ export function InitiativeCard({ initiative }: { initiative: Initiative }) {
           art === 'navy' ? 'bg-[#173b50] text-white' : art === 'red' ? 'bg-crimson text-white' : 'bg-[#ece9e4] text-navy'
         }`}
       >
-        <span className="relative z-10 w-fit rounded-[8px] border border-current/35 px-2 py-1 text-[9px] tracking-widest uppercase">
+        <span className="relative z-10 w-fit rounded-[8px] border border-current/35 px-2 py-1 text-xs tracking-widest uppercase">
           {category}
         </span>
         {art === 'light' ? (
@@ -103,16 +103,16 @@ export function InitiativeCard({ initiative }: { initiative: Initiative }) {
           <br />
           <span className={art === 'navy' ? 'text-red-200' : ''}>{tag[1]}</span>
         </p>
-        <span className="relative z-10 text-[8px] tracking-widest">{footerText}</span>
+        <span className="relative z-10 text-xs tracking-widest">{footerText}</span>
       </div>
 
       <div className="flex flex-1 flex-col p-6">
-        <span className="flex items-center gap-2 text-[9px] tracking-wider text-slate-600">
+        <span className="flex items-center gap-2 text-xs tracking-wider text-slate-600">
           <CalendarDays size={13} aria-hidden="true" />
           {dateText}
         </span>
         <h3 className="mt-4 mb-3 text-xl leading-7 font-semibold tracking-tight">{title}</h3>
-        <p className="mb-5 text-[13px] leading-7 text-slate-600">{desc}</p>
+        <p className="mb-5 text-sm leading-7 text-slate-600">{desc}</p>
         <Link
           href={`/?event=${initiative.id}#events`}
           className="text-link mt-auto w-full justify-between border-t border-slate-200 pt-3"

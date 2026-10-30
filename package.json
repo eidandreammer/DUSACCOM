@@ -15,31 +15,34 @@
     "test": "node --import tsx --test tests/*.test.ts",
     "db:generate": "drizzle-kit generate",
     "db:local": "wrangler d1 migrations apply DB --local",
-    "preview": "opennextjs-cloudflare preview"
+    "preview": "opennextjs-cloudflare preview",
+    "test:rules": "npx -y firebase-tools@latest emulators:exec --only firestore --project demo-dusaccom \"node --test tests/firebase/*.test.mjs\""
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "1.20.13",
+    "drizzle-orm": "^0.45.2",
+    "firebase": "^12.19.0",
+    "lucide-react": "^1.31.0",
     "next": "16.4.3",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "zod": "^4.0.0",
-    "drizzle-orm": "^0.45.2",
-    "lucide-react": "^1.31.0",
-    "@opennextjs/cloudflare": "1.20.13"
+    "zod": "^4.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
+    "@cloudflare/workers-types": "latest",
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "@tailwindcss/postcss": "^4.3.0",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "tailwindcss": "^4.3.0",
-    "@tailwindcss/postcss": "^4.3.0",
-    "postcss": "^8.5.0",
     "drizzle-kit": "^0.31.10",
-    "@cloudflare/workers-types": "latest",
-    "wrangler": "^4.148.0",
     "esbuild": "^0.25.0",
+    "postcss": "^8.5.0",
+    "sharp": "0.35.5",
+    "tailwindcss": "^4.3.0",
     "tsx": "^4.20.0",
-    "sharp": "0.35.5"
+    "typescript": "^5.9.3",
+    "wrangler": "^4.148.0"
   },
   "overrides": {
     "@node-minify/core": {
