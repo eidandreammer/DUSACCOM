@@ -71,7 +71,7 @@ Server logs use event names, status codes, timings, request IDs, and receipt ref
 
 ## Chapter event calendar
 
-The landing page calendar serves the chapter supporting Latinos in the United States. It includes month navigation, date selection, event time zones, and inline registration. Existing proposed initiatives have no confirmed dates and appear separately under “Dates to be announced”; their form records interest rather than reserving attendance. No live dates are fabricated.
+The landing page calendar serves the chapter supporting Latinos in the United States. It includes month navigation, date selection, event time zones, and inline registration. Below the calendar, up to three confirmed upcoming events appear in order of start time, soonest first, regardless of the selected month. This card section stays hidden when there are no upcoming events. Proposed initiatives without confirmed dates do not appear as upcoming events. No live dates are fabricated.
 
 To publish an event in `src/lib/content.ts`, keep its stable ID, set `status: 'confirmed'`, provide a `location`, and add `schedule` with `startsAt` (an ISO timestamp including `Z` or an explicit UTC offset), `timeZone` (an IANA time zone), and `registration: 'open'` or `'closed'`. Optional `titleEs` and `descriptionEs` supply Spanish event text. The calendar groups each event by its local date and displays its local time zone. An event link can use `/?event=<id>#events`.
 

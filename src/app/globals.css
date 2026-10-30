@@ -407,13 +407,6 @@
   top: 50%;
   transform: translateY(-50%);
 }
-.home-header nav[aria-label="Main navigation"] > a,
-.home-header nav[aria-label="Main navigation"] > div > div > a,
-.home-header nav[aria-label="Main navigation"] > div > div > button {
-  color: white;
-}
-.home-header nav[aria-label="Main navigation"] > a:hover,
-.home-header nav[aria-label="Main navigation"] > div > div > a:hover { color: #fda4af; }
 .home-header .icon-button:hover { background: rgb(255 255 255 / 12%); }
 .home-hero {
   min-height: 100vh;
@@ -475,19 +468,55 @@
   border-color: #e2e8f0;
 }
 
+.site-header .header-nav-link { color: inherit; }
+.site-header.home-header .header-nav-link:is(:hover, :focus-visible) { color: #fda4af; }
+.site-header.solid-header .header-nav-link:is(:hover, :focus-visible, .is-active) { color: var(--color-crimson); }
+.site-header.home-header .header-nav-link-blue:is(:hover, :focus-visible) { color: #80b8ff; }
+.site-header.solid-header .header-nav-link-blue:is(:hover, :focus-visible, .is-active) { color: #1d5f9b; }
+
+.header-menu-panel {
+  background-color: white;
+  border-color: #e2e8f0;
+  box-shadow: 0 12px 32px rgb(12 35 52 / 12%);
+}
+.site-header.home-header .header-menu-panel {
+  background-color: transparent;
+  border-color: rgb(255 255 255 / 25%);
+  box-shadow: none;
+  backdrop-filter: blur(16px);
+}
+.registration-details { border-color: #e2e8f0; }
+.home-header .registration-details { border-color: rgb(255 255 255 / 25%); }
+.registration-link {
+  --submenu-accent: var(--color-crimson);
+  --submenu-hover: #fff1f2;
+  color: var(--submenu-accent);
+}
+.registration-link[data-accent="blue"] {
+  --submenu-accent: #1d5f9b;
+  --submenu-hover: #eff6ff;
+}
+.registration-link:is(:hover, :focus-visible, [aria-current="page"]) {
+  background-color: var(--submenu-hover);
+}
+.home-header .registration-link { color: white; }
+.home-header .registration-link:is(:hover, :focus-visible, [aria-current="page"]) {
+  background-color: rgb(255 255 255 / 12%);
+}
+
 /* Override the base layer's global 1.5s transitions only within the header. */
 @layer base {
   .site-header {
     transition: background-color 1s ease, box-shadow 1s ease, transform 350ms ease, visibility 350ms !important;
   }
 
-  .site-header :is(.header-information, .header-surface, .header-brand-image, .header-information a, .header-controls > button, nav[aria-label="Main navigation"] a, nav[aria-label="Main navigation"] button) {
+  .site-header :is(.header-information, .header-surface, .header-brand-image, .header-menu-panel, .registration-details, .header-information a, .header-controls > button, nav a, nav button, nav summary) {
     transition: color 1s ease, background-color 1s ease, border-color 1s ease, box-shadow 1s ease, filter 1s ease !important;
   }
 
   @media (prefers-reduced-motion: reduce) {
     .site-header,
-    .site-header :is(.header-information, .header-surface, .header-brand-image, .header-information a, .header-controls > button, nav[aria-label="Main navigation"] a, nav[aria-label="Main navigation"] button) {
+    .site-header :is(.header-information, .header-surface, .header-brand-image, .header-menu-panel, .registration-details, .header-information a, .header-controls > button, nav a, nav button, nav summary) {
       transition: none !important;
     }
   }
@@ -513,11 +542,6 @@
 .site-header.solid-header .header-information a,
 .site-header.solid-header .header-controls > button { color: #000; }
 .site-header.solid-header .header-surface { color: #000; }
-.site-header.solid-header nav[aria-label="Main navigation"] > a,
-.site-header.solid-header nav[aria-label="Main navigation"] > div > div > a,
-.site-header.solid-header nav[aria-label="Main navigation"] > div > div > button {
-  color: #000;
-}
 .site-header.solid-header .header-brand-image { filter: none; }
 .site-header.home-header .header-brand-image { filter: brightness(0) invert(1); }
 .footer-logo { background: transparent; box-shadow: none; }

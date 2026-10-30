@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight, MapPin, X } from 'lucide-react';
 import { initiatives, type Initiative } from '@/lib/content';
-import { dateKey, eventDateKey, eventDescription, eventTitle, isEventRegistrationOpen, monthDays } from '@/lib/events';
+import { dateKey, eventDateKey, eventDescription, eventTitle, isEventRegistrationOpen, monthDays, upcomingEvents } from '@/lib/events';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
 import { InquiryForm } from './inquiry-form';
@@ -59,7 +59,7 @@ export function EventCalendar({ events = initiatives }: { events?: readonly Init
   }, [selectedEventId]);
 
   const scheduled = events.filter(event => eventDateKey(event) !== null).sort((a, b) => Date.parse(a.schedule!.startsAt) - Date.parse(b.schedule!.startsAt));
-  const pending = events.filter(event => event.status === 'proposed' || !eventDateKey(event));
+  const upcoming = now > 0 ? upcomingEvents(events, now) : [];
   const monthKey = month ? `${month.year}-${String(month.month + 1).padStart(2, '0')}` : '';
   const visible = month ? scheduled.filter(event => selectedDate ? eventDateKey(event) === selectedDate : eventDateKey(event)?.startsWith(monthKey)) : [];
   const selectedEvent = events.find(event => event.id === selectedEventId);
@@ -148,9 +148,9 @@ export function EventCalendar({ events = initiatives }: { events?: readonly Init
             {visible.length ? visible.map(renderEvent) : <p className={styles.empty} role="status">{copy.empty}</p>}
           </div>
         </div>
-        {pending.length > 0 && <div className={styles.pending}>
-          <h3>{copy.upcoming}</h3><p>{copy.pending}</p>
-          <div className={styles.pendingGrid}>{pending.map(renderEvent)}</div>
+        {upcoming.length > 0 && <div className={styles.upcoming}>
+          <h3>{copy.upcoming}</h3>
+          <div className={styles.upcomingGrid}>{upcoming.map(renderEvent)}</div>
         </div>}
         <div id={`${id}-registration`} hidden={!selectedEvent} className={styles.registration} ref={registration} tabIndex={-1}>
           {selectedEvent && <>

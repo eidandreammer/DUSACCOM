@@ -19,6 +19,13 @@ export function isEventRegistrationOpen(event: Initiative, now = Date.now()): bo
   return eventDateKey(event) !== null && event.schedule?.registration === 'open' && new Date(event.schedule.startsAt).getTime() > now;
 }
 
+export function upcomingEvents(events: readonly Initiative[], now = Date.now()): Initiative[] {
+  return events
+    .filter(event => eventDateKey(event) !== null && Date.parse(event.schedule!.startsAt) > now)
+    .sort((a, b) => Date.parse(a.schedule!.startsAt) - Date.parse(b.schedule!.startsAt))
+    .slice(0, 3);
+}
+
 export function monthDays(year: number, month: number): Array<number | null> {
   const offset = new Date(Date.UTC(year, month, 1)).getUTCDay();
   const count = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();

@@ -39,7 +39,9 @@ for (const path of paths) {
     assert.doesNotMatch(membership, /<details\b|<summary\b/, 'Membership content is always visible without a details toggle');
     assert.equal((membership.match(/<ul\b/g) || []).length, 4, 'Every card displays its benefits');
     assert.match(html, /aria-label="Chapter event calendar"/, 'Event calendar is available');
-    assert.match(html, /Date to be announced/, 'Unscheduled events do not invent dates');
+    const events = html.match(/<section id="events"[\s\S]*?<\/section>/)?.[0] || '';
+    assert.doesNotMatch(events, /<article\b/, 'No event cards appear while all events are unconfirmed');
+    assert.doesNotMatch(html, /href="\/(fotos|enviar-fotos|agendar-cita)"/, 'Removed photo pages are absent from navigation');
     const footer = html.match(/<footer\b[\s\S]*?<\/footer>/)?.[0] || '';
     assert.ok(footer, 'Footer is present');
     assert.doesNotMatch(footer, /href="\/(fotos|enviar-fotos|agendar-cita)"|href="https:\/\/(instagram|facebook)\.com"/, 'Footer omits extra photo-service links and placeholder social profiles');
@@ -48,6 +50,9 @@ for (const path of paths) {
 }
 for (const asset of assets) assert.equal((await fetch(`${base}${asset}`)).status, 200, `Asset ${asset}`);
 assert.equal((await fetch(`${base}/not-a-real-page`)).status, 404);
+for (const path of ['/fotos', '/enviar-fotos', '/agendar-cita']) {
+  assert.equal((await fetch(`${base}${path}`)).status, 404, `${path}: removed photo page`);
+}
 assert.equal((await fetch(`${base}/sitemap.xml`)).status, 200);
 assert.equal((await fetch(`${base}/robots.txt`)).status, 200);
 assert.equal((await (await fetch(`${base}/api/health`)).json()).status, 'ok');

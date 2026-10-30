@@ -38,13 +38,8 @@ export function Header() {
   const toggle = useRef<HTMLButtonElement>(null);
   const registrationToggle = useRef<HTMLButtonElement>(null);
   const registration = useRef<HTMLDivElement>(null);
-  const photoLinks = [
-    { href: '/fotos', label: t.nav.fotos },
-    { href: '/enviar-fotos', label: t.nav.enviarFotos },
-    { href: '/agendar-cita', label: t.nav.agendarCita },
-  ];
-  const registrationLinks = [{ href: '/#membership', label: t.nav.viewTiers }, { href: '/#events', label: t.nav.events }, ...photoLinks];
-  const registrationActive = pathname === '/membership' || photoLinks.some(({ href }) => pathname === href);
+  const registrationLinks = [{ href: '/#membership', label: t.nav.viewTiers, accent: 'red' }, { href: '/#events', label: t.nav.events, accent: 'blue' }];
+  const registrationActive = pathname === '/membership';
   const closeNavigation = () => { setOpen(false); setDropdownOpen(false); };
 
   useEffect(() => {
@@ -152,7 +147,7 @@ export function Header() {
   }, [isHome, pathname, open, dropdownOpen]);
 
   const navLinkClass = (href: string) =>
-    `flex min-h-12 items-center text-[15px] font-semibold transition-colors hover:text-crimson ${pathname === href ? 'text-crimson' : 'text-slate-600'}`;
+    `header-nav-link ${href === '/about' || href === '/infotep' ? 'header-nav-link-blue' : ''} flex min-h-12 items-center text-[15px] font-semibold transition-colors ${pathname === href ? 'is-active' : ''}`;
 
   return (
     <>
@@ -175,12 +170,12 @@ export function Header() {
             <div ref={registration} className="relative" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setDropdownOpen(false); }}>
               <div className="flex items-center">
                 <Link href="/#register-form" onClick={closeNavigation} className={navLinkClass(registrationActive ? pathname : '/membership')}>{t.nav.registration}</Link>
-                <button ref={registrationToggle} className="flex size-11 items-center justify-center text-slate-600 hover:text-crimson" aria-label={`${t.nav.registration}: ${t.nav.quickLinks}`} aria-expanded={dropdownOpen} aria-controls="registration-submenu" onClick={() => setDropdownOpen(!dropdownOpen)}>
+                <button ref={registrationToggle} className="header-nav-link flex size-11 items-center justify-center" aria-label={`${t.nav.registration}: ${t.nav.quickLinks}`} aria-expanded={dropdownOpen} aria-controls="registration-submenu" onClick={() => setDropdownOpen(!dropdownOpen)}>
                   <ChevronDown size={16} aria-hidden="true" className={dropdownOpen ? 'rotate-180' : ''} />
                 </button>
               </div>
-              <div id="registration-submenu" hidden={!dropdownOpen} className="absolute top-full left-0 w-80 rounded-lg border border-slate-200 bg-white p-2 shadow-xl">
-                {registrationLinks.map(({ href, label }) => <Link key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} className="flex min-h-12 items-center rounded-lg px-4 py-3 text-[14px] font-medium leading-6 text-slate-600 hover:bg-slate-50 hover:text-crimson">{label}</Link>)}
+              <div id="registration-submenu" hidden={!dropdownOpen} className="header-menu-panel absolute top-full right-0 w-80 rounded-lg border p-2">
+                {registrationLinks.map(({ href, label, accent }) => <Link key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} data-accent={accent} className="registration-link flex min-h-12 items-center rounded-lg px-4 py-3 text-[14px] font-medium leading-6">{label}</Link>)}
               </div>
             </div>
             <Link href="/#infotep" className={navLinkClass('/infotep')}>{t.nav.infotep}</Link>
@@ -193,12 +188,12 @@ export function Header() {
             <button ref={toggle} className="icon-button lg:hidden" aria-label={open ? t.nav.closeMenu : t.nav.openMenu} aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen(!open)}>{open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}</button>
           </div>
         </div>
-        <nav id="mobile-navigation" aria-label="Mobile navigation" hidden={!open} className="absolute top-full right-0 left-0 max-h-[calc(100dvh-84px)] overflow-y-auto border-t border-slate-200 bg-white px-6 py-4 shadow-xl lg:hidden">
+        <nav id="mobile-navigation" aria-label="Mobile navigation" hidden={!open} className="header-menu-panel absolute top-full right-0 left-0 max-h-[calc(100dvh-84px)] overflow-y-auto border-t px-6 py-4 lg:hidden">
           <Link href="/#about" className={navLinkClass('/about')} onClick={closeNavigation}>{t.nav.about}</Link>
-          <details className="border-y border-slate-100 py-1">
-            <summary className="cursor-pointer py-3 text-[15px] font-semibold text-slate-600">{t.nav.registration}</summary>
-            <Link href="/#register-form" onClick={closeNavigation} className="flex min-h-11 items-center pl-4 text-[14px] font-semibold text-crimson">{t.nav.registration}<ArrowUpRight size={16} className="ml-2" aria-hidden="true" /></Link>
-            {registrationLinks.map(({ href, label }) => <Link key={href} href={href} onClick={closeNavigation} className="flex min-h-12 items-center py-2 pl-4 text-[14px] text-slate-600 hover:text-crimson">{label}</Link>)}
+          <details className="registration-details border-y py-1">
+            <summary className="header-nav-link cursor-pointer py-3 text-[15px] font-semibold">{t.nav.registration}</summary>
+            <Link href="/#register-form" onClick={closeNavigation} data-accent="red" className="registration-link flex min-h-11 items-center rounded-lg px-4 text-[14px] font-semibold">{t.nav.registration}<ArrowUpRight size={16} className="ml-2" aria-hidden="true" /></Link>
+            {registrationLinks.map(({ href, label, accent }) => <Link key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} data-accent={accent} className="registration-link flex min-h-12 items-center rounded-lg px-4 py-2 text-[14px]">{label}</Link>)}
           </details>
           <Link href="/#infotep" className={navLinkClass('/infotep')} onClick={closeNavigation}>{t.nav.infotep}</Link>
           <Link href="/contact" className={navLinkClass('/contact')} onClick={closeNavigation}>{t.nav.contact}</Link>
