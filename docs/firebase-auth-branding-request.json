@@ -1,5 +1,6 @@
 {
-  "projectId": "dusaccom-community-2026",
+  "projectAlias": "dusaccom",
+  "projectNumber": "969342544667",
   "siteUrl": "https://dusaccom.web.app",
   "sendEmail": {
     "callbackUri": "https://dusaccom.web.app/__/auth/action",

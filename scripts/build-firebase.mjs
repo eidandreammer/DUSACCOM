@@ -12,7 +12,9 @@ const project = JSON.parse(await readFile(join(root, '.firebaserc'), 'utf8')).pr
 for (const key of ['API_KEY', 'AUTH_DOMAIN', 'PROJECT_ID', 'APP_ID']) {
   if (!process.env[`NEXT_PUBLIC_FIREBASE_${key}`]) throw new Error(`Missing NEXT_PUBLIC_FIREBASE_${key}.`);
 }
-if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== project) throw new Error('Firebase web configuration does not match .firebaserc.');
+const sdkProject = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+const sdkProjectNumber = process.env.NEXT_PUBLIC_FIREBASE_APP_ID?.split(':')[1];
+if (project !== sdkProject && project !== sdkProjectNumber) throw new Error('Firebase web configuration does not match .firebaserc.');
 const hosting = JSON.parse(await readFile(join(root, 'firebase.json'), 'utf8')).hosting;
 const siteUrl = new URL(process.env.FIREBASE_SITE_URL || `https://${hosting.site}.web.app`);
 if (siteUrl.protocol !== 'https:' || siteUrl.pathname !== '/' || siteUrl.search || siteUrl.hash) throw new Error('FIREBASE_SITE_URL must be an HTTPS origin.');

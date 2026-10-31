@@ -2,7 +2,7 @@
 
 ## Already completed
 
-- Project: [dusaccom-community-2026](https://console.firebase.google.com/project/dusaccom-community-2026/overview), display name **DUSACCOM Community**.
+- Project alias: `dusaccom`, resolving to [project number 969342544667](https://console.firebase.google.com/project/969342544667/overview), display name **DUSACCOM Community**. Aliases do not rename the backend project.
 - Web app registered: `1:969342544667:web:e260e2c19c7ed4c0cc41be`.
 - Firebase Authentication email/password provider enabled and deployed.
 - Cloud Firestore `(default)` created in **us-east4 (Northern Virginia)**. Firebase initialization provisioned **Standard edition**, with the free tier enabled. No billing upgrade was performed.
@@ -16,7 +16,7 @@
 
 I cannot choose your personal password or administrator identities for you.
 
-1. In [Authentication → Settings → Authorized domains](https://console.firebase.google.com/project/dusaccom-community-2026/authentication/settings), add `localhost` and `127.0.0.1` for local development. Enter hostnames only, without a protocol or port.
+1. In [Authentication → Settings → Authorized domains](https://console.firebase.google.com/project/969342544667/authentication/settings), add `localhost` and `127.0.0.1` for local development. Enter hostnames only, without a protocol or port.
 2. Start the website with `npm run dev` (use Node.js 22.16 or newer).
 3. Open `http://127.0.0.1:3000/account`, or the port shown in the terminal.
 4. Choose **Create account**.
@@ -27,9 +27,9 @@ I cannot choose your personal password or administrator identities for you.
 
 Only a trusted Firebase project operator should perform these steps. New users must create their accounts first.
 
-1. Open [Authentication → Users](https://console.firebase.google.com/project/dusaccom-community-2026/authentication/users).
+1. Open [Authentication → Users](https://console.firebase.google.com/project/969342544667/authentication/users).
 2. Find the intended user by email, open that account, and copy its **User UID**. Use the UID, not the email address, as the Firestore document ID.
-3. Open [Firestore → Data](https://console.firebase.google.com/project/dusaccom-community-2026/firestore/databases/-default-/data).
+3. Open [Firestore → Data](https://console.firebase.google.com/project/969342544667/firestore/databases/-default-/data).
 4. Choose **Start collection** and enter `admins`. If it already exists, select it and choose **Add document**.
 5. Set **Document ID** to the exact UID copied in step 2.
 6. Add field `enabled`, select type **boolean**, and set it to **true**. Save.
@@ -60,12 +60,12 @@ Firebase backend deployment is complete. The updated Next.js website still needs
    ```dotenv
    NEXT_PUBLIC_FIREBASE_API_KEY=<apiKey>
    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=dusaccom.web.app
-   NEXT_PUBLIC_FIREBASE_PROJECT_ID=dusaccom-community-2026
+   NEXT_PUBLIC_FIREBASE_PROJECT_ID=<projectId from the existing Firebase web SDK configuration>
    NEXT_PUBLIC_FIREBASE_APP_ID=1:969342544667:web:e260e2c19c7ed4c0cc41be
    ```
 
 3. Rebuild and deploy using your existing hosting workflow. `NEXT_PUBLIC_` values are embedded at build time, so changing the host settings requires a new build. Keep the variables available to the server runtime as well, since inquiry validation uses the project ID.
-4. Add `dusaccom-business-community.bluesole13.chatgpt.site` and any custom domain you use under [Authentication → Settings → Authorized domains](https://console.firebase.google.com/project/dusaccom-community-2026/authentication/settings). Enter a hostname only, without `https://`, a path, or a port. The current CLI does not apply authorized-domain changes from `firebase.json`; use the console for this step.
+4. Add `dusaccom-business-community.bluesole13.chatgpt.site` and any custom domain you use under [Authentication → Settings → Authorized domains](https://console.firebase.google.com/project/969342544667/authentication/settings). Enter a hostname only, without `https://`, a path, or a port. The current CLI does not apply authorized-domain changes from `firebase.json`; use the console for this step.
 5. Verify create account, sign out, sign in, and password reset on the deployed site. Customize the password reset email in Authentication → Templates if desired.
 6. Sign in as a member and confirm the publisher is unavailable; sign in as an administrator and publish an approved event. Check a second browser window for live updates.
 
@@ -89,7 +89,7 @@ Rules tests use a local demo Firebase project and require Java 21+. They verify 
 To redeploy backend configuration after intentional changes:
 
 ```sh
-npx -y firebase-tools@latest deploy --only auth,firestore --project dusaccom-community-2026
+npx -y firebase-tools@latest deploy --only auth,firestore --project dusaccom
 ```
 
 The rules are a reviewed-by-tests prototype, not a complete security audit. They validate the event field set, types, lengths, role and ownership. Full IANA time zone and calendar-date validity are enforced by the application; administrators remain trusted to publish accurate public information. Review before broad release.
