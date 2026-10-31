@@ -14,7 +14,7 @@ General sign-in and account creation return to Account settings. A requested acc
 
 Guest event registration remains available. The event form offers optional sign-in or account creation with the selected event context. A signed-out visitor can also enter administrator sign-in from the event creator; account creation does not grant event-publishing permissions. Membership account creation stays inside its existing dialog without leaving the filled application.
 
-The footer's **My account** section offers sign-in and account creation to guests. Signed-in users get Account settings, password/email changes, deletion or a delegate deletion request, sign-out, and team management when eligible. Account-section links use native navigation so the selected settings section opens reliably, including when navigating between settings on the same page.
+The footer's **My account** section contains two plain text links, **Account settings** and **Sign in**, using the same styling as the Chamber and contact columns. Detailed management controls are inside Account settings. Account-section links use native navigation so the selected settings section opens reliably, including when navigating between settings on the same page.
 
 ## Deletion behavior
 
