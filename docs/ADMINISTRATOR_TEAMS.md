@@ -33,7 +33,7 @@ Delegate records contain exactly `enabled`, immutable `parentUid`, `displayName`
 
 Deploy `firestore.rules` together with the website. Publishing only the UI does not enable administrator creation. These rules are a prototype with emulator coverage, rather than an independent security audit.
 
-Permanent deletion and approval requests require the trusted Firebase Functions backend and project-wide protection against direct client deletion. See [account management](ACCOUNT_MANAGEMENT.md) for activation status, deployment steps, five-second self-deletion, and failure recovery. Until the backend is active, creating and disabling delegates still works, while permanent deletion is unavailable.
+Permanent deletion and approval requests use the live Firebase Functions backend and project-wide protection against direct client deletion. See [account management](ACCOUNT_MANAGEMENT.md) for deployment steps, five-second self-deletion, live verification, and failure recovery. Parents can delete their delegates after a popup confirmation; delegates submit a request that their parent can approve or decline.
 
 ## Validation
 

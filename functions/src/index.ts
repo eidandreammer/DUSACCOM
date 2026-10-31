@@ -47,7 +47,8 @@ const handler = createAccountHandler({ store, isEnabled, verify: async token => 
 
 export const accountApi = onRequest({
   region: 'us-east4', minInstances: 0, maxInstances: 1, concurrency: 10,
-  timeoutSeconds: 60, memory: '256MiB', invoker: 'public', serviceAccount: 'dusaccom-accounts@',
+  timeoutSeconds: 60, memory: '256MiB', invoker: 'public',
+  serviceAccount: 'dusaccom-accounts@969342544667.iam.gserviceaccount.com',
 }, async (req, res) => {
   const rawBody = req.rawBody || Buffer.alloc(0);
   if (rawBody.length > 2048) { res.status(413).json({ error: 'account/invalid-request' }); return; }

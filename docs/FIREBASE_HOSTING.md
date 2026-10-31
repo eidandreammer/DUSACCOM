@@ -1,6 +1,6 @@
 # Firebase Hosting
 
-Use the Firebase CLI alias `dusaccom`, which resolves to the existing project number `969342544667`. The public Hosting site is `dusaccom`, at https://dusaccom.web.app. This preserves existing accounts and data; the alias is not a renamed Firebase project. The site uses classic Firebase Hosting, the existing Standard Firestore database in `us-east4`, email/password Authentication, and anonymous guest Authentication for forms. The account-deletion Functions backend is prepared but awaits active billing. See [account management deployment and activation](ACCOUNT_MANAGEMENT.md) before publishing its rewrite or changing client deletion permissions. The static site, password changes, and verified email changes continue working without Functions.
+Use the Firebase CLI alias `dusaccom`, which resolves to the existing project number `969342544667`. The public Hosting site is `dusaccom`, at https://dusaccom.web.app. This preserves existing accounts and data; the alias is not a renamed Firebase project. The site uses classic Firebase Hosting, the existing Standard Firestore database in `us-east4`, email/password Authentication, and anonymous guest Authentication for forms. Billing is enabled on Blaze, and the account-deletion Functions backend is live. See [account management deployment and activation](ACCOUNT_MANAGEMENT.md) for its Hosting rewrite, project-wide protection against direct client deletion, and live verification.
 
 Default public URL: https://dusaccom.web.app
 
@@ -21,13 +21,13 @@ npm run test:rules
 npm run deploy:firebase
 ```
 
-While Functions cannot deploy, use `npm run deploy:hosting-only` instead of `deploy:firebase`. This deliberately omits the account API rewrite, and deletion remains unavailable. Once the backend and its Auth protection are active, use the normal deployment command.
+Use `npm run deploy:accounts` when updating the function, then the normal website deployment command. Do not use the historical `deploy:hosting-only` fallback on the active deployment: it removes the account API route and makes deletion unavailable.
 
 The deployment helper resolves the canonical project ID from the ignored public Firebase SDK configuration and checks it against `.firebaserc`. This avoids a Firebase Rules API failure when a numeric CLI alias is used directly, without hardcoding the backend identifier in the repository.
 
 `build:firebase` optimizes the local photographs and runs a Next.js static export in a temporary copy without server API routes. It preserves the source API routes and standalone/Sites build, restores temporary files after failure, and writes only public output to `out/`. It checks that all four public Firebase configuration values exist and that the project matches `.firebaserc`. Its canonical URL defaults to the free Firebase URL, independently of any old local site URL. The deployment command publishes only Hosting, Authentication provider settings, and Firestore rules/indexes.
 
-Each page has its own static HTML, including account and resource routes. Hosting serves directory indexes with trailing slashes and a real 404 page, without a catch-all SPA rewrite. Security and cache headers are in `firebase.json`. No server runtime is needed. Firebase builds automatically select `NEXT_PUBLIC_INQUIRY_BACKEND=firestore`; the legacy standalone build continues using its existing D1 API.
+Each page has its own static HTML, including account and resource routes. Hosting serves directory indexes with trailing slashes and a real 404 page, without a catch-all SPA rewrite. Security and cache headers are in `firebase.json`. Pages need no Next.js server; `/api/account-management/**` runs in the dedicated Firebase Function. Firebase builds automatically select `NEXT_PUBLIC_INQUIRY_BACKEND=firestore`; the legacy standalone build continues using its existing D1 API.
 
 ## Forms and data
 
@@ -35,7 +35,7 @@ On the Firebase deployment, all contact, membership, initiative-interest, and sc
 
 New submissions are saved in `inquiries/{submissionId}` with the form fields, `ownerUid`, a stable receipt reference, a payload hash, server receipt time, and `status: new`. The visitor may get their own exact receipt; browser listing, edits, deletion, and access to another visitor's data are denied. Event administrators do **not** gain access to private inquiries. Trusted Firebase console/IAM operators can review and manage them. No automatic email notification is configured.
 
-The paired `inquiryLimits/{guestUid}` document enforces up to five new submissions per ten minutes per guest identity. An atomic transaction must create both the inquiry and its counter update. Rules reject omitted counters, early resets, forged ownership, missing consent, honeypot spam, invalid fields, unlisted membership/initiative options, and closed, past, draft, or missing live events. This is a per-identity limit, not a guarantee against someone creating multiple guest identities. Spark quotas remain hard service limits; no billing upgrade or paid overage is configured.
+The paired `inquiryLimits/{guestUid}` document enforces up to five new submissions per ten minutes per guest identity. An atomic transaction must create both the inquiry and its counter update. Rules reject omitted counters, early resets, forged ownership, missing consent, honeypot spam, invalid fields, unlisted membership/initiative options, and closed, past, draft, or missing live events. This is a per-identity limit, not a guarantee against someone creating multiple guest identities. The project now uses Blaze; monitor usage and billing in Firebase and Google Cloud.
 
 Retries reuse the submission UUID. Identical retries return the stored receipt without another counter increment. Changed payloads cannot overwrite an accepted submission. A success message requires a server-confirmed receipt, including when connectivity is lost or the UI times out.
 
@@ -53,11 +53,11 @@ After deployment:
 node tests/http-smoke.mjs https://dusaccom.web.app --static
 ```
 
-This checks public pages, images/scripts, metadata, 404 behavior, and that server API routes are absent. Auth and Firestore run in the browser, not at `/api/` on Hosting. Use Firebase's usage dashboard to monitor the Spark limits. If a limit is reached, service may become temporarily unavailable; do not upgrade billing automatically.
+This checks public pages, images/scripts, metadata, 404 behavior, and that legacy server APIs remain absent. Account deletion uses the protected `/api/account-management/**` function route. Other Auth and Firestore operations run through their Firebase SDKs. Use the usage dashboards to monitor the active Blaze project.
 
 ## Connect an owned custom domain
 
-A domain is optional. The `.web.app` address is free. Buying or renewing a domain is not part of this zero-cost deployment; use only a domain you already own and control.
+A domain is optional. The `.web.app` address is free. Buying or renewing a domain is not part of this deployment; use only a domain you already own and control.
 
 1. In Firebase console → Hosting → Add custom domain, enter the exact domain supplied by the owner.
 2. Add only the DNS verification and routing records provided by Firebase at the domain's DNS provider. Preserve email/MX and unrelated records. Firebase provisions HTTPS without requiring Blaze.
