@@ -6,6 +6,7 @@ import { CookieSettings } from './privacy-controls';
 import { site } from '@/lib/site';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
+import { FooterAccount } from './footer-account';
 
 export function Footer() {
   const { lang } = useLanguage();
@@ -13,7 +14,7 @@ export function Footer() {
 
   return (
     <footer className="bg-navy-deep pt-14 text-slate-300">
-      <div className="container grid gap-10 pb-12 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr]">
+      <div className="container grid gap-10 pb-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.1fr]">
         {/* Brand column */}
         <div className="sm:col-span-2 lg:col-span-1">
           <Link href="/" aria-label="DUSACCOM home" className="inline-block">
@@ -64,6 +65,7 @@ export function Footer() {
             {t.footer.noPayments}
           </span>
         </div>
+        <FooterAccount />
       </div>
 
       {/* Bottom bar */}

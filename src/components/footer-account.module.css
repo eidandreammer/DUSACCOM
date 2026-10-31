@@ -1,0 +1,7 @@
+.account h2 { margin-bottom: 20px; color: white; font-size: var(--type-label); font-weight: 600; }
+.actions { display: grid; gap: 10px; }
+.actions a, .actions button { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 14px; border: 1px solid #536576; border-radius: 6px; color: #e2e8f0; font-size: var(--type-label); line-height: 1.5; text-align: center; }
+.actions a:hover, .actions button:hover { border-color: #93c5fd; background: #193e59; color: white; }
+.actions button:disabled { opacity: .6; cursor: wait; }
+.error { margin-top: 12px; color: #fecaca; font-size: var(--type-label); line-height: 1.6; }
+@media (min-width: 640px) and (max-width: 1023px) { .actions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

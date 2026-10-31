@@ -1,12 +1,13 @@
 'use client';
 
-import { useId, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { collection, doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
 import { useAuth } from '@/lib/auth-context';
 import { useLanguage } from '@/lib/language-context';
 import { firebaseConfigured, getFirebase } from '@/lib/firebase';
 import { accountCopy } from '@/lib/account-copy';
+import { accountHref } from '@/lib/account-navigation';
 import { eventTimeToInput, eventTimeToISO, liveEventSchema } from '@/lib/live-events';
 import type { Initiative } from '@/lib/content';
 import styles from './account.module.css';
@@ -26,6 +27,8 @@ export function EventCreator({ categories = [], event: existingEvent, onCancel, 
   const [category, setCategory] = useState(existingEvent?.category || 'Networking');
   const [savedCategories, setSavedCategories] = useState<string[]>([]);
   const toggle = useRef<HTMLButtonElement>(null);
+  const [requestedCreation, setRequestedCreation] = useState(false);
+  useEffect(() => { setRequestedCreation(new URLSearchParams(window.location.search).get('action') === 'create-event'); }, []);
   const categoryOptions = [...new Set(['Networking', 'Workshop', 'Cross-border', ...(existingEvent ? [existingEvent.category] : []), ...categories, ...savedCategories])];
   const initialDate = existingEvent?.schedule ? eventTimeToInput(existingEvent.schedule.startsAt, existingEvent.schedule.timeZone) : '';
 
@@ -62,7 +65,13 @@ export function EventCreator({ categories = [], event: existingEvent, onCancel, 
     finally { setBusy(false); }
   }
 
-  if (!firebaseConfigured || loading || !user || !isAdmin) return null;
+  if (!firebaseConfigured || loading) return null;
+  if (!user) return <aside className={calendarStyles.creator} aria-labelledby={`${id}-title`}>
+    <h3 id={`${id}-title`}>{t.addEvent}</h3>
+    <p className={calendarStyles.creatorHint}>{t.signInHint}</p>
+    <a className={styles.primary} href={accountHref({ intent: 'create-event' })}>{t.signIn}</a>
+  </aside>;
+  if (!isAdmin) return requestedCreation ? <aside className={calendarStyles.creator}><p>{t.memberHint}</p></aside> : null;
 
   return <aside className={calendarStyles.creator} aria-labelledby={`${id}-title`}>
     <h3 id={`${id}-title`}>{existingEvent ? t.editEvent : <button ref={toggle} type="button" className={calendarStyles.creatorToggle} aria-expanded={expanded} aria-controls={`${id}-form`} disabled={busy} onClick={() => setExpanded(value => !value)}>

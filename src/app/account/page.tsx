@@ -1,7 +1,5 @@
 'use client';
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useEffect, useId, useState, type FormEvent } from 'react';
 import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
 import { useAuth } from '@/lib/auth-context';
@@ -14,10 +12,10 @@ import { teamCopy } from '@/lib/team-copy';
 import { DelegatedAdminManager } from '@/components/delegated-admin-manager';
 import { AccountSettings } from '@/components/account-settings';
 import { accountSettingsCopy } from '@/lib/account-settings-copy';
+import { accountContinuationHref, afterAuthentication } from '@/lib/account-navigation';
 import styles from '@/components/account.module.css';
 
 export default function AccountPage() {
-  const router = useRouter();
   const { lang } = useLanguage();
   const t = accountCopy[lang];
   const { user, isAdmin, canManageAdmins, accountEmail, loading } = useAuth();
@@ -43,12 +41,12 @@ export default function AccountPage() {
       const { auth } = getFirebase();
       const loginEmail = mode !== 'signup' && username ? teamLoginEmail(email, username) : email;
       auth.languageCode = lang;
-      if (mode === 'reset') { await sendPasswordResetEmail(auth, loginEmail, { url: `${site.url}/account/` }); setMessage(t.resetSent); }
+      if (mode === 'reset') { await sendPasswordResetEmail(auth, loginEmail, { url: `${site.url}${accountContinuationHref(window.location.search)}` }); setMessage(t.resetSent); }
       else if (mode === 'signup') {
         const credential = await createUserWithEmailAndPassword(auth, email, password);
-        await updateProfile(credential.user, { displayName: String(data.get('name')).trim() });
+        await updateProfile(credential.user, { displayName: String(data.get('name')).trim() }).catch(() => {});
       } else await signInWithEmailAndPassword(auth, loginEmail, password);
-      if (mode !== 'reset') router.replace('/#events');
+      if (mode !== 'reset') window.location.replace(afterAuthentication(window.location.search));
     } catch (error) { setError(error instanceof Error && error.message === 'team/invalid-login' ? teamCopy[lang].invalid : accountError(error, lang)); }
     finally { setBusy(false); }
   }
@@ -63,7 +61,7 @@ export default function AccountPage() {
       {!firebaseConfigured ? <p role="status">{t.unavailable}</p> : loading ? <p role="status">{t.working}</p> : user ? <>
         <p>{t.signedIn} <strong>{user.displayName || accountEmail}</strong></p>
         <span className={styles.badge}>{isAdmin ? canManageAdmins ? t.admin : teamCopy[lang].delegated : t.member}</span>
-        <Link className={styles.primary} href="/#events">{t.calendar}</Link>
+        <a className={styles.primary} href="/#events">{t.calendar}</a>
         <button type="button" className={styles.secondary} disabled={busy} onClick={logout}>{t.signOut}</button>
       </> : <>
         <div className={styles.tabs}>

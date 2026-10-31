@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { UserRound } from 'lucide-react';
 import { signOut } from 'firebase/auth';
 import { useEffect, useId, useRef, useState } from 'react';
@@ -12,6 +11,7 @@ import { teamCopy } from '@/lib/team-copy';
 import { accountSettingsCopy } from '@/lib/account-settings-copy';
 import { membershipAccountCopy } from '@/lib/membership-account-copy';
 import { translations } from '@/lib/translations';
+import { accountHref, accountHrefForContext } from '@/lib/account-navigation';
 import styles from './profile-menu.module.css';
 
 export function ProfileMenu({ onOpenChange }: { onOpenChange: (open: boolean) => void }) {
@@ -24,10 +24,16 @@ export function ProfileMenu({ onOpenChange }: { onOpenChange: (open: boolean) =>
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [signInHref, setSignInHref] = useState(accountHref());
+  const [signUpHref, setSignUpHref] = useState(accountHref({ mode: 'signup' }));
   const name = user?.displayName?.trim() || accountEmail || t.guest;
   const initial = Array.from(name)[0]?.toLocaleUpperCase(lang) || '';
 
   function changeOpen(next: boolean) {
+    if (next) {
+      setSignInHref(accountHrefForContext(window.location, 'signin'));
+      setSignUpHref(accountHrefForContext(window.location, 'signup'));
+    }
     setOpen(next);
     onOpenChange(next);
   }
@@ -81,8 +87,8 @@ export function ProfileMenu({ onOpenChange }: { onOpenChange: (open: boolean) =>
           <a href="/account/?settings=profile" className={styles.action} onClick={() => changeOpen(false)}>{accountSettingsCopy[lang].title}</a>
           <button type="button" className={styles.action} disabled={busy} onClick={logout}>{busy ? t.working : t.signOut}</button>
         </div> : <div className={styles.actions}>
-          <Link href="/account" className={styles.action} onClick={() => changeOpen(false)}>{t.signIn}</Link>
-          <Link href="/account?mode=signup" className={styles.secondary} onClick={() => changeOpen(false)}>{t.signUp}</Link>
+          <a href={signInHref} className={styles.action} onClick={() => changeOpen(false)}>{t.signIn}</a>
+          <a href={signUpHref} className={styles.secondary} onClick={() => changeOpen(false)}>{t.signUp}</a>
         </div>}
         {error && <p role="alert" className={styles.error}>{error}</p>}
       </>}

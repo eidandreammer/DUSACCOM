@@ -5,6 +5,7 @@ import { collection, limit, onSnapshot, query, where } from 'firebase/firestore'
 import { firebaseConfigured, getFirebase } from '@/lib/firebase';
 import { liveEvent } from '@/lib/live-events';
 import { accountCopy } from '@/lib/account-copy';
+import { accountHref } from '@/lib/account-navigation';
 import { useAuth } from '@/lib/auth-context';
 import { EventCreator } from './event-creator';
 import { EventActions, EventEditor } from './event-actions';
@@ -20,7 +21,7 @@ type Month = { year: number; month: number };
 
 export function EventCalendar({ events: initialEvents = initiatives }: { events?: readonly Initiative[] }) {
   const { lang } = useLanguage();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, loading: authLoading } = useAuth();
   const admin = Boolean(user && isAdmin);
   const [remoteEvents, setRemoteEvents] = useState<Initiative[]>([]);
   const [liveError, setLiveError] = useState(false);
@@ -85,13 +86,13 @@ export function EventCalendar({ events: initialEvents = initiatives }: { events?
   }, [events]);
 
   useEffect(() => {
-    if (!selectedEventId) return;
+    if (!selectedEventId || authLoading) return;
     const frame = requestAnimationFrame(() => {
       registration.current?.focus({ preventScroll: true });
       registration.current?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
     });
     return () => cancelAnimationFrame(frame);
-  }, [selectedEventId]);
+  }, [selectedEventId, authLoading]);
 
   const scheduled = events.filter(event => eventDateKey(event) !== null).sort((a, b) => Date.parse(a.schedule!.startsAt) - Date.parse(b.schedule!.startsAt));
   const upcoming = now > 0 ? upcomingEvents(events, now) : [];
@@ -125,6 +126,25 @@ export function EventCalendar({ events: initialEvents = initiatives }: { events?
     setMonth({ year, month: monthNumber - 1 }); setSelectedDate(null);
   }
 
+  function selectEvent(eventId: string) {
+    resolvedLink.current = true;
+    const url = new URL(window.location.href);
+    url.searchParams.set('event', eventId);
+    url.searchParams.delete('action');
+    url.hash = 'events';
+    window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+    setSelectedEventId(eventId);
+  }
+
+  function closeRegistration() {
+    setSelectedEventId('');
+    const url = new URL(window.location.href);
+    url.searchParams.delete('event');
+    url.hash = 'events';
+    window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+    registrationTrigger.current?.focus();
+  }
+
   function renderEvent(event: Initiative) {
     const open = now > 0 && isEventRegistrationOpen(event, now);
     const dated = eventDateKey(event) !== null;
@@ -139,7 +159,7 @@ export function EventCalendar({ events: initialEvents = initiatives }: { events?
         <span className={styles.location}><MapPin size={14} aria-hidden="true" />{event.location || copy.locationTba}</span>
         {open || !dated ? (
           <button className={`${styles.eventButton} hover-scale`} aria-expanded={selectedEventId === event.id} aria-controls={`${id}-registration`}
-            onClick={click => { registrationTrigger.current = click.currentTarget; setSelectedEventId(event.id); }}>{open ? copy.register : copy.interest}</button>
+            onClick={click => { registrationTrigger.current = click.currentTarget; selectEvent(event.id); }}>{open ? copy.register : copy.interest}</button>
         ) : <span className={styles.closed}>{copy.closed}</span>}
         {admin && remoteEvents.some(item => item.id === event.id) && <EventActions event={event}
           onEdit={() => { setAdminMessage(''); setEditingEventId(event.id); }}
@@ -218,10 +238,15 @@ export function EventCalendar({ events: initialEvents = initiatives }: { events?
           {selectedEvent && <>
             <div className={styles.registrationIntro}>
               <div><h3>{copy.registrationTitle}</h3><p>{eventTitle(selectedEvent, lang)}</p></div>
-              <button aria-label={copy.closeForm} onClick={() => { setSelectedEventId(''); registrationTrigger.current?.focus(); }}><X size={20} aria-hidden="true" /></button>
+              <button aria-label={copy.closeForm} onClick={closeRegistration}><X size={20} aria-hidden="true" /></button>
             </div>
             {canRegister || selectedIsPending ? <>
               {selectedIsPending && <p className={styles.interestNote}>{copy.interestNote}</p>}
+              {!user && !authLoading && <div className={styles.accountOptions}>
+                <p>{accountCopy[lang].guestEventHint}</p>
+                <a href={accountHref({ intent: 'event-registration', eventId: selectedEvent.id })}>{accountCopy[lang].signInForEvent}</a>
+                <a href={accountHref({ mode: 'signup', intent: 'event-registration', eventId: selectedEvent.id })}>{accountCopy[lang].createForEvent}</a>
+              </div>}
               <InquiryForm kind={canRegister ? 'event-registration' : 'event'} initialInterest={selectedEvent.id} eventOptions={[selectedEvent]} />
             </> : <p className={styles.empty} role="status">{copy.closed}</p>}
           </>}

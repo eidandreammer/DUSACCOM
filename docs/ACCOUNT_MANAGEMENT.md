@@ -6,6 +6,16 @@ The Heidy portrait and its reserved layout space have been removed from the Nonp
 
 After a successful membership application, the signed-in profile card also displays the submitted company/organization, membership pathway, and application status. These private details persist across sign-ins and are removed by trusted account deletion. See [membership accounts](MEMBERSHIP_ACCOUNTS.md) for the sign-up prompt and data model.
 
+## Navigation
+
+The account page's **Go to the events calendar** action uses a native `/#events` link, matching the site's other section links and avoiding a client-router scroll reset to the hero.
+
+General sign-in and account creation return to Account settings. A requested account section such as password, email, team, or deletion is retained through authentication. Event-related entry links carry a recognized `intent`: `events` returns to the calendar, `create-event` returns to the calendar's creator area, and `event-registration` preserves the selected public event ID and reopens that event's form. The selected-event scroll waits until account access is loaded so administrator tools do not shift the target afterward. Password-reset continuation preserves the same intent. Return destinations are constructed from these known actions; arbitrary redirect URLs are ignored.
+
+Guest event registration remains available. The event form offers optional sign-in or account creation with the selected event context. A signed-out visitor can also enter administrator sign-in from the event creator; account creation does not grant event-publishing permissions. Membership account creation stays inside its existing dialog without leaving the filled application.
+
+The footer's **My account** section offers sign-in and account creation to guests. Signed-in users get Account settings, password/email changes, deletion or a delegate deletion request, sign-out, and team management when eligible. Account-section links use native navigation so the selected settings section opens reliably, including when navigating between settings on the same page.
+
 ## Deletion behavior
 
 - A member or parent administrator confirms their password, then holds continuously for five seconds in a modal. Release, leaving the button, losing focus, switching tabs, or canceling the dialog resets the hold. The server also requires a recent login and a private, expiring, UID-bound confirmation that is at least five seconds old.
