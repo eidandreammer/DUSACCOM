@@ -1,0 +1,39 @@
+{
+  "projectId": "dusaccom-community-2026",
+  "siteUrl": "https://dusaccom.web.app",
+  "sendEmail": {
+    "callbackUri": "https://dusaccom.web.app/__/auth/action",
+    "resetPasswordTemplate": {
+      "senderLocalPart": "noreply",
+      "subject": "Reset your password for DUSACCOM",
+      "body": "<p>Hello,</p>\n<p>Follow this link to reset your DUSACCOM password for your %EMAIL% account.</p>\n<p><a href='%LINK%'>%LINK%</a></p>\n<p>If you didn’t ask to reset your password, you can ignore this email.</p>\n<p>Best regards,<br>DUSACCOM team</p>",
+      "bodyFormat": "HTML",
+      "replyTo": "dusaccom1@gmail.com",
+      "senderDisplayName": "DUSACCOM team"
+    },
+    "verifyEmailTemplate": {
+      "senderLocalPart": "noreply",
+      "subject": "Verify your email for DUSACCOM",
+      "body": "<p>Hello %DISPLAY_NAME%,</p>\n<p>Follow this link to verify your email address.</p>\n<p><a href='%LINK%'>%LINK%</a></p>\n<p>If you didn’t ask to verify this address, you can ignore this email.</p>\n<p>Best regards,<br>DUSACCOM team</p>",
+      "bodyFormat": "HTML",
+      "replyTo": "dusaccom1@gmail.com",
+      "senderDisplayName": "DUSACCOM team"
+    },
+    "changeEmailTemplate": {
+      "senderLocalPart": "noreply",
+      "subject": "Your sign-in email was changed for DUSACCOM",
+      "body": "<p>Hello %DISPLAY_NAME%,</p>\n<p>Your sign-in email for DUSACCOM was changed to %NEW_EMAIL%.</p>\n<p>If you didn’t ask to change your email, follow this link to reset your sign-in email.</p>\n<p><a href='%LINK%'>%LINK%</a></p>\n<p>Best regards,<br>DUSACCOM team</p>",
+      "bodyFormat": "HTML",
+      "replyTo": "dusaccom1@gmail.com",
+      "senderDisplayName": "DUSACCOM team"
+    },
+    "revertSecondFactorAdditionTemplate": {
+      "senderLocalPart": "noreply",
+      "subject": "You've added 2 step verification to your DUSACCOM account.",
+      "body": "<p>Hello %DISPLAY_NAME%,</p>\n<p>Your account in DUSACCOM has been updated with %SECOND_FACTOR% for 2-step verification.</p>\n<p>If you didn't add this 2-step verification, click the link below to remove it.</p>\n<p><a href='%LINK%'>%LINK%</a></p>\n<p>Best regards,<br>DUSACCOM team</p>",
+      "bodyFormat": "HTML",
+      "replyTo": "dusaccom1@gmail.com",
+      "senderDisplayName": "DUSACCOM team"
+    }
+  }
+}

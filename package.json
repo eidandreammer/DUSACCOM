@@ -10,7 +10,7 @@
     "dev": "next dev --hostname 127.0.0.1",
     "build": "node scripts/optimize-images.mjs && next build --webpack",
     "build:firebase": "node scripts/optimize-images.mjs && node scripts/build-firebase.mjs",
-    "deploy:firebase": "npm run build:firebase && npx -y firebase-tools@latest deploy --only hosting,auth,firestore --project dusaccom-community-2026",
+    "deploy:firebase": "npm run build:firebase && npx -y firebase-tools@latest deploy --only hosting,auth,firestore --project dusaccom-community-2026 && npx -y firebase-tools@latest deploy --only hosting --config firebase.legacy.json --project dusaccom-community-2026",
     "build:sites": "opennextjs-cloudflare build && node scripts/package-worker.mjs",
     "start": "next start --hostname 127.0.0.1",
     "typecheck": "tsc --noEmit",

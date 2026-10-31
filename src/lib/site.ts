@@ -5,7 +5,7 @@ export const site = {
   email: 'dusaccom1@gmail.com',
   phone: '646-326-6052',
   phoneHref: '+16463266052',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://dusaccom-business-community.bluesole13.chatgpt.site',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://dusaccom.web.app',
   description: 'A chapter supporting Latinos in the United States through English and Spanish lessons, community events, and meaningful connections.'
 } as const;
 export function pageMetadata(title: string, description: string, path: string): Metadata {

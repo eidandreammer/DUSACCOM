@@ -1,8 +1,12 @@
 # Firebase Hosting on Spark
 
-The deployment target is `dusaccom-community-2026`, using classic Firebase Hosting, the existing Standard Firestore database in `us-east4`, email/password Authentication, and anonymous guest Authentication for forms. No Functions, App Hosting, Cloud Run, Cloud Storage, billing account, trial, or Blaze upgrade is used.
+The Firebase project is `dusaccom-community-2026`; the public Hosting site is `dusaccom`, at https://dusaccom.web.app. The project ID stays unchanged to preserve existing accounts and data. The site uses classic Firebase Hosting, the existing Standard Firestore database in `us-east4`, email/password Authentication, and anonymous guest Authentication for forms. No Functions, App Hosting, Cloud Run, Cloud Storage, billing account, trial, or Blaze upgrade is used.
 
-Default public URL: https://dusaccom-community-2026.web.app
+Default public URL: https://dusaccom.web.app
+
+The previous Hosting site redirects ordinary pages to the new origin through `firebase.legacy.json`, preserving paths and query parameters. Firebase's reserved authentication handlers remain available so existing password-reset links continue to work. `deploy:firebase` deploys both the main site and the legacy redirects. The build derives its default canonical origin from the Hosting site ID in `firebase.json`, independently of the Firebase project ID. Password-reset requests return visitors to the new site's account page; the public Firebase authentication domain is `dusaccom.web.app`.
+
+See [email branding status](FIREBASE_EMAIL_BRANDING.md) for the Firebase restriction that currently prevents changing authentication email subjects, bodies, and the email action-link origin.
 
 ## Build and deploy
 
@@ -41,7 +45,7 @@ The rules are a tested prototype, not a complete independent security audit. Rev
 After deployment:
 
 ```sh
-node tests/http-smoke.mjs https://dusaccom-community-2026.web.app --static
+node tests/http-smoke.mjs https://dusaccom.web.app --static
 ```
 
 This checks public pages, images/scripts, metadata, 404 behavior, and that server API routes are absent. Auth and Firestore run in the browser, not at `/api/` on Hosting. Use Firebase's usage dashboard to monitor the Spark limits. If a limit is reached, service may become temporarily unavailable; do not upgrade billing automatically.

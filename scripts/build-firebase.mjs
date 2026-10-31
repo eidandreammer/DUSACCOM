@@ -13,7 +13,8 @@ for (const key of ['API_KEY', 'AUTH_DOMAIN', 'PROJECT_ID', 'APP_ID']) {
   if (!process.env[`NEXT_PUBLIC_FIREBASE_${key}`]) throw new Error(`Missing NEXT_PUBLIC_FIREBASE_${key}.`);
 }
 if (process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID !== project) throw new Error('Firebase web configuration does not match .firebaserc.');
-const siteUrl = new URL(process.env.FIREBASE_SITE_URL || `https://${project}.web.app`);
+const hosting = JSON.parse(await readFile(join(root, 'firebase.json'), 'utf8')).hosting;
+const siteUrl = new URL(process.env.FIREBASE_SITE_URL || `https://${hosting.site}.web.app`);
 if (siteUrl.protocol !== 'https:' || siteUrl.pathname !== '/' || siteUrl.search || siteUrl.hash) throw new Error('FIREBASE_SITE_URL must be an HTTPS origin.');
 const staging = await mkdtemp(join(tmpdir(), 'dusaccom-firebase-'));
 try {

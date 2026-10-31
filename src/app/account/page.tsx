@@ -8,6 +8,7 @@ import { useAuth } from '@/lib/auth-context';
 import { useLanguage } from '@/lib/language-context';
 import { firebaseConfigured, getFirebase } from '@/lib/firebase';
 import { accountCopy, accountError } from '@/lib/account-copy';
+import { site } from '@/lib/site';
 import styles from '@/components/account.module.css';
 
 export default function AccountPage() {
@@ -32,7 +33,8 @@ export default function AccountPage() {
     setBusy(true); setError(''); setMessage('');
     try {
       const { auth } = getFirebase();
-      if (mode === 'reset') { await sendPasswordResetEmail(auth, email); setMessage(t.resetSent); }
+      auth.languageCode = lang;
+      if (mode === 'reset') { await sendPasswordResetEmail(auth, email, { url: `${site.url}/account/` }); setMessage(t.resetSent); }
       else if (mode === 'signup') {
         const credential = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(credential.user, { displayName: String(data.get('name')).trim() });

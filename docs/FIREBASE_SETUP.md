@@ -59,7 +59,7 @@ Firebase backend deployment is complete. The updated Next.js website still needs
 
    ```dotenv
    NEXT_PUBLIC_FIREBASE_API_KEY=<apiKey>
-   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=dusaccom-community-2026.firebaseapp.com
+   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=dusaccom.web.app
    NEXT_PUBLIC_FIREBASE_PROJECT_ID=dusaccom-community-2026
    NEXT_PUBLIC_FIREBASE_APP_ID=1:969342544667:web:e260e2c19c7ed4c0cc41be
    ```

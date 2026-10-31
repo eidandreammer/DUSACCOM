@@ -4,7 +4,7 @@ Production-oriented chamber website built with **Next.js 16 App Router, React, s
 
 ## Firebase Spark deployment
 
-The website can now run entirely on classic Firebase Hosting and the existing Firebase backend, with no billing account. Build and publish with `npm run deploy:firebase` using Node.js 22.16+. The free URL is `https://dusaccom-community-2026.web.app`. See [the Firebase Hosting guide](docs/FIREBASE_HOSTING.md) for architecture, rules, validation, data handling, and an optional owned custom domain. The older D1/Sites instructions below remain for that legacy deployment; Firebase-hosted forms save new records directly in Firestore.
+The website can now run entirely on classic Firebase Hosting and the existing Firebase backend, with no billing account. Build and publish with `npm run deploy:firebase` using Node.js 22.16+. The free URL is `https://dusaccom.web.app`. See [the Firebase Hosting guide](docs/FIREBASE_HOSTING.md) for architecture, rules, validation, data handling, and an optional owned custom domain. The older D1/Sites instructions below remain for that legacy deployment; Firebase-hosted forms save new records directly in Firestore.
 
 ## Start
 
