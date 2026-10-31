@@ -17,4 +17,5 @@ for (const name of ['new-york', 'networking', ...culturalImages.map(({ name }) =
     await sharp(`public/assets/${name}.jpg`).resize({ width, withoutEnlargement: true }).webp({ quality: 82, effort: 6 }).toFile(`public/assets/${name}-${width}.webp`);
   }
 }
+await sharp('public/imgs/Heidy portrait.png').rotate().resize({ width: 384, withoutEnlargement: true }).webp({ quality: 84, effort: 6 }).toFile('public/assets/heidy-portrait.webp');
 console.log('Generated local responsive WebP assets.');

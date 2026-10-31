@@ -41,7 +41,17 @@ export default function Home() {
               <ArrowDown size={18} aria-hidden="true" />
             </a>
           </div>
-          <p className={styles.heroFootnote}>{copy.aboutFootnote}</p>
+          <div className={styles.heroFooter}>
+            <p className={styles.heroFootnote}>{copy.aboutFootnote}</p>
+            <Image
+              src="/assets/heidy-portrait.webp"
+              alt="Heidy"
+              width={384}
+              height={512}
+              sizes="(max-width: 760px) 84px, (max-width: 900px) 104px, 136px"
+              className={styles.heroPortrait}
+            />
+          </div>
         </div>
       </section>
 
