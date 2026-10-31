@@ -151,7 +151,7 @@ export function Header() {
   }, [isHome, pathname, open, dropdownOpen, profileOpen]);
 
   const navLinkClass = (href: string) =>
-    `header-nav-link ${href === '/about' || href === '/infotep' ? 'header-nav-link-blue' : ''} flex min-h-12 items-center text-base font-semibold transition-colors ${pathname === href ? 'is-active' : ''}`;
+    `header-nav-link ${href === '/about' || href === '/infotep' || href === '/contact' ? 'header-nav-link-blue' : ''} flex min-h-12 items-center text-base font-semibold transition-colors ${pathname === href ? 'is-active' : ''}`;
 
   return (
     <>
