@@ -1,6 +1,9 @@
 rules_version = '2';
 // Data model:
-// admins/{uid}: {enabled: bool}; trusted console/IAM operator manages roles.
+// admins/{uid}: root {enabled: bool, parentUid?: null}, managed by trusted IAM.
+// Delegated admins: enabled bool, immutable parentUid (root UID), displayName
+// (2..100), shared email (3..254), username (3..24), createdAt (server timestamp). Only the root may
+// create these roles or toggle enabled. Delegates cannot grant any roles.
 // events/{id}: title/titleEs (1..160/0..160 chars), description/descriptionEs
 // (1..2000/0..2000 chars), location (1..240), category (1..60 chars), startsAt UTC ISO
 // string, timeZone IANA string (1..80), status confirmed, registration open/closed,
@@ -13,12 +16,33 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
+    function rootAdmin(uid) {
+      return exists(/databases/$(database)/documents/admins/$(uid))
+        && get(/databases/$(database)/documents/admins/$(uid)).data.enabled == true
+        && get(/databases/$(database)/documents/admins/$(uid)).data.get('parentUid', null) == null;
+    }
+    function managesAdmins() { return signedIn() && rootAdmin(request.auth.uid); }
+    function enabledAdmin(uid) {
+      let role = get(/databases/$(database)/documents/admins/$(uid)).data;
+      return role.enabled == true
+        && (role.get('parentUid', null) == null
+          || (role.parentUid is string && role.parentUid != uid && rootAdmin(role.parentUid)));
+    }
     function admin() {
       return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
-        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.enabled == true;
+        && enabledAdmin(request.auth.uid);
     }
     function bounded(value, minimum, maximum) {
       return value is string && value.size() >= minimum && value.size() <= maximum;
+    }
+    function validDelegatedAdmin(data) {
+      return data.keys().hasAll(['enabled', 'parentUid', 'displayName', 'email', 'username', 'createdAt'])
+        && data.keys().hasOnly(['enabled', 'parentUid', 'displayName', 'email', 'username', 'createdAt'])
+        && data.enabled is bool && bounded(data.parentUid, 1, 128)
+        && bounded(data.displayName, 2, 100) && data.displayName.matches('.*[^\\s].*')
+        && bounded(data.email, 3, 254) && data.email.matches('^[^\\s@]+@[^\\s@]+[.][^\\s@]+$')
+        && data.username is string && data.username.matches('^[a-z][a-z0-9_-]{2,23}$')
+        && data.createdAt is timestamp;
     }
     function validEvent(data) {
       return data.keys().hasAll(['title', 'titleEs', 'description', 'descriptionEs', 'location', 'category', 'startsAt', 'timeZone', 'status', 'registration', 'createdBy', 'createdAt'])
@@ -100,8 +124,19 @@ service cloud.firestore {
       allow list, delete: if false;
     }
     match /admins/{uid} {
-      allow get: if signedIn() && request.auth.uid == uid;
-      allow list, create, update, delete: if false;
+      allow get: if signedIn() && (request.auth.uid == uid
+        || (managesAdmins() && resource.data.parentUid == request.auth.uid)
+        || get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.get('parentUid', null) == uid);
+      allow list: if managesAdmins() && resource.data.parentUid == request.auth.uid && request.query.limit <= 500;
+      allow create: if managesAdmins() && uid != request.auth.uid
+        && validDelegatedAdmin(request.resource.data)
+        && request.resource.data.parentUid == request.auth.uid
+        && request.resource.data.email == request.auth.token.email.lower()
+        && request.resource.data.enabled == true && request.resource.data.createdAt == request.time;
+      allow update: if managesAdmins() && resource.data.parentUid == request.auth.uid
+        && validDelegatedAdmin(request.resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['enabled']);
+      allow delete: if false;
     }
     match /events/{id} {
       allow get: if resource.data.status == 'confirmed';

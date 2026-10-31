@@ -8,10 +8,11 @@ import { useAuth } from '@/lib/auth-context';
 import { useLanguage } from '@/lib/language-context';
 import { getFirebase } from '@/lib/firebase';
 import { accountCopy, accountError } from '@/lib/account-copy';
+import { teamCopy } from '@/lib/team-copy';
 import styles from './profile-menu.module.css';
 
 export function ProfileMenu({ onOpenChange }: { onOpenChange: (open: boolean) => void }) {
-  const { user, isAdmin, loading } = useAuth();
+  const { user, isAdmin, canManageAdmins, accountEmail, loading } = useAuth();
   const { lang } = useLanguage();
   const t = accountCopy[lang];
   const id = useId();
@@ -20,7 +21,7 @@ export function ProfileMenu({ onOpenChange }: { onOpenChange: (open: boolean) =>
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const name = user?.displayName?.trim() || user?.email || t.guest;
+  const name = user?.displayName?.trim() || accountEmail || t.guest;
   const initial = Array.from(name)[0]?.toLocaleUpperCase(lang) || '';
 
   function changeOpen(next: boolean) {
@@ -65,9 +66,10 @@ export function ProfileMenu({ onOpenChange }: { onOpenChange: (open: boolean) =>
     <section id={`${id}-profile`} hidden={!open} className={styles.card} aria-labelledby={`${id}-name`}>
       <h2 id={`${id}-name`}>{loading ? t.account : name}</h2>
       {loading ? <p role="status">{t.working}</p> : <>
-        {user?.email && <p className={styles.email}>{user.email}</p>}
+        {accountEmail && <p className={styles.email}>{accountEmail}</p>}
         <p className={styles.status}>{t.status}: <strong>{user ? t.statusSignedIn : t.statusSignedOut}</strong></p>
-        {user && <span className={styles.badge}>{isAdmin ? t.admin : t.member}</span>}
+        {user && <span className={styles.badge}>{isAdmin ? canManageAdmins ? t.admin : teamCopy[lang].delegated : t.member}</span>}
+        {canManageAdmins && <Link href="/account/" className={styles.action} onClick={() => changeOpen(false)}>{teamCopy[lang].manage}</Link>}
         {user ? <button type="button" className={styles.action} disabled={busy} onClick={logout}>{busy ? t.working : t.signOut}</button> : <div className={styles.actions}>
           <Link href="/account" className={styles.action} onClick={() => changeOpen(false)}>{t.signIn}</Link>
           <Link href="/account?mode=signup" className={styles.secondary} onClick={() => changeOpen(false)}>{t.signUp}</Link>
