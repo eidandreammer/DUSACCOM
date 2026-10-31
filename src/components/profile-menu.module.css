@@ -6,6 +6,9 @@
 .card .status { font-size: var(--type-label); }
 .badge { display: inline-block; margin-bottom: 20px; padding: 4px 12px; border-radius: 20px; background: #edf1f5; font-size: var(--type-label); }
 .actions { display: grid; gap: 12px; }
+.membership { display: grid; gap: 12px; margin-bottom: 20px; padding-block: 16px; border-block: 1px solid #d5dce1; }
+.membership dt { color: #465766; font-size: var(--type-caption); line-height: 1.6; }
+.membership dd { margin: 2px 0 0; font-size: var(--type-label); font-weight: 600; line-height: 1.5; overflow-wrap: anywhere; }
 .action, .secondary { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; padding: 10px 16px; border-radius: 8px; font-size: var(--type-label); font-weight: 600; text-align: center; text-decoration: none; }
 .action { background: #102c41; color: white; }
 .action:hover { background: #1c435f; }

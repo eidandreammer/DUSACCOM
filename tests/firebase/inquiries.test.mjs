@@ -26,9 +26,9 @@ before(async () => {
 });
 after(async () => environment?.cleanup());
 
-test('all form kinds persist with private server receipts and idempotent retries', async () => {
+test('guest contact and event forms persist with private server receipts and idempotent retries', async () => {
   const db = guest('inquiry-owner');
-  for (const patch of [{}, { kind: 'membership', interest: 'nonprofit' }, { kind: 'event', interest: 'beyond-borders' }, { kind: 'event-registration', interest: 'inquiry-future', message: '' }]) {
+  for (const patch of [{}, { kind: 'event', interest: 'beyond-borders' }, { kind: 'event-registration', interest: 'inquiry-future', message: '' }]) {
     const data = input(patch);
     const first = await saveFirestoreInquiry(db, 'inquiry-owner', data);
     assert.equal(first.ok, true);
@@ -46,7 +46,7 @@ test('all form kinds persist with private server receipts and idempotent retries
     await assertFails(updateDoc(ref, { message: 'Edited after acceptance' }));
     await assertFails(deleteDoc(ref));
   }
-  assert.equal((await getDoc(doc(db, 'inquiryLimits', 'inquiry-owner'))).data().count, 4);
+  assert.equal((await getDoc(doc(db, 'inquiryLimits', 'inquiry-owner'))).data().count, 3);
   await assertFails(getDocs(collection(db, 'inquiries')));
   await assertFails(getDoc(doc(guest('inquiry-intruder'), 'inquiryLimits', 'inquiry-owner')));
 });

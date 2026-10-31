@@ -95,6 +95,8 @@ test('the HTTPS function verifies real emulator tokens and deletes only a parent
   try {
     await db.doc(`admins/${parent.uid}`).set({ enabled: true });
     await db.doc(`admins/${delegate.uid}`).set({ enabled: true, parentUid: parent.uid });
+    await db.doc(`membershipProfiles/${delegate.uid}`).set({ company: 'Temporary QA organization' });
+    await db.doc(`membershipProfiles/${member.uid}`).set({ company: 'Temporary QA organization' });
     assert.equal((await call('availability', 'invalid-token')).status, 401);
     const childToken = await (await signInWithEmailAndPassword(auth, delegate.email, password)).user.getIdToken();
     assert.equal((await call('deletion-request', childToken)).status, 200);
@@ -105,6 +107,7 @@ test('the HTTPS function verifies real emulator tokens and deletes only a parent
     assert.equal((await call('delete-delegate', parentToken, { targetUid: delegate.uid })).status, 200);
     await assert.rejects(adminAuth.getUser(delegate.uid), { code: 'auth/user-not-found' });
     assert.equal((await db.doc(`admins/${delegate.uid}`).get()).exists, false);
+    assert.equal((await db.doc(`membershipProfiles/${delegate.uid}`).get()).exists, false);
     assert.equal((await call('deletion-request', childToken)).status, 401, 'Deleted tokens must be rejected.');
     const memberToken = await (await signInWithEmailAndPassword(auth, member.email, password)).user.getIdToken();
     const confirmation = await (await call('begin-self-deletion', memberToken)).json();
@@ -114,10 +117,11 @@ test('the HTTPS function verifies real emulator tokens and deletes only a parent
     await db.doc(`accountDeletionChallenges/${member.uid}`).update({ createdAt: Date.now() - 5100 });
     assert.equal((await call('delete-self', memberToken, { confirmation: confirmation.confirmation })).status, 200);
     await assert.rejects(adminAuth.getUser(member.uid), { code: 'auth/user-not-found' });
+    assert.equal((await db.doc(`membershipProfiles/${member.uid}`).get()).exists, false);
   } finally {
     for (const uid of [parent.uid, delegate.uid, member.uid]) {
       await adminAuth.deleteUser(uid).catch(() => {});
-      await Promise.all(['admins', 'accountDeletionRequests', 'accountDeletionChallenges'].map(collection => db.doc(`${collection}/${uid}`).delete()));
+      await Promise.all(['admins', 'membershipProfiles', 'accountDeletionRequests', 'accountDeletionChallenges'].map(collection => db.doc(`${collection}/${uid}`).delete()));
     }
     await deleteApp(app);
     await db.terminate();

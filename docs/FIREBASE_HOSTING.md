@@ -31,7 +31,9 @@ Each page has its own static HTML, including account and resource routes. Hostin
 
 ## Forms and data
 
-On the Firebase deployment, all contact, membership, initiative-interest, and scheduled-event registration forms use a separate Firebase app named `inquiries`. A guest identity is created only when a form is submitted, and persists independently of the member/admin session. Visitors do not have to create a member account to contact the Chamber. This uses Firebase's free anonymous provider, not phone authentication.
+Contact, initiative-interest, and scheduled-event registration forms use a separate Firebase app named `inquiries`. A guest identity is created only when one of those forms is submitted, and persists independently of the member/admin session. Visitors do not have to create a member account to contact the Chamber. This uses Firebase's free anonymous provider, not phone authentication.
+
+Membership applications require sign-in or explicit account creation and use the primary account UID. Their receipt, rate-limit counter, and private company/pathway profile are saved atomically. The signed-in profile card retrieves the submitted details. See [membership accounts](MEMBERSHIP_ACCOUNTS.md) for consent, existing-email handling, privacy, profile schema, and verification.
 
 New submissions are saved in `inquiries/{submissionId}` with the form fields, `ownerUid`, a stable receipt reference, a payload hash, server receipt time, and `status: new`. The visitor may get their own exact receipt; browser listing, edits, deletion, and access to another visitor's data are denied. Event administrators do **not** gain access to private inquiries. Trusted Firebase console/IAM operators can review and manage them. No automatic email notification is configured.
 

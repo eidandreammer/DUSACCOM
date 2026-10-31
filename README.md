@@ -6,6 +6,8 @@ Production-oriented chamber website built with **Next.js 16 App Router, React, s
 
 The website runs on classic Firebase Hosting and the existing Firebase backend. The Blaze plan is active, and a trusted Firebase Function handles account deletion and parent approval for delegates. Build and publish with `npm run deploy:firebase` using Node.js 22.16+; use `npm run deploy:accounts` for backend function updates. The public URL is `https://dusaccom.web.app`. See [the Firebase Hosting guide](docs/FIREBASE_HOSTING.md) for architecture, rules, validation, data handling, and an optional owned custom domain. The older D1/Sites instructions below remain for that legacy deployment; Firebase-hosted forms save new records directly in Firestore.
 
+[Membership applications](docs/MEMBERSHIP_ACCOUNTS.md) require sign-in or consented account creation and save private company/pathway details for the profile card. Contact and event forms support guests.
+
 ## Start
 
 Requires Node.js 22.16+ and npm.

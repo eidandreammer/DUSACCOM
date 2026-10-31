@@ -28,7 +28,8 @@ export default function AccountPage() {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('mode') === 'signup') setMode('signup');
+    const selected = new URLSearchParams(window.location.search).get('mode');
+    if (selected === 'signup' || selected === 'reset') setMode(selected);
   }, []);
   function changeMode(next: typeof mode) { setMode(next); if (next === 'signup') setTeamLogin(false); setError(''); setMessage(''); }
   async function submit(event: FormEvent<HTMLFormElement>) {

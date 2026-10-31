@@ -10,7 +10,9 @@ const auth = getAuth();
 const store: AccountStore = {
   async role(uid) { return (await db.doc(`admins/${uid}`).get()).data() as Role | undefined; },
   async disable(uid) { await db.doc(`admins/${uid}`).update({ enabled: false }); },
-  async removeRole(uid) { await db.doc(`admins/${uid}`).delete(); },
+  async removeRole(uid) {
+    await db.batch().delete(db.doc(`admins/${uid}`)).delete(db.doc(`membershipProfiles/${uid}`)).commit();
+  },
   async hasDelegates(uid) { return !(await db.collection('admins').where('parentUid', '==', uid).limit(1).get()).empty; },
   async request(uid) { return (await db.doc(`accountDeletionRequests/${uid}`).get()).data() as DeletionRequest | undefined; },
   async saveRequest(uid, request) { await db.doc(`accountDeletionRequests/${uid}`).set(request); },

@@ -9,6 +9,10 @@ import { eventTitle, isEventRegistrationOpen } from '@/lib/events';
 import { track } from './privacy-controls';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
+import { useAuth } from '@/lib/auth-context';
+import { accountEmailMatches } from '@/lib/membership-profile';
+import { membershipAccountCopy } from '@/lib/membership-account-copy';
+import { MembershipAccountDialog } from './membership-account-dialog';
 
 type Values = {
   name: string;
@@ -32,6 +36,8 @@ export function InquiryForm({
   eventOptions?: readonly Initiative[];
 }) {
   const { lang } = useLanguage();
+  const { user, accountEmail, membershipProfile, loading: authLoading, refreshAccount } = useAuth();
+  const membershipCopy = membershipAccountCopy[lang];
   const f = translations[lang].form;
   const isEvent = kind === 'event' || kind === 'event-registration';
   const isRegistration = kind === 'event-registration';
@@ -49,6 +55,8 @@ export function InquiryForm({
   const [touched, setTouched] = useState<Partial<Record<keyof Values, boolean>>>({});
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<InquiryResponse | null>(null);
+  const [accountDialog, setAccountDialog] = useState(false);
+  const [accountNotice, setAccountNotice] = useState('');
   const resultRef = useRef<HTMLDivElement>(null);
   const submissionId = useRef<string>('');
   const form = useRef<HTMLFormElement>(null);
@@ -56,6 +64,12 @@ export function InquiryForm({
   useEffect(() => {
     submissionId.current = crypto.randomUUID();
   }, []);
+
+  useEffect(() => {
+    if (kind !== 'membership' || !user || authLoading) return;
+    setValues(current => ({ ...current, name: current.name || user.displayName || '',
+      email: current.email || accountEmail || user.email || '', company: current.company || membershipProfile?.company || '' }));
+  }, [kind, user, accountEmail, membershipProfile, authLoading]);
 
   useEffect(() => {
     setValues(current => ({ ...current, interest: initialInterest }));
@@ -115,12 +129,22 @@ export function InquiryForm({
       if (field instanceof HTMLElement) field.focus();
       return;
     }
+    if (kind === 'membership') {
+      if (authLoading) return;
+      if (!user || user.isAnonymous) { setAccountDialog(true); return; }
+      if (!accountEmailMatches(values.email, user.email, accountEmail)) {
+        setErrors(current => ({ ...current, email: membershipCopy.matchingEmail }));
+        setTouched(current => ({ ...current, email: true }));
+        form.current?.querySelector<HTMLInputElement>('input[name="email"]')?.focus();
+        return;
+      }
+    }
     setBusy(true);
     setResult(null);
     let timeout: ReturnType<typeof setTimeout> | undefined;
     try {
       let data: InquiryResponse;
-      if (process.env.NEXT_PUBLIC_INQUIRY_BACKEND === 'firestore') {
+      if (kind === 'membership' || process.env.NEXT_PUBLIC_INQUIRY_BACKEND === 'firestore') {
         const { submitFirebaseInquiry } = await import('@/lib/firestore-inquiries');
         data = await Promise.race([
           submitFirebaseInquiry({ ...values, kind, consent: true, submissionId: submissionId.current }),
@@ -183,7 +207,7 @@ export function InquiryForm({
       ? f.submitEvent
       : f.submitContact;
 
-  return (
+  return (<>
     <form
       ref={form}
       method="post"
@@ -196,6 +220,8 @@ export function InquiryForm({
       <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
       <p className="mt-2 mb-7 text-sm leading-7 text-slate-600">{desc}</p>
       <noscript><p>{lang === 'es' ? 'Los formularios necesitan JavaScript. Contacto:' : 'Online forms require JavaScript. Contact:'} <a href={`mailto:${site.email}`}>{site.email}</a> · {site.phone}.</p></noscript>
+      {kind === 'membership' && !user && <p className="mb-5 text-sm leading-7 text-slate-600">{membershipCopy.required}</p>}
+      {accountNotice && <p role="status" className="mb-5 rounded-[8px] border border-emerald-300 bg-emerald-50 p-4 text-sm leading-7 text-slate-700">{accountNotice}</p>}
 
       <fieldset disabled={busy} className="min-w-0 space-y-5">
         <legend className="sr-only">Details</legend>
@@ -335,7 +361,7 @@ export function InquiryForm({
           <ErrorMessage name="consent" />
         </div>
 
-        <button type="submit" className="button w-full justify-center" disabled={busy}>
+        <button type="submit" className="button w-full justify-center" disabled={busy || (kind === 'membership' && authLoading)}>
           <span>{busy ? f.sending : submitBtnText}</span>
           {busy ? (
             <LoaderCircle size={19} className="animate-spin" aria-hidden="true" />
@@ -389,5 +415,11 @@ export function InquiryForm({
           ))}
       </div>
     </form>
-  );
+    {accountDialog && <MembershipAccountDialog email={values.email} name={values.name}
+      onCancel={() => setAccountDialog(false)} onComplete={created => {
+        setAccountDialog(false); setAccountNotice(created ? membershipCopy.created : membershipCopy.signedIn);
+        void refreshAccount().catch(() => {});
+        requestAnimationFrame(() => form.current?.querySelector<HTMLButtonElement>('button[type="submit"]')?.focus());
+      }} />}
+  </>);
 }

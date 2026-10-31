@@ -13,9 +13,17 @@ rules_version = '2';
 // receivedAt server timestamp, status 'new'. Create-only; owner can get a receipt.
 // inquiryLimits/{UID}: count (1..5), windowStart and updatedAt server timestamps,
 // lastSubmission UUID. Must be committed atomically with a new inquiry.
+// membershipProfiles/{auth UID}: company (0..150), membershipTier enum,
+// status 'submitted', submissionId UUID, updatedAt server timestamp. Private
+// exact owner reads; create/update paired atomically with a new membership
+// inquiry. Only trusted backend account deletion may remove this document.
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
+    function owns(uid) { return signedIn() && request.auth.uid == uid; }
+    function memberIdentity() {
+      return signedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
     function rootAdmin(uid) {
       return exists(/databases/$(database)/documents/admins/$(uid))
         && get(/databases/$(database)/documents/admins/$(uid)).data.enabled == true
@@ -57,6 +65,34 @@ service cloud.firestore {
     }
     function uuid(value) {
       return value is string && value.matches('^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$');
+    }
+    function ownsInquiryEmail(email) {
+      return memberIdentity() && (request.auth.token.get('email', '').lower() == email.lower()
+        || (exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+          && admin()
+          && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.get('parentUid', null) is string
+          && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.get('email', '').lower() == email.lower()));
+    }
+    function validMembershipProfile(data) {
+      return data.keys().hasAll(['company', 'membershipTier', 'status', 'submissionId', 'updatedAt'])
+        && data.keys().hasOnly(['company', 'membershipTier', 'status', 'submissionId', 'updatedAt'])
+        && bounded(data.company, 0, 150)
+        && data.membershipTier in ['startup', 'small-business', 'corporate', 'nonprofit']
+        && data.status == 'submitted' && uuid(data.submissionId)
+        && data.updatedAt is timestamp && data.updatedAt == request.time;
+    }
+    function pairedMembership(data) {
+      let path = /databases/$(database)/documents/inquiries/$(data.submissionId);
+      let inquiry = getAfter(path).data;
+      return !exists(path) && inquiry.kind == 'membership' && inquiry.ownerUid == request.auth.uid
+        && inquiry.company == data.company && inquiry.interest == data.membershipTier
+        && inquiry.receivedAt == request.time && ownsInquiryEmail(inquiry.email);
+    }
+    function hasMembershipProfile(inquiry) {
+      let profile = getAfter(/databases/$(database)/documents/membershipProfiles/$(request.auth.uid)).data;
+      return ownsInquiryEmail(inquiry.email) && validMembershipProfile(profile)
+        && profile.submissionId == inquiry.submissionId
+        && profile.company == inquiry.company && profile.membershipTier == inquiry.interest;
     }
     function futureEvent(iso) {
       let date = iso.split('T')[0].split('-');
@@ -105,9 +141,16 @@ service cloud.firestore {
     match /inquiries/{id} {
       allow get: if signedIn() && (!exists(/databases/$(database)/documents/inquiries/$(id)) || resource.data.ownerUid == request.auth.uid);
       allow create: if signedIn() && validInquiry(request.resource.data, id)
+        && (request.resource.data.kind != 'membership' || hasMembershipProfile(request.resource.data))
         && getAfter(/databases/$(database)/documents/inquiryLimits/$(request.auth.uid)).data.lastSubmission == id
         && getAfter(/databases/$(database)/documents/inquiryLimits/$(request.auth.uid)).data.updatedAt == request.time;
       allow list, update, delete: if false;
+    }
+    match /membershipProfiles/{uid} {
+      allow get: if owns(uid) && memberIdentity();
+      allow create, update: if owns(uid) && memberIdentity()
+        && validMembershipProfile(request.resource.data) && pairedMembership(request.resource.data);
+      allow list, delete: if false;
     }
     match /inquiryLimits/{uid} {
       allow get: if signedIn() && request.auth.uid == uid;

@@ -5,8 +5,8 @@ import { useLanguage } from '@/lib/language-context';
 import { accountSettingsCopy } from '@/lib/account-settings-copy';
 import styles from './account-settings.module.css';
 
-export function ConfirmationDialog({ open, title, description, busy = false, onCancel, children }: {
-  open: boolean; title: string; description: string; busy?: boolean; onCancel: () => void; children: ReactNode;
+export function ConfirmationDialog({ open, title, description, busy = false, cancelLabel, onCancel, children }: {
+  open: boolean; title: string; description: string; busy?: boolean; cancelLabel?: string; onCancel: () => void; children: ReactNode;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const { lang } = useLanguage();
@@ -31,6 +31,6 @@ export function ConfirmationDialog({ open, title, description, busy = false, onC
     <h2 id={`${id}-title`}>{title}</h2>
     <p id={`${id}-description`}>{description}</p>
     {children}
-    <button type="button" className={styles.cancel} autoFocus disabled={busy} onClick={onCancel}>{accountSettingsCopy[lang].cancel}</button>
+    <button type="button" className={styles.cancel} autoFocus disabled={busy} onClick={onCancel}>{cancelLabel || accountSettingsCopy[lang].cancel}</button>
   </dialog>;
 }

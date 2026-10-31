@@ -1,7 +1,8 @@
 import { signInAnonymously } from 'firebase/auth';
 import { doc, getDocFromServer, runTransaction, serverTimestamp, Timestamp, type Firestore } from 'firebase/firestore';
 import { inquirySchema, validationErrors, type Inquiry, type InquiryResponse } from './inquiry';
-import { getInquiryFirebase } from './firebase';
+import { getFirebase, getInquiryFirebase } from './firebase';
+import { accountEmailMatches } from './membership-profile';
 
 const WINDOW_MS = 10 * 60 * 1000;
 class SubmissionError extends Error {}
@@ -33,6 +34,10 @@ export async function saveFirestoreInquiry(db: Firestore, ownerUid: string, inpu
         updatedAt: serverTimestamp(), lastSubmission: inquiry.submissionId,
       });
       transaction.set(receiptRef, { ...inquiry, ownerUid, reference, payloadHash, receivedAt: serverTimestamp(), status: 'new' });
+      if (inquiry.kind === 'membership') transaction.set(doc(db, 'membershipProfiles', ownerUid), {
+        company: inquiry.company, membershipTier: inquiry.interest, status: 'submitted',
+        submissionId: inquiry.submissionId, updatedAt: serverTimestamp(),
+      });
     });
     // Require a confirmed server receipt. Offline writes never show success.
     const saved = (await getDocFromServer(receiptRef)).data();
@@ -45,6 +50,19 @@ export async function saveFirestoreInquiry(db: Firestore, ownerUid: string, inpu
 }
 
 export async function submitFirebaseInquiry(input: Inquiry): Promise<InquiryResponse> {
+  if (input.kind === 'membership') {
+    const { auth, db } = getFirebase();
+    await auth.authStateReady();
+    const user = auth.currentUser;
+    if (!user || user.isAnonymous) throw new Error('membership/sign-in-required');
+    let sharedEmail: string | undefined;
+    if (!accountEmailMatches(input.email, user.email)) {
+      const role = (await getDocFromServer(doc(db, 'admins', user.uid))).data();
+      if (role?.parentUid && role.enabled === true) sharedEmail = role.email;
+    }
+    if (!accountEmailMatches(input.email, user.email, sharedEmail)) throw new Error('membership/email-mismatch');
+    return saveFirestoreInquiry(db, user.uid, input);
+  }
   const { auth, db } = getInquiryFirebase();
   await auth.authStateReady();
   if (!auth.currentUser) {

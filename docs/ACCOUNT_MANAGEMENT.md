@@ -4,6 +4,8 @@ The signed-in profile menu contains only Account settings and Sign out, with 12p
 
 The Heidy portrait and its reserved layout space have been removed from the Nonprofit card. Start Registration remains below that card.
 
+After a successful membership application, the signed-in profile card also displays the submitted company/organization, membership pathway, and application status. These private details persist across sign-ins and are removed by trusted account deletion. See [membership accounts](MEMBERSHIP_ACCOUNTS.md) for the sign-up prompt and data model.
+
 ## Deletion behavior
 
 - A member or parent administrator confirms their password, then holds continuously for five seconds in a modal. Release, leaving the button, losing focus, switching tabs, or canceling the dialog resets the hold. The server also requires a recent login and a private, expiring, UID-bound confirmation that is at least five seconds old.

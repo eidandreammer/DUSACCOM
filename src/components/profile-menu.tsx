@@ -10,10 +10,12 @@ import { getFirebase } from '@/lib/firebase';
 import { accountCopy, accountError } from '@/lib/account-copy';
 import { teamCopy } from '@/lib/team-copy';
 import { accountSettingsCopy } from '@/lib/account-settings-copy';
+import { membershipAccountCopy } from '@/lib/membership-account-copy';
+import { translations } from '@/lib/translations';
 import styles from './profile-menu.module.css';
 
 export function ProfileMenu({ onOpenChange }: { onOpenChange: (open: boolean) => void }) {
-  const { user, isAdmin, canManageAdmins, accountEmail, loading } = useAuth();
+  const { user, isAdmin, canManageAdmins, accountEmail, membershipProfile, loading } = useAuth();
   const { lang } = useLanguage();
   const t = accountCopy[lang];
   const id = useId();
@@ -70,6 +72,11 @@ export function ProfileMenu({ onOpenChange }: { onOpenChange: (open: boolean) =>
         {accountEmail && <p className={styles.email}>{accountEmail}</p>}
         <p className={styles.status}>{t.status}: <strong>{user ? t.statusSignedIn : t.statusSignedOut}</strong></p>
         {user && <span className={styles.badge}>{isAdmin ? canManageAdmins ? t.admin : teamCopy[lang].delegated : t.member}</span>}
+        {user && membershipProfile && <dl className={styles.membership}>
+          {membershipProfile.company && <div><dt>{membershipAccountCopy[lang].organization}</dt><dd>{membershipProfile.company}</dd></div>}
+          <div><dt>{membershipAccountCopy[lang].pathway}</dt><dd>{translations[lang].membershipTiers.find(tier => tier.id === membershipProfile.membershipTier)?.name}</dd></div>
+          <div><dt>{membershipAccountCopy[lang].applicationStatus}</dt><dd>{membershipAccountCopy[lang].submitted}</dd></div>
+        </dl>}
         {user ? <div className={styles.actions}>
           <a href="/account/?settings=profile" className={styles.action} onClick={() => changeOpen(false)}>{accountSettingsCopy[lang].title}</a>
           <button type="button" className={styles.action} disabled={busy} onClick={logout}>{busy ? t.working : t.signOut}</button>

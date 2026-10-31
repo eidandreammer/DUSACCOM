@@ -5,14 +5,24 @@ import { onIdTokenChanged, reload, signOut, type User } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { firebaseConfigured, getFirebase } from './firebase';
 import { adminAccess } from './admin-access';
+import { readMembershipProfile, type MembershipProfile } from './membership-profile';
 
 type AuthState = { user: User | null; isAdmin: boolean; canManageAdmins: boolean; accountEmail: string | null; parentUid: string | null; loading: boolean };
 const initialState: AuthState = { user: null, isAdmin: false, canManageAdmins: false, accountEmail: null, parentUid: null, loading: true };
-const AuthContext = createContext<AuthState & { refreshAccount: () => Promise<void> }>({ ...initialState, refreshAccount: async () => {} });
+const AuthContext = createContext<AuthState & { membershipProfile: MembershipProfile | null; refreshAccount: () => Promise<void> }>({ ...initialState, membershipProfile: null, refreshAccount: async () => {} });
 export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>(initialState);
+  const [membership, setMembership] = useState<{ uid: string; profile: MembershipProfile | null } | null>(null);
+  useEffect(() => {
+    const uid = state.user?.uid;
+    if (!uid || state.user?.isAnonymous) return;
+    return onSnapshot(doc(getFirebase().db, 'membershipProfiles', uid), { includeMetadataChanges: true }, snapshot => {
+      if (snapshot.metadata.hasPendingWrites) return;
+      setMembership({ uid, profile: readMembershipProfile(snapshot.data()) });
+    }, () => setMembership({ uid, profile: null }));
+  }, [state.user?.uid, state.user?.isAnonymous]);
   const refreshAccount = useCallback(async () => {
     const user = getFirebase().auth.currentUser;
     if (!user) return;
@@ -61,5 +71,5 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, () => { ++session; stopRole?.(); stopParent?.(); setState({ ...initialState, loading: false }); });
     return () => { ++session; stopAuth(); stopRole?.(); stopParent?.(); };
   }, []);
-  return <AuthContext.Provider value={{ ...state, refreshAccount }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ ...state, membershipProfile: membership && membership.uid === state.user?.uid ? membership.profile : null, refreshAccount }}>{children}</AuthContext.Provider>;
 }
