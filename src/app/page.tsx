@@ -92,7 +92,7 @@ export default function Home() {
             </div>
           </div>
           <div className={styles.membershipCards}>
-            <MembershipCards registrationHref="#register-form" onSelect={setSelectedTier} nonprofitPortrait />
+            <MembershipCards registrationHref="#register-form" onSelect={setSelectedTier} />
           </div>
           <div className={styles.membershipFooter}>
             <p className={styles.membershipDisclaimer}>{t.home.membershipSec.disclaimer}</p>

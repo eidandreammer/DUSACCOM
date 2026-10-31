@@ -5,9 +5,12 @@
 .card .email { color: #465766; overflow-wrap: anywhere; }
 .card .status { font-size: var(--type-label); }
 .badge { display: inline-block; margin-bottom: 20px; padding: 4px 12px; border-radius: 20px; background: #edf1f5; font-size: var(--type-label); }
-.actions { display: grid; gap: 8px; }
-.action, .secondary { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; padding: 10px 16px; border-radius: 8px; font-size: var(--type-label); font-weight: 600; text-align: center; text-decoration: none; }
+.actions { display: grid; gap: 12px; }
+.action, .secondary, .danger { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; padding: 10px 16px; border-radius: 8px; font-size: var(--type-label); font-weight: 600; text-align: center; text-decoration: none; }
 .action { background: #102c41; color: white; }
 .action:hover { background: #1c435f; }
-.secondary { color: #bd3042; }
+.secondary { color: #1d5f9b; border: 1px solid #d5dce1; }
+.secondary:hover { background: #edf1f5; }
+.danger { color: #a32537; border: 1px solid #bd3042; }
+.danger:hover { background: #fff1f2; }
 .card .error { margin-top: 16px; margin-bottom: 0; color: #a32537; font-size: var(--type-label); }

@@ -4,6 +4,7 @@ import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firest
 import { adminAccess } from './admin-access';
 import { getFirebase } from './firebase';
 import { delegatedAdminInput, teamLoginEmail } from './team-login';
+import { accountRequest } from './account-management';
 
 export async function createDelegatedAdmin(input: unknown) {
   const values = delegatedAdminInput.parse(input);
@@ -35,7 +36,10 @@ export async function createDelegatedAdmin(input: unknown) {
   } catch (error) {
     if (created && !assigned) {
       try { await deleteUser(created.user); }
-      catch { throw new Error('team/cleanup-required'); }
+      catch {
+        try { await accountRequest('discard-unassigned-delegate', { targetUid: created.user.uid, username: values.username }); }
+        catch { throw new Error('team/cleanup-required'); }
+      }
     }
     throw error;
   } finally {

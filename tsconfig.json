@@ -36,6 +36,7 @@
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
+    "functions",
     "node_modules",
     "dist",
     ".open-next",

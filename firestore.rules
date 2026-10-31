@@ -138,6 +138,15 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['enabled']);
       allow delete: if false;
     }
+    // Parent approval is written only by the authenticated account API.
+    // Clients can read their own request, or requests for their own team.
+    match /accountDeletionRequests/{uid} {
+      allow get: if signedIn() && (request.auth.uid == uid
+        || (managesAdmins() && resource.data.parentUid == request.auth.uid));
+      allow list: if managesAdmins() && resource.data.parentUid == request.auth.uid && request.query.limit <= 500;
+      allow create, update, delete: if false;
+    }
+    match /accountDeletionChallenges/{uid} { allow read, write: if false; }
     match /events/{id} {
       allow get: if resource.data.status == 'confirmed';
       allow list: if resource.data.status == 'confirmed' && request.query.limit <= 500;

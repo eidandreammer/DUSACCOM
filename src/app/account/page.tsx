@@ -12,6 +12,8 @@ import { site } from '@/lib/site';
 import { teamLoginEmail } from '@/lib/team-login';
 import { teamCopy } from '@/lib/team-copy';
 import { DelegatedAdminManager } from '@/components/delegated-admin-manager';
+import { AccountSettings } from '@/components/account-settings';
+import { accountSettingsCopy } from '@/lib/account-settings-copy';
 import styles from '@/components/account.module.css';
 
 export default function AccountPage() {
@@ -83,6 +85,7 @@ export default function AccountPage() {
       {error && <p role="alert" className={styles.error}>{error}</p>}
       {message && <p role="status">{message}</p>}
     </div>
+    {user && !loading && <AccountSettings key={user.uid} onDeleted={() => { setError(''); setMessage(accountSettingsCopy[lang].deleted); }} />}
     <DelegatedAdminManager />
   </section>;
 }

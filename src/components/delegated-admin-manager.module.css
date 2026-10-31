@@ -11,4 +11,11 @@
 .team button { min-height: 44px; flex-shrink: 0; padding: 10px 14px; border: 1px solid #a7b7c4; border-radius: 6px; color: #102c41; font-size: var(--type-label); }
 .team button:hover { background: #edf1f5; }
 .team button:disabled { opacity: .6; cursor: wait; }
+.identity { flex: 1; min-width: 0; }
+.identity p { overflow-wrap: anywhere; }
+.actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; max-width: 55%; }
+.team .deleteButton { color: #a32537; border-color: #bd3042; }
+.team .deleteButton:hover { background: #fff1f2; }
+.team .requestBadge { margin-top: 8px; color: #a32537; font-weight: 600; }
 @media (max-width: 540px) { .panel { padding: 24px; } .team li { align-items: flex-start; flex-direction: column; gap: 10px; } }
+@media (max-width: 540px) { .actions { max-width: 100%; justify-content: flex-start; } }

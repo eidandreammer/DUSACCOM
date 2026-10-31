@@ -1,8 +1,4 @@
 .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
-.hasPortrait { isolation: isolate; }
-.portraitCard { position: relative; }
-/* The 1px card border plus this 1px inset cover 2px of the portrait. */
-.portrait { position: absolute; bottom: calc(100% - 1px); left: 50%; z-index: -1; display: block; width: 136px; max-width: 80%; height: auto; transform: translateX(-50%); border-radius: 8px 8px 0 0; }
 .card { --card-padding: 24px; display: flex; flex-direction: column; border: 1px solid #d5dce1; border-radius: 8px; padding: var(--card-padding); background: white; color: #102c41; }
 .featured { border-color: #bd3042; }
 .icon { flex-shrink: 0; margin-bottom: 24px; color: #bd3042; }
@@ -17,5 +13,3 @@
 .apply svg { flex-shrink: 0; width: 15px; }
 @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 540px) { .grid { grid-template-columns: 1fr; gap: 16px; } .card { --card-padding: 22px; } .icon { flex-shrink: 0; margin-bottom: 16px; } }
-@media (min-width: 541px) and (max-width: 1100px) { .hasPortrait { row-gap: 200px; } }
-@media (max-width: 540px) { .hasPortrait .portraitCard { margin-top: 180px; } }

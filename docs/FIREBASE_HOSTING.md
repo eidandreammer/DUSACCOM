@@ -1,6 +1,6 @@
-# Firebase Hosting on Spark
+# Firebase Hosting
 
-Use the Firebase CLI alias `dusaccom`, which resolves to the existing project number `969342544667`. The public Hosting site is `dusaccom`, at https://dusaccom.web.app. This preserves existing accounts and data; the alias is not a renamed Firebase project. The site uses classic Firebase Hosting, the existing Standard Firestore database in `us-east4`, email/password Authentication, and anonymous guest Authentication for forms. No Functions, App Hosting, Cloud Run, Cloud Storage, billing account, trial, or Blaze upgrade is used.
+Use the Firebase CLI alias `dusaccom`, which resolves to the existing project number `969342544667`. The public Hosting site is `dusaccom`, at https://dusaccom.web.app. This preserves existing accounts and data; the alias is not a renamed Firebase project. The site uses classic Firebase Hosting, the existing Standard Firestore database in `us-east4`, email/password Authentication, and anonymous guest Authentication for forms. The account-deletion Functions backend is prepared but awaits active billing. See [account management deployment and activation](ACCOUNT_MANAGEMENT.md) before publishing its rewrite or changing client deletion permissions. The static site, password changes, and verified email changes continue working without Functions.
 
 Default public URL: https://dusaccom.web.app
 
@@ -14,11 +14,16 @@ Use Node.js 22.16+ with the public Firebase web configuration from `.env.example
 
 ```sh
 npm ci
+npm ci --prefix functions
 npm run typecheck
 npm test
 npm run test:rules
 npm run deploy:firebase
 ```
+
+While Functions cannot deploy, use `npm run deploy:hosting-only` instead of `deploy:firebase`. This deliberately omits the account API rewrite, and deletion remains unavailable. Once the backend and its Auth protection are active, use the normal deployment command.
+
+The deployment helper resolves the canonical project ID from the ignored public Firebase SDK configuration and checks it against `.firebaserc`. This avoids a Firebase Rules API failure when a numeric CLI alias is used directly, without hardcoding the backend identifier in the repository.
 
 `build:firebase` optimizes the local photographs and runs a Next.js static export in a temporary copy without server API routes. It preserves the source API routes and standalone/Sites build, restores temporary files after failure, and writes only public output to `out/`. It checks that all four public Firebase configuration values exist and that the project matches `.firebaserc`. Its canonical URL defaults to the free Firebase URL, independently of any old local site URL. The deployment command publishes only Hosting, Authentication provider settings, and Firestore rules/indexes.
 

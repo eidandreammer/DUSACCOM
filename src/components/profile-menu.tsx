@@ -9,10 +9,11 @@ import { useLanguage } from '@/lib/language-context';
 import { getFirebase } from '@/lib/firebase';
 import { accountCopy, accountError } from '@/lib/account-copy';
 import { teamCopy } from '@/lib/team-copy';
+import { accountSettingsCopy } from '@/lib/account-settings-copy';
 import styles from './profile-menu.module.css';
 
 export function ProfileMenu({ onOpenChange }: { onOpenChange: (open: boolean) => void }) {
-  const { user, isAdmin, canManageAdmins, accountEmail, loading } = useAuth();
+  const { user, isAdmin, canManageAdmins, accountEmail, parentUid, loading } = useAuth();
   const { lang } = useLanguage();
   const t = accountCopy[lang];
   const id = useId();
@@ -69,8 +70,14 @@ export function ProfileMenu({ onOpenChange }: { onOpenChange: (open: boolean) =>
         {accountEmail && <p className={styles.email}>{accountEmail}</p>}
         <p className={styles.status}>{t.status}: <strong>{user ? t.statusSignedIn : t.statusSignedOut}</strong></p>
         {user && <span className={styles.badge}>{isAdmin ? canManageAdmins ? t.admin : teamCopy[lang].delegated : t.member}</span>}
-        {canManageAdmins && <Link href="/account/" className={styles.action} onClick={() => changeOpen(false)}>{teamCopy[lang].manage}</Link>}
-        {user ? <button type="button" className={styles.action} disabled={busy} onClick={logout}>{busy ? t.working : t.signOut}</button> : <div className={styles.actions}>
+        {user ? <div className={styles.actions}>
+          <a href="/account/?settings=profile" className={styles.action} onClick={() => changeOpen(false)}>{accountSettingsCopy[lang].title}</a>
+          <a href="/account/?settings=password" className={styles.secondary} onClick={() => changeOpen(false)}>{accountSettingsCopy[lang].password}</a>
+          <a href="/account/?settings=email" className={styles.secondary} onClick={() => changeOpen(false)}>{accountSettingsCopy[lang].email}</a>
+          {canManageAdmins && <a href="/account/?settings=team" className={styles.action} onClick={() => changeOpen(false)}>{teamCopy[lang].manage}</a>}
+          <a href="/account/?settings=delete" className={styles.danger} onClick={() => changeOpen(false)}>{parentUid ? accountSettingsCopy[lang].requestDeletion : accountSettingsCopy[lang].deleteAccount}</a>
+          <button type="button" className={styles.action} disabled={busy} onClick={logout}>{busy ? t.working : t.signOut}</button>
+        </div> : <div className={styles.actions}>
           <Link href="/account" className={styles.action} onClick={() => changeOpen(false)}>{t.signIn}</Link>
           <Link href="/account?mode=signup" className={styles.secondary} onClick={() => changeOpen(false)}>{t.signUp}</Link>
         </div>}

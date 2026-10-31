@@ -11,6 +11,7 @@ Each delegate selects **Sign in with a team username** and enters the shared ema
 | Create, edit, close registration, or delete any calendar event | Yes | Yes |
 | Add delegated administrators | Yes, under their own account | No |
 | Enable or disable delegates | Own delegates only | No |
+| Permanently delete a delegate account | Own delegates, with a confirmation popup | Request parent approval for own account only |
 | Create another parent administrator or change a role's parent | Trusted Firebase operator only | No |
 | Access private inquiry records or Firebase console | Not granted by this role | Not granted by this role |
 
@@ -31,6 +32,8 @@ Parent records in `admins/{uid}` have `enabled: true` and no `parentUid`, or `pa
 Delegate records contain exactly `enabled`, immutable `parentUid`, `displayName`, shared `email`, normalized `username`, and immutable `createdAt`. Parent-only queries filter by `parentUid == currentUser.uid` and limit results to 500. Rules require the shared email to match the creating parent's authenticated email. Clients can only toggle `enabled` on an existing delegate; they cannot reparent, promote, delete role records, or alter usernames. All event writes check the enabled parent as well as the delegate's own role.
 
 Deploy `firestore.rules` together with the website. Publishing only the UI does not enable administrator creation. These rules are a prototype with emulator coverage, rather than an independent security audit.
+
+Permanent deletion and approval requests require the trusted Firebase Functions backend and project-wide protection against direct client deletion. See [account management](ACCOUNT_MANAGEMENT.md) for activation status, deployment steps, five-second self-deletion, and failure recovery. Until the backend is active, creating and disabling delegates still works, while permanent deletion is unavailable.
 
 ## Validation
 

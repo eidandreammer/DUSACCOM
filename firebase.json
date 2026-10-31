@@ -1,10 +1,18 @@
 {
+  "functions": [{
+    "source": "functions",
+    "codebase": "account-management",
+    "runtime": "nodejs22",
+    "ignore": ["node_modules", ".git", "*.log", ".env*"],
+    "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"]
+  }],
   "hosting": {
     "site": "dusaccom",
     "public": "out",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "cleanUrls": true,
     "trailingSlash": true,
+    "rewrites": [{ "source": "/api/account-management/**", "function": { "functionId": "accountApi", "region": "us-east4" } }],
     "headers": [
       { "source": "**", "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
@@ -29,6 +37,7 @@
     }
   },
   "emulators": {
+    "functions": { "port": 5001 },
     "auth": { "port": 9099 },
     "firestore": {
       "port": 8080

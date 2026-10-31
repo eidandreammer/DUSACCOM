@@ -1,6 +1,5 @@
 'use client';
 import Link from 'next/link';
-import Image from 'next/image';
 import { ArrowRight, ArrowUpRight, TrendingUp, UsersRound, Globe2, HeartHandshake, Check, Sparkles, BriefcaseBusiness } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { type Program } from '@/lib/content';
@@ -102,21 +101,17 @@ export function ProgramGrid() {
   );
 }
 
-export function MembershipCards({ registrationHref, onSelect, nonprofitPortrait = false }: { registrationHref?: string; onSelect?: (tier: string) => void; nonprofitPortrait?: boolean } = {}) {
+export function MembershipCards({ registrationHref, onSelect }: { registrationHref?: string; onSelect?: (tier: string) => void } = {}) {
   const { lang } = useLanguage();
   const tiersList = translations[lang].membershipTiers;
 
   return (
-    <div className={`${membershipStyles.grid} ${nonprofitPortrait ? membershipStyles.hasPortrait : ''}`}>
+    <div className={membershipStyles.grid}>
       {tiersList.map((tier) => {
         const Icon = { startup: Sparkles, 'small-business': BriefcaseBusiness, corporate: Globe2, nonprofit: HeartHandshake }[tier.id];
         const featured = 'featuredBadge' in tier;
         return (
-          <article key={tier.id} className={`${membershipStyles.card} ${featured ? membershipStyles.featured : ''} ${nonprofitPortrait && tier.id === 'nonprofit' ? membershipStyles.portraitCard : ''}`}>
-            {nonprofitPortrait && tier.id === 'nonprofit' && <Image
-              src="/assets/heidy-portrait.webp" alt="Heidy" width={384} height={512} sizes="136px"
-              className={membershipStyles.portrait}
-            />}
+          <article key={tier.id} className={`${membershipStyles.card} ${featured ? membershipStyles.featured : ''}`}>
             <Icon size={25} strokeWidth={1.5} className={membershipStyles.icon} aria-hidden="true" />
             <span className={membershipStyles.eyebrow}>{tier.eyebrow}</span>
             <h3>{tier.name}</h3>
