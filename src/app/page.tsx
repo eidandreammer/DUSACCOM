@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { ArrowDown, ArrowRight } from 'lucide-react';
 import { InquiryForm } from '@/components/inquiry-form';
@@ -37,10 +36,10 @@ export default function Home() {
             </h1>
             <p className={styles.statement}>{copy.aboutStatement}</p>
             <p className={`${styles.body} ${styles.heroDescription}`}>{t.aboutPage.description}</p>
-            <Link href="#mission" className={`${styles.link} ${styles.heroLink}`}>
+            <a href="#mission" className={`${styles.link} ${styles.heroLink}`}>
               {copy.discoverPurpose}
               <ArrowDown size={18} aria-hidden="true" />
-            </Link>
+            </a>
           </div>
           <p className={styles.heroFootnote}>{copy.aboutFootnote}</p>
         </div>
@@ -54,9 +53,9 @@ export default function Home() {
           </div>
           <div>
             <p className={styles.body}>{t.aboutPage.purposeDesc}</p>
-            <Link href="#mission" className={`${styles.link} ${styles.aboutLink}`}>
+            <a href="#mission" className={`${styles.link} ${styles.aboutLink}`}>
               {copy.purposeTitle}<ArrowDown size={18} aria-hidden="true" />
-            </Link>
+            </a>
           </div>
         </div>
       </section>
@@ -91,10 +90,10 @@ export default function Home() {
               <h2 id="membership-title" className={styles.pathTitle}>{copy.membershipTitle}</h2>
               <p className={styles.body}>{copy.membershipDescription}</p>
             </div>
-            <Link href="#register" className={`${styles.secondaryAction} hover-scale`}>
+            <a href="#register-form" className={`${styles.secondaryAction} hover-scale`}>
               {copy.registrationButton}
               <ArrowRight size={18} aria-hidden="true" />
-            </Link>
+            </a>
           </div>
           <div className={styles.membershipCards}>
             <MembershipCards registrationHref="#register-form" onSelect={setSelectedTier} />
@@ -112,9 +111,9 @@ export default function Home() {
             </div>
             <div>
               <p className={styles.body}>{copy.registrationDescription}</p>
-              <Link href="#register-form" className={`${styles.link} ${styles.aboutLink}`}>
+              <a href="#register-form" className={`${styles.link} ${styles.aboutLink}`}>
                 {copy.registrationFormButton}<ArrowDown size={18} aria-hidden="true" />
-              </Link>
+              </a>
             </div>
           </div>
           <ol className={styles.registrationSteps}>

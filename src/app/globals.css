@@ -523,8 +523,7 @@
 .site-header.solid-header .header-information a,
 .site-header.solid-header .header-controls > button { color: #000; }
 .site-header.solid-header .header-surface { color: #000; }
-.site-header.solid-header .header-brand-image { filter: none; }
-.site-header.home-header .header-brand-image { filter: brightness(0) invert(1); }
+.site-header .header-brand-image { filter: none; }
 .footer-logo { background: transparent; box-shadow: none; }
 
 /* Homepage content follows the header's grid, colors, and generous spacing. */

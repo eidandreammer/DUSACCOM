@@ -42,12 +42,12 @@ export function Footer() {
         {/* The Chamber links */}
         <div className="footer-links">
           <h2>{t.footer.chamberTitle}</h2>
-          <Link href="/#about">{t.footer.about}</Link>
-          <Link href="/#mission">{t.footer.mission}</Link>
-          <Link href="/#membership">{t.footer.becomeMember}</Link>
-          <Link href="/#register-form">{t.nav.registration}</Link>
-          <Link href="/#infotep">{t.footer.infotep}</Link>
-          <Link href="/#events">{t.nav.events}</Link>
+          <a href="/#about">{t.footer.about}</a>
+          <a href="/#mission">{t.footer.mission}</a>
+          <a href="/#membership">{t.footer.becomeMember}</a>
+          <a href="/#register-form">{t.nav.registration}</a>
+          <a href="/#infotep">{t.footer.infotep}</a>
+          <a href="/#events">{t.nav.events}</a>
         </div>
 
         {/* Let's connect links */}

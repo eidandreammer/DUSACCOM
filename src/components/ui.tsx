@@ -29,7 +29,8 @@ export function ButtonLink({
   className?: string;
   onClick?: () => void;
 }) {
-  const Element = href.startsWith('#') ? 'a' : Link;
+  // Let the browser handle section navigation without the router resetting scroll.
+  const Element = href.includes('#') ? 'a' : Link;
   return (
     <Element
       href={href}

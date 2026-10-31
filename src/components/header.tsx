@@ -9,7 +9,7 @@ import { site } from '@/lib/site';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
 
-export function Brand({ light = false, large = false }: { light?: boolean; large?: boolean }) {
+export function Brand({ large = false }: { large?: boolean }) {
   return (
     <Link href="/" className={`brand flex items-center shrink-0 ${large ? 'header-brand' : ''}`} aria-label="DUSACCOM home">
       <Image
@@ -19,7 +19,6 @@ export function Brand({ light = false, large = false }: { light?: boolean; large
         height={1117}
         priority
         className={large ? 'header-brand-image' : 'h-12 w-auto object-contain'}
-        style={light ? { filter: 'brightness(0) invert(1)' } : { filter: 'none' }}
       />
     </Link>
   );
@@ -169,21 +168,22 @@ export function Header() {
       </div>
       <div className="header-surface relative border-b">
         <div className="container flex min-h-26 items-center gap-3 sm:gap-6">
-          <Brand light={overHero} large />
+          <Brand large />
           <nav aria-label="Main navigation" className="ml-auto hidden items-center gap-7 lg:flex">
-            <Link href="/#about" className={navLinkClass('/about')}>{t.nav.about}</Link>
+            <a href="/#about" className={navLinkClass('/about')}>{t.nav.about}</a>
             <div ref={registration} className="relative" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setDropdownOpen(false); }}>
               <div className="flex items-center">
-                <Link href="/#register-form" onClick={closeNavigation} className={navLinkClass(registrationActive ? pathname : '/membership')}>{t.nav.registration}</Link>
+                <a href="/#register-form" onClick={closeNavigation} className={navLinkClass(registrationActive ? pathname : '/membership')}>{t.nav.registration}</a>
                 <button ref={registrationToggle} className="header-nav-link flex size-11 items-center justify-center" aria-label={`${t.nav.registration}: ${t.nav.quickLinks}`} aria-expanded={dropdownOpen} aria-controls="registration-submenu" onClick={() => setDropdownOpen(!dropdownOpen)}>
                   <ChevronDown size={16} aria-hidden="true" className={dropdownOpen ? 'rotate-180' : ''} />
                 </button>
               </div>
               <div id="registration-submenu" hidden={!dropdownOpen} className="header-menu-panel absolute top-full right-0 w-80 rounded-lg border p-2">
-                {registrationLinks.map(({ href, label, accent }) => <Link key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} data-accent={accent} className="registration-link flex min-h-12 items-center rounded-lg px-4 py-3 text-sm font-medium leading-6">{label}</Link>)}
+                {registrationLinks.map(({ href, label, accent }) => <a key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} data-accent={accent} className="registration-link flex min-h-12 items-center rounded-lg px-4 py-3 text-sm font-medium leading-6">{label}</a>)}
               </div>
             </div>
-            <Link href="/#infotep" className={navLinkClass('/infotep')}>{t.nav.infotep}</Link>
+            <a href="/#infotep" className={navLinkClass('/infotep')}>{t.nav.infotep}</a>
+            <a href="/#events" onClick={closeNavigation} className={navLinkClass('/#events')}>{t.nav.events}</a>
             <Link href="/contact" aria-current={pathname === '/contact' ? 'page' : undefined} className={navLinkClass('/contact')}>{t.nav.contact}</Link>
           </nav>
           <div className="header-controls ml-auto flex shrink-0 items-center gap-2 lg:ml-0">
@@ -195,13 +195,14 @@ export function Header() {
           </div>
         </div>
         <nav id="mobile-navigation" aria-label="Mobile navigation" hidden={!open} className="header-menu-panel absolute top-full right-0 left-0 max-h-[calc(100dvh-84px)] overflow-y-auto border-t px-6 py-4 lg:hidden">
-          <Link href="/#about" className={navLinkClass('/about')} onClick={closeNavigation}>{t.nav.about}</Link>
+          <a href="/#about" className={navLinkClass('/about')} onClick={closeNavigation}>{t.nav.about}</a>
           <details className="registration-details border-y py-1">
             <summary className="header-nav-link cursor-pointer py-3 text-base font-semibold">{t.nav.registration}</summary>
-            <Link href="/#register-form" onClick={closeNavigation} data-accent="red" className="registration-link flex min-h-11 items-center rounded-lg px-4 text-sm font-semibold">{t.nav.registration}<ArrowUpRight size={16} className="ml-2" aria-hidden="true" /></Link>
-            {registrationLinks.map(({ href, label, accent }) => <Link key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} data-accent={accent} className="registration-link flex min-h-12 items-center rounded-lg px-4 py-2 text-sm">{label}</Link>)}
+            <a href="/#register-form" onClick={closeNavigation} data-accent="red" className="registration-link flex min-h-11 items-center rounded-lg px-4 text-sm font-semibold">{t.nav.registration}<ArrowUpRight size={16} className="ml-2" aria-hidden="true" /></a>
+            {registrationLinks.map(({ href, label, accent }) => <a key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} data-accent={accent} className="registration-link flex min-h-12 items-center rounded-lg px-4 py-2 text-sm">{label}</a>)}
           </details>
-          <Link href="/#infotep" className={navLinkClass('/infotep')} onClick={closeNavigation}>{t.nav.infotep}</Link>
+          <a href="/#infotep" className={navLinkClass('/infotep')} onClick={closeNavigation}>{t.nav.infotep}</a>
+          <a href="/#events" className={navLinkClass('/#events')} onClick={closeNavigation}>{t.nav.events}</a>
           <Link href="/contact" className={navLinkClass('/contact')} onClick={closeNavigation}>{t.nav.contact}</Link>
         </nav>
       </div>
