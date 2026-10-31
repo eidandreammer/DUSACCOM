@@ -41,17 +41,7 @@ export default function Home() {
               <ArrowDown size={18} aria-hidden="true" />
             </a>
           </div>
-          <div className={styles.heroFooter}>
-            <p className={styles.heroFootnote}>{copy.aboutFootnote}</p>
-            <Image
-              src="/assets/heidy-portrait.webp"
-              alt="Heidy"
-              width={384}
-              height={512}
-              sizes="(max-width: 760px) 84px, (max-width: 900px) 104px, 136px"
-              className={styles.heroPortrait}
-            />
-          </div>
+          <p className={styles.heroFootnote}>{copy.aboutFootnote}</p>
         </div>
       </section>
 
@@ -100,15 +90,17 @@ export default function Home() {
               <h2 id="membership-title" className={styles.pathTitle}>{copy.membershipTitle}</h2>
               <p className={styles.body}>{copy.membershipDescription}</p>
             </div>
-            <a href="#register-form" className={`${styles.secondaryAction} hover-scale`}>
+          </div>
+          <div className={styles.membershipCards}>
+            <MembershipCards registrationHref="#register-form" onSelect={setSelectedTier} nonprofitPortrait />
+          </div>
+          <div className={styles.membershipFooter}>
+            <p className={styles.membershipDisclaimer}>{t.home.membershipSec.disclaimer}</p>
+            <a href="#register-form" className={`${styles.secondaryAction} ${styles.membershipRegistration} hover-scale`}>
               {copy.registrationButton}
               <ArrowRight size={18} aria-hidden="true" />
             </a>
           </div>
-          <div className={styles.membershipCards}>
-            <MembershipCards registrationHref="#register-form" onSelect={setSelectedTier} />
-          </div>
-          <p className={styles.membershipDisclaimer}>{t.home.membershipSec.disclaimer}</p>
         </div>
       </section>
 

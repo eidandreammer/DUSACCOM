@@ -51,7 +51,6 @@
 }
 
 .home .heroLayout {
-  position: relative;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -133,27 +132,7 @@
   color: #f8cbd2;
 }
 
-.home .heroFooter {
-  display: flex;
-  align-items: flex-end;
-  gap: 24px;
-  padding-right: 168px;
-}
-
-.home .heroPortrait {
-  position: absolute;
-  right: 0;
-  bottom: 40px;
-  width: 136px;
-  height: auto;
-  border: 1px solid rgb(255 255 255 / 30%);
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 16%);
-}
-
 .home .heroFootnote {
-  flex: 1;
-  min-width: 0;
   margin: 0;
   padding-top: 24px;
   border-top: 1px solid rgb(255 255 255 / 24%);
@@ -397,8 +376,6 @@
 
 @media (max-width: 900px) {
   .home .heroLayout { padding-top: 224px; }
-  .home .heroFooter { padding-right: 0; }
-  .home .heroPortrait { position: static; flex-shrink: 0; width: 104px; }
   .home .sectionIntro { grid-template-columns: 1fr; gap: 28px; }
   .home .purposeIntro { max-width: 60ch; }
   .home .trainingAreas { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 40px; }
@@ -418,7 +395,6 @@
   .home .heroDescription { max-width: 48ch; margin-top: 24px; font-size: var(--type-lead); }
   .home .heroLink { margin-top: 24px; }
   .home .heroFootnote { font-size: var(--type-caption); }
-  .home .heroPortrait { width: 84px; }
   .home .purpose,
   .home .training { padding-block: 76px; }
   .home .sectionTitle { font-size: var(--type-h2); }
@@ -465,9 +441,11 @@
 .home .membershipIntro .label { color: #d4dee6; }
 .home .membershipIntro .pathTitle { max-width: 24ch; }
 .home .membershipIntro .body { color: #d4dee6; }
-.home .membershipIntro .secondaryAction { flex-shrink: 0; margin-top: 0; }
 .home .membershipCards { margin-top: 56px; color: var(--color-navy); }
 .home .membershipCards article { background: white; }
+.home .membershipFooter { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; align-items: start; margin-top: 20px; }
+.home .membershipFooter .membershipDisclaimer { grid-column: 1 / span 3; margin: 0; }
+.home .membershipRegistration { grid-column: 4; width: 100%; margin-top: 0; }
 .home .membershipDisclaimer { max-width: 82ch; margin: 28px 0 0; color: #d4dee6; font-size: var(--type-label); line-height: 1.8; }
 .home .register { background: white; }
 .home .registrationSteps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; margin-top: 56px; padding: 0; list-style: none; }
@@ -485,6 +463,9 @@
 .home .formNote .body { font-size: var(--type-body); }
 @media (max-width: 1100px) {
   .home .membershipIntro { align-items: flex-start; flex-direction: column; gap: 28px; }
+  .home .membershipFooter { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .home .membershipFooter .membershipDisclaimer { grid-column: 1; }
+  .home .membershipRegistration { grid-column: 2; }
   .home .formLayout { gap: 40px; }
   .home .trainingNext { align-items: flex-start; flex-direction: column; gap: 20px; }
 }
@@ -514,6 +495,9 @@
   .home .trainingCopy .sectionTitle { font-size: var(--type-h2); }
 }
 @media (max-width: 540px) {
+  .home .membershipFooter { grid-template-columns: 1fr; gap: 20px; }
+  .home .membershipRegistration { grid-column: 1; grid-row: 1; }
+  .home .membershipFooter .membershipDisclaimer { grid-column: 1; grid-row: 2; }
   .home .trainingAreas { grid-template-columns: 1fr; }
   .home .trainingArea { padding-inline: 0; }
   .home .trainingIntro { gap: 16px; }
