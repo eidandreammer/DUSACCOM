@@ -13,6 +13,14 @@ export const firebaseConfigured = Object.values(config).every(Boolean);
 // Lazy initialization keeps builds and unconfigured deployments usable.
 export function getFirebase() {
   if (!firebaseConfigured) throw new Error('Firebase is not configured.');
-  const app = getApps().length ? getApp() : initializeApp(config);
+  const app = getApps().some(app => app.name === '[DEFAULT]') ? getApp() : initializeApp(config);
+  return { auth: getAuth(app), db: getFirestore(app) };
+}
+
+// A separate guest identity protects inquiry ownership without replacing the
+// member/admin sign-in session or creating an account for every page visitor.
+export function getInquiryFirebase() {
+  if (!firebaseConfigured) throw new Error('Firebase is not configured.');
+  const app = getApps().find(app => app.name === 'inquiries') || initializeApp(config, 'inquiries');
   return { auth: getAuth(app), db: getFirestore(app) };
 }

@@ -95,7 +95,7 @@ export function EventCreator({ categories = [], event: existingEvent, onCancel, 
         {existingEvent && <label htmlFor={`${id}-registration`}>{t.registration}<select id={`${id}-registration`} name="registration" defaultValue={existingEvent.schedule?.registration || 'open'}>
           <option value="open">{t.registrationOpen}</option><option value="closed">{t.registrationClosed}</option>
         </select></label>}
-        <button className={styles.primary} disabled={busy}>{busy ? (existingEvent ? t.saving : t.publishing) : existingEvent ? t.saveEvent : t.publish}</button>
+        <button className={`${styles.primary} hover-scale`} disabled={busy}>{busy ? (existingEvent ? t.saving : t.publishing) : existingEvent ? t.saveEvent : t.publish}</button>
         {onCancel && <button type="button" className={styles.secondary} disabled={busy} onClick={onCancel}>{t.cancel}</button>}
       </fieldset>
       {error && <p role="alert" className={styles.error}>{error}</p>}

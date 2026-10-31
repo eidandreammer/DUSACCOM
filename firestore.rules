@@ -6,6 +6,10 @@ rules_version = '2';
 // string, timeZone IANA string (1..80), status confirmed, registration open/closed,
 // createdBy (immutable auth UID), createdAt (immutable server timestamp).
 // Confirmed event details are public so visitors can use the chamber calendar.
+// inquiries/{UUID}: original form fields, ownerUid, reference, SHA256 payloadHash,
+// receivedAt server timestamp, status 'new'. Create-only; owner can get a receipt.
+// inquiryLimits/{UID}: count (1..5), windowStart and updatedAt server timestamps,
+// lastSubmission UUID. Must be committed atomically with a new inquiry.
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
@@ -26,6 +30,74 @@ service cloud.firestore {
         && data.status == 'confirmed' && data.registration in ['open', 'closed']
         && data.startsAt is string && data.startsAt.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[.][0-9]{3}Z$')
         && bounded(data.createdBy, 1, 128) && data.createdAt is timestamp;
+    }
+    function uuid(value) {
+      return value is string && value.matches('^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$');
+    }
+    function futureEvent(iso) {
+      let date = iso.split('T')[0].split('-');
+      let time = iso.split('T')[1].split(':');
+      return timestamp.date(int(date[0]), int(date[1]), int(date[2]))
+        + duration.value(int(time[0]), 'h') + duration.value(int(time[1]), 'm')
+        + duration.value(int(time[2].split('[.]')[0]), 's') > request.time;
+    }
+    function openEvent(id) {
+      let event = get(/databases/$(database)/documents/events/$(id)).data;
+      return event.status == 'confirmed' && event.registration == 'open' && futureEvent(event.startsAt);
+    }
+    function validInterest(data) {
+      return data.kind == 'contact'
+        || (data.kind == 'membership' && data.interest in ['startup', 'small-business', 'corporate', 'nonprofit'])
+        || (data.kind == 'event' && (data.interest in ['business-connection', 'next-chapter', 'beyond-borders']
+          || get(/databases/$(database)/documents/events/$(data.interest)).data.status == 'confirmed'))
+        || (data.kind == 'event-registration' && openEvent(data.interest));
+    }
+    function validInquiry(data, id) {
+      return data.keys().hasAll(['kind', 'name', 'email', 'company', 'interest', 'message', 'consent', 'website', 'submissionId', 'ownerUid', 'reference', 'payloadHash', 'receivedAt', 'status'])
+        && data.keys().hasOnly(['kind', 'name', 'email', 'company', 'interest', 'message', 'consent', 'website', 'submissionId', 'ownerUid', 'reference', 'payloadHash', 'receivedAt', 'status'])
+        && uuid(id) && data.submissionId == id && data.ownerUid == request.auth.uid
+        && data.kind in ['contact', 'membership', 'event', 'event-registration']
+        && bounded(data.name, 2, 100) && data.name.matches('.*[^\\s].*')
+        && bounded(data.email, 3, 254) && data.email.matches('^[^\\s@]+@[^\\s@]+[.][^\\s@]+$')
+        && bounded(data.company, 0, 150) && bounded(data.interest, 1, 200)
+        && bounded(data.message, data.kind == 'event-registration' ? 0 : 10, 3000)
+        && data.consent == true && data.website == '' && data.status == 'new'
+        && data.reference is string && data.reference.matches('^DUS-[A-F0-9]{12}$')
+        && data.payloadHash is string && data.payloadHash.matches('^[a-f0-9]{64}$')
+        && data.receivedAt == request.time && validInterest(data);
+    }
+    function validLimit(data) {
+      return data.keys().hasAll(['count', 'windowStart', 'updatedAt', 'lastSubmission'])
+        && data.keys().hasOnly(['count', 'windowStart', 'updatedAt', 'lastSubmission'])
+        && data.count is int && data.count >= 1 && data.count <= 5
+        && data.windowStart is timestamp && data.updatedAt == request.time
+        && uuid(data.lastSubmission);
+    }
+    function pairedInquiry(data) {
+      let path = /databases/$(database)/documents/inquiries/$(data.lastSubmission);
+      return !exists(path) && getAfter(path).data.ownerUid == request.auth.uid
+        && getAfter(path).data.receivedAt == request.time;
+    }
+    match /inquiries/{id} {
+      allow get: if signedIn() && (!exists(/databases/$(database)/documents/inquiries/$(id)) || resource.data.ownerUid == request.auth.uid);
+      allow create: if signedIn() && validInquiry(request.resource.data, id)
+        && getAfter(/databases/$(database)/documents/inquiryLimits/$(request.auth.uid)).data.lastSubmission == id
+        && getAfter(/databases/$(database)/documents/inquiryLimits/$(request.auth.uid)).data.updatedAt == request.time;
+      allow list, update, delete: if false;
+    }
+    match /inquiryLimits/{uid} {
+      allow get: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn() && request.auth.uid == uid && validLimit(request.resource.data)
+        && request.resource.data.count == 1 && request.resource.data.windowStart == request.time
+        && pairedInquiry(request.resource.data);
+      allow update: if signedIn() && request.auth.uid == uid && validLimit(request.resource.data)
+        && pairedInquiry(request.resource.data)
+        && ((request.time < resource.data.windowStart + duration.value(10, 'm')
+          && request.resource.data.windowStart == resource.data.windowStart
+          && request.resource.data.count == resource.data.count + 1)
+          || (request.time >= resource.data.windowStart + duration.value(10, 'm')
+          && request.resource.data.windowStart == request.time && request.resource.data.count == 1));
+      allow list, delete: if false;
     }
     match /admins/{uid} {
       allow get: if signedIn() && request.auth.uid == uid;

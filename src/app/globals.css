@@ -495,7 +495,7 @@
   }
 
   .site-header :is(.header-information, .header-surface, .header-brand-image, .header-menu-panel, .registration-details, .header-information a, .header-controls > button, nav a, nav button, nav summary) {
-    transition: color 1s ease, background-color 1s ease, border-color 1s ease, box-shadow 1s ease, filter 1s ease !important;
+    transition: color 1s ease, background-color 1s ease, border-color 1s ease, box-shadow 1s ease, filter 1s ease, scale 1s ease-in-out !important;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -545,17 +545,30 @@
   .home-training-area:last-child { padding-right: 0; }
 }
 
-/* Both header bars let the page show through a softly blurred surface. */
-.site-header.home-header,
-.site-header.solid-header { background-color: transparent; }
+/* The hero header is glass; the scrolled header fades to solid white. */
+.site-header.home-header { background-color: transparent; }
+.site-header.solid-header { background-color: white; }
 .site-header .header-surface,
-.site-header .header-information { -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.site-header .header-information { position: relative; }
+/* Blur the bars on their own layer so the submenu can blur the hero beneath it. */
+.site-header .header-surface::before,
+.site-header .header-information::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
 .site-header.home-header .header-information { background-color: transparent; border-color: rgb(255 255 255 / 15%); }
 .site-header.home-header .header-surface { background-color: transparent; border-color: rgb(255 255 255 / 15%); }
 .site-header.solid-header .header-information { background-color: transparent; }
 .site-header.solid-header .header-surface { background-color: transparent; }
 .site-header.home-header .header-menu-panel {
-  background-color: transparent;
+  background-color: rgb(255 255 255 / 16%);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   box-shadow: 0 12px 32px rgb(12 35 52 / 20%);
 }
 .site-header .header-brand { flex-shrink: 1; min-width: 88px; }
@@ -579,3 +592,29 @@
 .header-profile:hover { box-shadow: 0 0 0 3px rgb(147 167 185 / 30%); }
 
 .page-title { font-size: var(--type-h1); }
+
+/* Individual scale composes with existing transforms, such as button lift. */
+@layer base {
+  .button.button,
+  .button.button:hover,
+  .hover-scale.hover-scale,
+  .hover-scale.hover-scale:hover {
+    transition: var(--button-hover-transitions, all 1.5s ease-in-out), scale 1s ease-in-out !important;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .button:hover:not(:disabled):not([aria-disabled='true']),
+    .hover-scale:hover:not(:disabled):not([aria-disabled='true']) { scale: 1.1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .button.button,
+    .button.button:hover,
+    .hover-scale.hover-scale,
+    .hover-scale.hover-scale:hover { scale: none !important; transition: none !important; }
+  }
+}
+
+.site-header .header-controls > .hover-scale {
+  --button-hover-transitions: color 1s ease, background-color 1s ease, border-color 1s ease, box-shadow 1s ease, filter 1s ease;
+}

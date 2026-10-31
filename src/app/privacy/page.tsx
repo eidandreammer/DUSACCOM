@@ -5,6 +5,7 @@ import { useLanguage } from '@/lib/language-context';
 
 export default function Privacy() {
   const { lang } = useLanguage();
+  const firebaseForms = process.env.NEXT_PUBLIC_INQUIRY_BACKEND === 'firestore';
 
   return (
     <>
@@ -38,12 +39,17 @@ export default function Privacy() {
                 information. DUSACCOM’s contact details are provided below if you prefer to call or email.
               </p>
               <h2>Security and abuse prevention</h2>
-              <p>
+              {firebaseForms ? <p>
+                Inquiries are stored privately in Google Cloud Firestore. When you submit a form, Firebase creates a guest
+                identifier stored in your browser, separately from your member account. It links your receipt to your browser
+                and limits repeated submissions. Your contact details are not published. Google may process technical request
+                metadata under its own policies. Contact the Chamber to request deletion of your inquiry or guest identifier.
+              </p> : <p>
                 The site uses hosting and database services to deliver the website and store inquiries. To reduce automated
                 abuse, a short-lived, hashed network identifier and a request count may be stored for rate limiting. Raw IP
                 addresses are not written to the inquiry database or application logs. The hosting provider may process
                 technical request metadata under its own policies.
-              </p>
+              </p>}
               <h2>Preferences and optional analytics</h2>
               <p>
                 Your cookie preference is saved in your browser’s local storage. Optional analytics are disabled unless you
@@ -93,12 +99,18 @@ export default function Privacy() {
                 detallan a continuación si prefieres llamarnos o escribirnos directamente.
               </p>
               <h2>Seguridad y prevención de abuso</h2>
-              <p>
+              {firebaseForms ? <p>
+                Las consultas se guardan de forma privada en Google Cloud Firestore. Al enviar un formulario, Firebase crea un
+                identificador de invitado almacenado en tu navegador, separado de tu cuenta de miembro. Este identificador
+                vincula tu comprobante con el navegador y limita envíos repetidos. Tus datos de contacto no se publican.
+                Google puede procesar metadatos técnicos conforme a sus políticas. Contacta a la Cámara para solicitar la
+                eliminación de tu consulta o identificador de invitado.
+              </p> : <p>
                 El sitio utiliza servicios de alojamiento y bases de datos seguras para operar la plataforma y resguardar las
                 solicitudes. Para reducir el tráfico automatizado indebido, se puede almacenar un identificador de red cifrado
                 temporal y un contador de peticiones para limitación de frecuencia. No se guardan direcciones IP directas en la
                 base de datos de consultas ni en los registros de aplicación.
-              </p>
+              </p>}
               <h2>Preferencias y estadísticas opcionales</h2>
               <p>
                 Tu preferencia sobre cookies se almacena localmente en tu navegador. Las estadísticas opcionales están

@@ -9,6 +9,8 @@
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1",
     "build": "node scripts/optimize-images.mjs && next build --webpack",
+    "build:firebase": "node scripts/optimize-images.mjs && node scripts/build-firebase.mjs",
+    "deploy:firebase": "npm run build:firebase && npx -y firebase-tools@latest deploy --only hosting,auth,firestore --project dusaccom-community-2026",
     "build:sites": "opennextjs-cloudflare build && node scripts/package-worker.mjs",
     "start": "next start --hostname 127.0.0.1",
     "typecheck": "tsc --noEmit",
@@ -16,7 +18,7 @@
     "db:generate": "drizzle-kit generate",
     "db:local": "wrangler d1 migrations apply DB --local",
     "preview": "opennextjs-cloudflare preview",
-    "test:rules": "npx -y firebase-tools@latest emulators:exec --only firestore --project demo-dusaccom \"node --test tests/firebase/*.test.mjs\""
+    "test:rules": "npx -y firebase-tools@latest emulators:exec --only auth,firestore --project demo-dusaccom \"node --import tsx --test tests/firebase/*.test.mjs\""
   },
   "dependencies": {
     "@opennextjs/cloudflare": "1.20.13",

@@ -50,6 +50,8 @@ The form creates confirmed events with open registration. To close registration 
 
 ## 4. Configure the website host and deploy the website changes
 
+**Current free Firebase Hosting workflow:** follow [FIREBASE_HOSTING.md](FIREBASE_HOSTING.md). It exports the website to classic Hosting and stores new form submissions in Firestore. The steps below describe the older Sites/Cloudflare hosting setup and its historical D1 records.
+
 Firebase backend deployment is complete. The updated Next.js website still needs to be deployed through your existing hosting workflow.
 
 1. Open the environment/build settings for the host serving the website.

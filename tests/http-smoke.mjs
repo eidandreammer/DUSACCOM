@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 const heroImages = JSON.parse(await readFile(new URL('../src/lib/hero-images.json', import.meta.url), 'utf8'));
 const base = process.argv[2] || 'http://127.0.0.1:8787';
-const paths = process.argv.length > 3 ? process.argv.slice(3) : ['/', '/about', '/account', '/programs', '/membership', '/contact', '/privacy', '/terms', '/resources/better-business-networking', '/resources/preparing-for-a-new-market', '/resources/a-community-in-your-corner'];
+const staticHosting = process.argv.includes('--static');
+const requestedPaths = process.argv.slice(3).filter(arg => arg !== '--static');
+const paths = requestedPaths.length ? requestedPaths : ['/', '/about', '/account', '/programs', '/membership', '/contact', '/privacy', '/terms', '/resources/better-business-networking', '/resources/preparing-for-a-new-market', '/resources/a-community-in-your-corner'];
 const assets = new Set();
 for (const path of paths) {
   const response = await fetch(`${base}${path}`);
@@ -58,7 +60,12 @@ for (const path of ['/fotos', '/enviar-fotos', '/agendar-cita']) {
 }
 assert.equal((await fetch(`${base}/sitemap.xml`)).status, 200);
 assert.equal((await fetch(`${base}/robots.txt`)).status, 200);
-assert.equal((await (await fetch(`${base}/api/health`)).json()).status, 'ok');
-const invalid = await fetch(`${base}/api/inquiries`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
-assert.equal(invalid.status, 422);
-console.log(`PASS: ${paths.length} pages, ${assets.size} local assets, metadata routes, 404, health, and server validation.`);
+if (staticHosting) {
+  assert.equal((await fetch(`${base}/api/health`)).status, 404);
+  assert.equal((await fetch(`${base}/api/inquiries`)).status, 404);
+} else {
+  assert.equal((await (await fetch(`${base}/api/health`)).json()).status, 'ok');
+  const invalid = await fetch(`${base}/api/inquiries`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
+  assert.equal(invalid.status, 422);
+}
+console.log(`PASS: ${paths.length} pages, ${assets.size} local assets, metadata routes, 404, and ${staticHosting ? 'static Firebase routing' : 'server validation'}.`);

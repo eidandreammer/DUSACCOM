@@ -117,17 +117,28 @@ export function InquiryForm({
     }
     setBusy(true);
     setResult(null);
+    let timeout: ReturnType<typeof setTimeout> | undefined;
     try {
-      const response = await fetch('/api/inquiries', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...values, kind, submissionId: submissionId.current }),
-        signal: AbortSignal.timeout(15000),
-      });
-      const payload: unknown = await response.json();
-      if (typeof payload !== 'object' || payload === null || !('ok' in payload)) throw new Error('Invalid response');
-      const data = payload as InquiryResponse;
-      if (response.ok && data.ok && typeof data.reference === 'string') {
+      let data: InquiryResponse;
+      if (process.env.NEXT_PUBLIC_INQUIRY_BACKEND === 'firestore') {
+        const { submitFirebaseInquiry } = await import('@/lib/firestore-inquiries');
+        data = await Promise.race([
+          submitFirebaseInquiry({ ...values, kind, consent: true, submissionId: submissionId.current }),
+          new Promise<never>((_, reject) => { timeout = setTimeout(() => reject(new Error('Submission timed out. Retry with the same ID.')), 15000); }),
+        ]);
+      } else {
+        const response = await fetch('/api/inquiries', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...values, kind, submissionId: submissionId.current }),
+          signal: AbortSignal.timeout(15000),
+        });
+        const payload: unknown = await response.json();
+        if (typeof payload !== 'object' || payload === null || !('ok' in payload)) throw new Error('Invalid response');
+        data = payload as InquiryResponse;
+        if (!response.ok && data.ok) throw new Error('Request failed');
+      }
+      if (data.ok && typeof data.reference === 'string') {
         setResult(data);
         setValues({ name: '', email: '', company: '', interest: initialInterest, message: '', consent: false, website: '' });
         setTouched({});
@@ -145,6 +156,7 @@ export function InquiryForm({
         message: f.errorMessage,
       });
     } finally {
+      clearTimeout(timeout);
       setBusy(false);
       requestAnimationFrame(() => resultRef.current?.focus({ preventScroll: false }));
     }
@@ -183,6 +195,7 @@ export function InquiryForm({
     >
       <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
       <p className="mt-2 mb-7 text-sm leading-7 text-slate-600">{desc}</p>
+      <noscript><p>{lang === 'es' ? 'Los formularios necesitan JavaScript. Contacto:' : 'Online forms require JavaScript. Contact:'} <a href={`mailto:${site.email}`}>{site.email}</a> · {site.phone}.</p></noscript>
 
       <fieldset disabled={busy} className="min-w-0 space-y-5">
         <legend className="sr-only">Details</legend>

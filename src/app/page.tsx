@@ -91,7 +91,7 @@ export default function Home() {
               <h2 id="membership-title" className={styles.pathTitle}>{copy.membershipTitle}</h2>
               <p className={styles.body}>{copy.membershipDescription}</p>
             </div>
-            <Link href="#register" className={styles.secondaryAction}>
+            <Link href="#register" className={`${styles.secondaryAction} hover-scale`}>
               {copy.registrationButton}
               <ArrowRight size={18} aria-hidden="true" />
             </Link>

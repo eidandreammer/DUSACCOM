@@ -138,7 +138,7 @@ export function EventCalendar({ events: initialEvents = initiatives }: { events?
         <p>{eventDescription(event, lang)}</p>
         <span className={styles.location}><MapPin size={14} aria-hidden="true" />{event.location || copy.locationTba}</span>
         {open || !dated ? (
-          <button className={styles.eventButton} aria-expanded={selectedEventId === event.id} aria-controls={`${id}-registration`}
+          <button className={`${styles.eventButton} hover-scale`} aria-expanded={selectedEventId === event.id} aria-controls={`${id}-registration`}
             onClick={click => { registrationTrigger.current = click.currentTarget; setSelectedEventId(event.id); }}>{open ? copy.register : copy.interest}</button>
         ) : <span className={styles.closed}>{copy.closed}</span>}
         {admin && remoteEvents.some(item => item.id === event.id) && <EventActions event={event}

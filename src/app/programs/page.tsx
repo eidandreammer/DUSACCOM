@@ -1,5 +1,5 @@
 'use client';
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Check } from 'lucide-react';
 import { PageIntro, Eyebrow, ProgramIcon, ButtonLink, ClosingCTA } from '@/components/ui';
@@ -9,13 +9,18 @@ import { initiatives, type Program } from '@/lib/content';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
 
+function ProgramSelection({ onChange }: { onChange: (value: string) => void }) {
+  const value = useSearchParams().get('initiative') || '';
+  const selected = initiatives.some(item => item.id === value) ? value : '';
+  useEffect(() => onChange(selected), [selected, onChange]);
+  return null;
+}
+
 function ProgramsContent() {
   const { lang } = useLanguage();
   const p = translations[lang].programsPage;
   const list = translations[lang].programsList;
-  const searchParams = useSearchParams();
-  const initiativeParam = searchParams.get('initiative') || '';
-  const selected = initiatives.some((item) => item.id === initiativeParam) ? initiativeParam : '';
+  const [selected, setSelected] = useState('');
 
   const featuresMap: Record<string, { en: string[]; es: string[] }> = {
     'business-development': {
@@ -40,6 +45,7 @@ function ProgramsContent() {
 
   return (
     <>
+      <Suspense fallback={null}><ProgramSelection onChange={setSelected} /></Suspense>
       <PageIntro
         eyebrow={p.eyebrow}
         title={p.title}
@@ -120,9 +126,5 @@ function ProgramsContent() {
 }
 
 export default function Programs() {
-  return (
-    <Suspense fallback={<div className="container py-20 text-center">Loading…</div>}>
-      <ProgramsContent />
-    </Suspense>
-  );
+  return <ProgramsContent />;
 }

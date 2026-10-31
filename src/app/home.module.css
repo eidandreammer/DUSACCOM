@@ -345,6 +345,7 @@
    that same layer, only for homepage links, without affecting shared controls. */
 @layer base {
   .home a {
+    --button-hover-transitions: color 180ms ease, background-color 180ms ease, border-color 180ms ease;
     transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease !important;
   }
 

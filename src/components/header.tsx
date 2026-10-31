@@ -105,7 +105,10 @@ export function Header() {
       const exitedHero = previousInHero === true && !inHero;
       const initialUpdate = previousInHero === undefined;
       previousInHero = inHero;
-      setOverHero(inHero);
+      const heroBounds = hero?.getBoundingClientRect();
+      // Start the white surface once 70% of the hero has scrolled above view.
+      // Keep the existing hide-on-scroll behavior tied to the full hero exit.
+      setOverHero(inHero && (!heroBounds || heroBounds.top > -heroBounds.height * 0.7));
       if (inHero || currentY <= 0 || open || dropdownOpen || profileOpen || headerHasFocus()) {
         clearHideTimer();
         setHidden(false);
@@ -184,7 +187,7 @@ export function Header() {
             <Link href="/contact" aria-current={pathname === '/contact' ? 'page' : undefined} className={navLinkClass('/contact')}>{t.nav.contact}</Link>
           </nav>
           <div className="header-controls ml-auto flex shrink-0 items-center gap-2 lg:ml-0">
-            <button onClick={toggleLang} aria-label={t.nav.shiftLangAria} className="header-language inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-bold hover:border-crimson">
+            <button onClick={toggleLang} aria-label={t.nav.shiftLangAria} className="header-language hover-scale inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-bold hover:border-crimson">
               <Globe size={16} aria-hidden="true" /><span>{lang === 'en' ? 'EN / ES' : 'ES / EN'}</span>
             </button>
             <button ref={toggle} className="icon-button lg:hidden" aria-label={open ? t.nav.closeMenu : t.nav.openMenu} aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen(!open)}>{open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}</button>

@@ -1,5 +1,5 @@
 'use client';
-import { Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { PageIntro, Eyebrow, MembershipCards, ClosingCTA } from '@/components/ui';
 import { InquiryForm } from '@/components/inquiry-form';
@@ -7,15 +7,21 @@ import { tiers } from '@/lib/content';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
 
+function MembershipSelection({ onChange }: { onChange: (value: string) => void }) {
+  const value = useSearchParams().get('tier') || '';
+  const selected = tiers.some(tier => tier.id === value) ? value : '';
+  useEffect(() => onChange(selected), [selected, onChange]);
+  return null;
+}
+
 function MembershipContent() {
   const { lang } = useLanguage();
   const m = translations[lang].membershipPage;
-  const searchParams = useSearchParams();
-  const tierParam = searchParams.get('tier') || '';
-  const selected = tiers.some((tier) => tier.id === tierParam) ? tierParam : '';
+  const [selected, setSelected] = useState('');
 
   return (
     <>
+      <Suspense fallback={null}><MembershipSelection onChange={setSelected} /></Suspense>
       <PageIntro
         eyebrow={m.eyebrow}
         title={m.title}
@@ -90,9 +96,5 @@ function MembershipContent() {
 }
 
 export default function Membership() {
-  return (
-    <Suspense fallback={<div className="container py-20 text-center">Loading…</div>}>
-      <MembershipContent />
-    </Suspense>
-  );
+  return <MembershipContent />;
 }
