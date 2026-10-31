@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, ChevronDown, Globe, Mail, Menu, Phone, X } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, ChevronUp, Globe, Mail, Menu, Phone, X } from 'lucide-react';
 import { ProfileMenu } from './profile-menu';
 import { site } from '@/lib/site';
 import { useLanguage } from '@/lib/language-context';
@@ -35,6 +35,7 @@ export function Header() {
   const t = translations[lang];
   const [open, setOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const RegistrationChevron = dropdownOpen ? ChevronUp : ChevronDown;
   const [profileOpen, setProfileOpen] = useState(false);
   const toggle = useRef<HTMLButtonElement>(null);
   const registrationToggle = useRef<HTMLButtonElement>(null);
@@ -174,8 +175,8 @@ export function Header() {
             <div ref={registration} className="relative" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setDropdownOpen(false); }}>
               <div className="flex items-center">
                 <a href="/#register-form" onClick={closeNavigation} className={navLinkClass(registrationActive ? pathname : '/membership')}>{t.nav.registration}</a>
-                <button ref={registrationToggle} className="header-nav-link flex size-11 items-center justify-center" aria-label={`${t.nav.registration}: ${t.nav.quickLinks}`} aria-expanded={dropdownOpen} aria-controls="registration-submenu" onClick={() => setDropdownOpen(!dropdownOpen)}>
-                  <ChevronDown size={16} aria-hidden="true" className={dropdownOpen ? 'rotate-180' : ''} />
+                <button type="button" ref={registrationToggle} className="header-nav-link flex size-11 items-center justify-center" aria-label={`${t.nav.registration}: ${t.nav.quickLinks}`} aria-expanded={dropdownOpen} aria-controls="registration-submenu" onClick={() => setDropdownOpen(previous => !previous)}>
+                  <RegistrationChevron size={16} aria-hidden="true" className="pointer-events-none block shrink-0" />
                 </button>
               </div>
               <div id="registration-submenu" hidden={!dropdownOpen} className="header-menu-panel absolute top-full right-0 w-80 rounded-lg border p-2">
