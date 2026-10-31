@@ -7,6 +7,7 @@ import { useLanguage } from '@/lib/language-context';
 import { getFirebase } from '@/lib/firebase';
 import { beginAccountDeletion, changeAccountEmail, changeAccountName, changeAccountPassword, finishAccountDeletion, requestDelegateDeletion } from '@/lib/account-management';
 import { accountSettingsCopy, settingsError } from '@/lib/account-settings-copy';
+import { teamCopy } from '@/lib/team-copy';
 import { useAccountDeletion } from '@/lib/use-account-deletion';
 import { ConfirmationDialog } from './confirmation-dialog';
 import { HoldToConfirm } from './hold-to-confirm';
@@ -14,7 +15,7 @@ import accountStyles from './account.module.css';
 import styles from './account-settings.module.css';
 
 export function AccountSettings({ onDeleted }: { onDeleted: () => void }) {
-  const { user, parentUid, accountEmail, refreshAccount } = useAuth();
+  const { user, parentUid, accountEmail, canManageAdmins, refreshAccount } = useAuth();
   const { lang } = useLanguage();
   const t = accountSettingsCopy[lang];
   const deletionEnabled = useAccountDeletion();
@@ -117,6 +118,7 @@ export function AccountSettings({ onDeleted }: { onDeleted: () => void }) {
         </fieldset>
       </form>}
     </details>
+    {canManageAdmins && <a className={`${accountStyles.primary} ${styles.teamLink}`} href="#administrator-team">{teamCopy[lang].manage}</a>}
     {requestStatus === 'pending' || requestStatus === 'approved' ? <p className={styles.notice} role="status">{t.pending}</p> : <>
       {requestStatus === 'declined' && <p className={styles.notice}>{t.declined}</p>}
       <button type="button" className={styles.danger} aria-haspopup="dialog" disabled={busy} onClick={() => { setError(''); setConfirmation(''); setConfirming(true); }}>{parentUid ? t.requestDeletion : t.deleteAccount}</button>

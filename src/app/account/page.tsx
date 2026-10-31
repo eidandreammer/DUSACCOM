@@ -62,7 +62,6 @@ export default function AccountPage() {
       {!firebaseConfigured ? <p role="status">{t.unavailable}</p> : loading ? <p role="status">{t.working}</p> : user ? <>
         <p>{t.signedIn} <strong>{user.displayName || accountEmail}</strong></p>
         <span className={styles.badge}>{isAdmin ? canManageAdmins ? t.admin : teamCopy[lang].delegated : t.member}</span>
-        {canManageAdmins && <a className={styles.secondary} href="#administrator-team">{teamCopy[lang].manage}</a>}
         <Link className={styles.primary} href="/#events">{t.calendar}</Link>
         <button type="button" className={styles.secondary} disabled={busy} onClick={logout}>{t.signOut}</button>
       </> : <>

@@ -3,6 +3,7 @@
 .panel details { margin-top: 20px; padding: 18px; border: 1px solid #d5dce1; scroll-margin-top: 176px; }
 .panel summary { cursor: pointer; font-weight: 600; min-height: 32px; }
 .panel form { margin-top: 20px; }
+.teamLink { margin-top: 20px; }
 .hint { margin-top: 12px; color: #465766; font-size: var(--type-label); line-height: 1.7; }
 .notice { margin-top: 20px; }
 .danger { display: block; min-height: 44px; padding: 12px 18px; border: 1px solid #bd3042; border-radius: 8px; color: #a32537; font-weight: 600; margin-top: 24px; }

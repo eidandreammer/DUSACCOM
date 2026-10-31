@@ -1,6 +1,6 @@
 # Account management
 
-The profile menu opens profile editing, password changes, verified email changes, administrator teams for eligible parents, and account deletion. Actions have 12px spacing and at least 44px height. Password and email changes require the current password. Email changes take effect only after the new address is verified. Existing delegates keep their current shared email and username when a parent changes email; delegates cannot independently change the shared login address.
+The signed-in profile menu contains only Account settings and Sign out, with 12px spacing and at least 44px height. Account settings contains profile editing, password changes, verified email changes, the administrator-team management entry for eligible parents, and account deletion. Password and email changes require the current password. Email changes take effect only after the new address is verified. Existing delegates keep their current shared email and username when a parent changes email; delegates cannot independently change the shared login address.
 
 The Heidy portrait and its reserved layout space have been removed from the Nonprofit card. Start Registration remains below that card.
 
