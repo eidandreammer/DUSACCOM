@@ -56,7 +56,7 @@
   flex-direction: column;
   justify-content: center;
   gap: 64px;
-  padding-block: clamp(232px, 26vh, 284px) 40px;
+  padding-block: clamp(196px, 22vh, 248px) 40px;
 }
 
 .home .heroCopy {
@@ -124,18 +124,28 @@
 }
 
 .home .heroLink {
-  margin-top: 30px;
+  min-height: 52px;
+  padding: 13px 22px;
+  border: 1px solid rgb(255 255 255 / 45%);
+  border-radius: var(--radius-control);
+  corner-shape: squircle;
+  background: var(--color-navy-deep);
   color: white;
 }
 
-.home .heroLink:hover {
-  color: #f8cbd2;
+.home .heroFooter { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; padding-top: 24px; border-top: 1px solid rgb(255 255 255 / 24%); }
+.home .heroActions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 16px 24px; }
+.home .heroActions a { margin: 0; }
+
+.home .heroLink:is(:hover, :focus-visible) {
+  background: #1c435f;
+  border-color: white;
+  color: white;
 }
 
 .home .heroFootnote {
   margin: 0;
-  padding-top: 24px;
-  border-top: 1px solid rgb(255 255 255 / 24%);
+  max-width: 42ch;
   color: #d9e2e9;
   font-size: var(--type-caption);
   line-height: 1.6;
@@ -149,7 +159,7 @@
 }
 
 .home .purpose {
-  scroll-margin-top: 176px;
+  scroll-margin-top: 0;
   background: white;
 }
 
@@ -244,7 +254,8 @@
   margin-top: auto;
   padding: 13px 22px;
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
+  corner-shape: squircle;
 }
 
 .home .primaryAction {
@@ -375,7 +386,7 @@
 }
 
 @media (max-width: 900px) {
-  .home .heroLayout { padding-top: 224px; }
+  .home .heroLayout { padding-top: 188px; }
   .home .sectionIntro { grid-template-columns: 1fr; gap: 28px; }
   .home .purposeIntro { max-width: 60ch; }
   .home .trainingAreas { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 40px; }
@@ -388,12 +399,13 @@
   .home .container { width: calc(100% - 40px); }
   .home .label { font-size: var(--type-caption); margin-bottom: 20px; }
   .home .body { font-size: var(--type-body); line-height: 1.75; }
-  .home .heroLayout { gap: 48px; padding-block: 216px 28px; }
+  .home .heroLayout { gap: 48px; padding-block: 180px 28px; }
   .home .heroCopy { max-width: 600px; margin-left: 0; }
   .home .heroTitle { font-size: var(--type-h1); }
   .home .statement { max-width: 25ch; margin-top: 24px; font-size: var(--type-h3); }
   .home .heroDescription { max-width: 48ch; margin-top: 24px; font-size: var(--type-lead); }
-  .home .heroLink { margin-top: 24px; }
+  .home .heroFooter { flex-direction: column; align-items: stretch; gap: 24px; }
+  .home .heroFootnote { max-width: none; }
   .home .heroFootnote { font-size: var(--type-caption); }
   .home .purpose,
   .home .training { padding-block: 76px; }
@@ -431,7 +443,7 @@
 
 /* Landing-page sections share the existing visual system and header offsets. */
 .home :is(.about, .register, .registrationForm) { padding-block: 116px; }
-.home section[id] { scroll-margin-top: 176px; }
+.home section[id] { scroll-margin-top: 0; }
 .home .about { background: white; }
 .home .purpose { background: #f5f6f7; }
 .home .aboutLink { margin-top: 24px; color: var(--color-crimson); }
@@ -486,12 +498,12 @@
 .home .brandRed { color: #f45b70; }
 .home .trainingIntro { flex-direction: row; align-items: flex-start; }
 .home .trainingCopy { min-width: 0; }
-.home .infotepLogo { flex-shrink: 0; width: 180px; height: 180px; object-fit: contain; border-radius: 8px; }
+.home .infotepLogo { flex-shrink: 0; width: 252px; height: 252px; object-fit: contain; }
 .home .trainingAreas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .home .trainingArea { padding-inline: 40px; }
 @media (max-width: 760px) {
   .home .trainingIntro { gap: 24px; }
-  .home .infotepLogo { width: 112px; height: 112px; }
+  .home .infotepLogo { width: 156.8px; height: 156.8px; }
   .home .trainingCopy .sectionTitle { font-size: var(--type-h2); }
 }
 @media (max-width: 540px) {
@@ -501,7 +513,7 @@
   .home .trainingAreas { grid-template-columns: 1fr; }
   .home .trainingArea { padding-inline: 0; }
   .home .trainingIntro { gap: 16px; }
-  .home .infotepLogo { width: 88px; height: 88px; }
+  .home .infotepLogo { width: 123.2px; height: 123.2px; }
 }
 
 .home .heroSlides { position: absolute; inset: 0; z-index: -2; overflow: hidden; }

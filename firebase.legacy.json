@@ -1,0 +1,20 @@
+{
+  "hosting": {
+    "site": "dusaccom-community-2026",
+    "public": "hosting-legacy",
+    "ignore": ["**/.*"],
+    "headers": [
+      { "regex": "^/__reset-password(/.*)?$", "headers": [
+        { "key": "Clear-Site-Data", "value": "\"cache\"" },
+        { "key": "Cache-Control", "value": "no-store" }
+      ] },
+      { "source": "/__/firebase/init.json", "headers": [
+        { "key": "Cache-Control", "value": "no-store" }
+      ] }
+    ],
+    "redirects": [
+      { "source": "/", "destination": "https://dusaccom.web.app/", "type": 301 },
+      { "regex": "^/(?P<path>[^_].*|_[^_].*|_)$", "destination": "https://dusaccom.web.app/:path", "type": 301 }
+    ]
+  }
+}

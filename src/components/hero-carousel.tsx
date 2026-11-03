@@ -1,11 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type MouseEvent, type ReactNode } from 'react';
 import images from '@/lib/hero-images.json';
 import styles from '@/app/home.module.css';
 
-export function HeroCarousel() {
+export function HeroCarousel({ children }: { children: ReactNode }) {
   const [active, setActive] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
 
@@ -21,12 +21,22 @@ export function HeroCarousel() {
     if (reducedMotion) return;
     const timer = setInterval(() => {
       if (!document.hidden) setActive(previous => (previous + 1) % images.length);
-    }, 30000);
+    }, 25000);
     return () => clearInterval(timer);
-  }, [reducedMotion]);
+  }, [active, reducedMotion]);
 
-  return <div className={styles.heroSlides} aria-hidden="true">
-    {images.map(({ name }, index) => <Image key={name} src={`/assets/hero-${name}.jpg`} alt="" fill sizes="100vw" priority={index === 0}
-      loading={index === 0 ? undefined : 'eager'} className={`${styles.heroImage} ${index === active ? styles.heroImageActive : ''}`} />)}
-  </div>;
+  const advance = () => setActive(previous => (previous + 1) % images.length);
+  function onHeroClick(event: MouseEvent<HTMLElement>) {
+    // Keep navigation, controls, and text selection independent of the photos.
+    if ((event.target as HTMLElement).closest('a, button, input, select, textarea, [role="button"]') || window.getSelection()?.toString()) return;
+    advance();
+  }
+
+  return <section className={`home-hero ${styles.hero}`} aria-labelledby="about-title" onClick={onHeroClick}>
+    <div className={styles.heroSlides} aria-hidden="true">
+      {images.map(({ name }, index) => <Image key={name} src={`/assets/hero-${name}.jpg`} alt="" fill sizes="100vw" priority={index === 0}
+        loading={index === 0 ? undefined : 'eager'} className={`${styles.heroImage} ${index === active ? styles.heroImageActive : ''}`} />)}
+    </div>
+    {children}
+  </section>;
 }

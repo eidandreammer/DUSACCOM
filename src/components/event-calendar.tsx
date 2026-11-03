@@ -152,7 +152,7 @@ export function EventCalendar({ events: initialEvents = initiatives }: { events?
       weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short', timeZone: event.schedule!.timeZone,
     }).format(new Date(event.schedule!.startsAt)) : copy.tba;
     return (
-      <article key={event.id} className={styles.eventCard}>
+      <article key={event.id} className={`surface ${styles.eventCard}`}>
         <span className={styles.eventDate}><CalendarDays size={15} aria-hidden="true" />{dated ? <time dateTime={event.schedule!.startsAt}>{formatted}</time> : formatted}</span>
         <h3>{eventTitle(event, lang)}</h3>
         <p>{eventDescription(event, lang)}</p>
@@ -182,7 +182,7 @@ export function EventCalendar({ events: initialEvents = initiatives }: { events?
           <p>{copy.description}</p>
         </div>
         <div className={styles.layout}>
-          <div className={styles.calendar} aria-label={copy.calendarLabel}>
+          <div className={`surface ${styles.calendar}`} aria-label={copy.calendarLabel}>
             <div className={styles.monthBar}>
               <h3 aria-live="polite">{monthLabel}</h3>
               <div>

@@ -15,7 +15,7 @@ Consequently, there is no existing third-party email service or SMTP authorizati
 - All four existing account-management templates have sender display name `DUSACCOM team` and Reply-To `dusaccom1@gmail.com`.
 - The website uses `dusaccom.web.app` as its Firebase authentication domain.
 - Password-reset requests set `https://dusaccom.web.app/account/` as their continue URL and use the visitor's selected language.
-- The old website redirects to the new address. Firebase's reserved authentication handlers remain available for previously issued links.
+- The old website redirects public pages to the new address. Its Firebase reserved namespace stays on the original host, including the configuration needed by previously issued authentication links (see the November 2 repair below).
 - A production check found no old website or authentication hostnames in stored Firestore document fields.
 
 ## Pending Firebase restriction
@@ -46,3 +46,23 @@ Production build, TypeScript, and all 32 application tests passed. Live HTTP che
 The deployment command targets the `dusaccom` alias, which resolves to the existing project number. The build accepts that number only when it matches the project number in the configured Firebase web App ID. Keep the canonical `projectId` from the SDK configuration for the Firestore client: replacing it with an alias or number does not provide a working Firestore database connection. The SDK configuration is separate from the public brand.
 
 Do not report the email request as complete or push/deploy it as a finished branding change while the generated emails still expose the prior backend name. Custom email delivery needs an authenticated SMTP or transactional-email service, or Firebase support must unlock the managed email settings. Previously delivered messages cannot be rewritten by changing future templates.
+
+## Password-reset repair — November 2, 2026
+
+A valid reset link reproduced the blank “Error encountered” page. The legacy site's catch-all redirect also matched `/__/firebase/init.json`. The auth HTML itself returned HTTP 200, but its configuration request redirected to `dusaccom.web.app`; the browser blocked that cross-origin request. Checking only the handler's HTTP status had missed this failure.
+
+`firebase.legacy.json` now redirects public paths while excluding paths starting with `/__`. Firebase serves the auth handler, scripts, and SDK configuration on their original origin. Deploy this separate legacy-host configuration with `npm run deploy:legacy-auth`; the normal website deployment continues to use `firebase.json`. Keep both configurations when maintaining the two Hosting sites. No email template, callback URL, sender service, or user password needs to be changed for this repair.
+
+The repair was deployed and verified on both legacy Hosting domains. `node tests/legacy-auth-smoke.mjs` checks the JSON configuration without following redirects, the auth HTML and scripts, and public-page redirects with query strings. The application tests also guard the reserved-path exclusion.
+
+A browser opened a real generated reset action link for a temporary production QA account, submitted a new password, displayed Firebase's success message, and signed in with the new password. Reopening the used link displayed its expired/used explanation. No email was sent; the temporary account was deleted through the admin API afterward. Existing accounts were untouched. This fixes password resets, not the pending email-branding restriction described above.
+
+## Recovery for browsers retaining the old redirect
+
+The user subsequently confirmed that a new reset email failed in the regular browser but opened the password form in a private window. A cached permanent redirect for `/__/firebase/init.json` can survive the server repair. New emails still use that same bootstrap URL, so requesting another email alone does not clear the problem.
+
+Open https://dusaccom-community-2026.firebaseapp.com/__reset-password/ in the affected regular browser, then reopen the full link from the latest reset email. This static recovery page sends `Clear-Site-Data: "cache"` and `Cache-Control: no-store`. It refreshes cached files for that old origin; it does not request clearing cookies, local storage, IndexedDB, or saved sign-in state. The bootstrap JSON also uses `no-store` going forward. This recovery path intentionally stays on the old host instead of redirecting to the main website.
+
+Firebase's reserved `/__/auth/action` response ignores custom Hosting response headers, so the cache refresh lives on a separate static page. The callback URL remains locked by `EMAIL_TEMPLATE_UPDATE_NOT_ALLOWED`; no email delivery or account settings were changed for this recovery.
+
+A preview test reproduced the original blank error with a real redirect and a valid temporary-account reset code. After repairing the server in the same browser session, the cached redirect still caused the error. Visiting the refresh page removed it; that same session then completed the password reset and signed in with the new password. Cookie and local-storage markers survived the cache refresh. The temporary account was deleted, and no email was sent. Production HTTP checks cover the recovery page and `no-store` bootstrap configuration on both legacy domains.

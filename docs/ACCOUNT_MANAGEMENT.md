@@ -28,6 +28,8 @@ The footer's **My account** section contains two plain text links, **Account set
 
 ## Deployment status and activation
 
+Local Next.js development and standalone servers forward `/api/account-management/{action}` to the deployed Firebase account API through a server route. The route checks the browser's same-origin request, forwards its Firebase ID token, and leaves authentication, parent ownership, and deletion protection checks to the trusted function. Local development therefore manages the Firebase project configured in the web SDK, including its real accounts. No Admin SDK credentials are needed locally. Reload `/account` after updating to recheck availability. Firebase Hosting continues to use its function rewrite; the static build omits Next.js API routes.
+
 As of October 31, 2026, project `969342544667` is linked to the user's active billing account and uses Blaze. The account API and its Hosting rewrite are deployed, and `client.permissions.disabledUserDeletion` is enabled. The authenticated availability endpoint returns `enabled: true`, enabling deletion and approval controls on the site. Reload an account page that was opened before activation.
 
 The dedicated `dusaccom-accounts@969342544667.iam.gserviceaccount.com` runtime service account has Firebase Authentication Admin and Cloud Datastore User roles. Its actual IAM email uses the project number, so the function specifies the full email; the `dusaccom-accounts@` shorthand incorrectly expands to a different identity. No service-account keys were created. The function uses Application Default Credentials, runs in `us-east4`, and has zero minimum instances and one maximum instance. The Functions artifact repository deletes build images older than one day.

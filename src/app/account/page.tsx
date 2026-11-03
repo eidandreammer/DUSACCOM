@@ -56,7 +56,7 @@ export default function AccountPage() {
     finally { setBusy(false); }
   }
   return <section className={styles.page}>
-    <div className={styles.panel}>
+    <div className={`surface ${styles.panel}`}>
       <h1>{t.title}</h1><p>{t.description}</p>
       {!firebaseConfigured ? <p role="status">{t.unavailable}</p> : loading ? <p role="status">{t.working}</p> : user ? <>
         <p>{t.signedIn} <strong>{user.displayName || accountEmail}</strong></p>

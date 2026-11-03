@@ -13,6 +13,7 @@
     "deploy:firebase": "npm run build:firebase && node scripts/deploy-firebase.mjs",
     "deploy:hosting-only": "npm run build:firebase && node scripts/deploy-firebase.mjs --hosting-only",
     "deploy:accounts": "npm ci --prefix functions && node scripts/deploy-firebase.mjs --accounts",
+    "deploy:legacy-auth": "npx --yes --package=firebase-tools@latest -- firebase deploy --only hosting --project dusaccom --config firebase.legacy.json",
     "build:sites": "opennextjs-cloudflare build && node scripts/package-worker.mjs",
     "start": "next start --hostname 127.0.0.1",
     "typecheck": "tsc --noEmit",

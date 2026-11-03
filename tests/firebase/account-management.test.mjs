@@ -74,7 +74,7 @@ test('deletion requests are private and every client write or approval is denied
   } finally { await environment.cleanup(); }
 });
 
-test('the HTTPS function verifies real emulator tokens and deletes only a parent’s delegate', async () => {
+test('the local account proxy and HTTPS function verify real tokens and delete only a parent’s delegate', async () => {
   assert.ok(process.env.FIREBASE_AUTH_EMULATOR_HOST, 'Local emulators only.');
   assert.ok(process.env.ACCOUNT_API_EMULATOR_URL, 'Run test:rules with the Functions emulator.');
   const require = createRequire(new URL('../../functions/package.json', import.meta.url));
@@ -91,7 +91,14 @@ test('the HTTPS function verifies real emulator tokens and deletes only a parent
   const parent = await adminAuth.createUser({ email: `api-parent-${crypto.randomUUID()}@gmail.com`, password });
   const delegate = await adminAuth.createUser({ email: `api-child-${crypto.randomUUID()}@gmail.com`, password });
   const member = await adminAuth.createUser({ email: `api-member-${crypto.randomUUID()}@gmail.com`, password });
-  const call = async (path, token, body = {}) => fetch(`${process.env.ACCOUNT_API_EMULATOR_URL}/${path}`, { method: 'POST', headers: { Origin: 'https://dusaccom.web.app', Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const { createAccountProxy } = await import('../../src/server/account-proxy.ts');
+  const proxy = createAccountProxy((url, options) => {
+    const action = new URL(url).pathname.split('/').pop();
+    return fetch(`${process.env.ACCOUNT_API_EMULATOR_URL}/${action}`, options);
+  });
+  const call = async (path, token, body = {}) => proxy(new Request(`http://127.0.0.1:3000/api/account-management/${path}`, {
+    method: 'POST', headers: { Origin: 'http://127.0.0.1:3000', Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+  }));
   try {
     await db.doc(`admins/${parent.uid}`).set({ enabled: true });
     await db.doc(`admins/${delegate.uid}`).set({ enabled: true, parentUid: parent.uid });
@@ -103,7 +110,9 @@ test('the HTTPS function verifies real emulator tokens and deletes only a parent
     assert.equal((await call('begin-self-deletion', childToken)).status, 403);
     assert.equal((await db.doc(`accountDeletionRequests/${delegate.uid}`).get()).data().parentUid, parent.uid);
     const parentToken = await (await signInWithEmailAndPassword(auth, parent.email, password)).user.getIdToken();
+    assert.deepEqual(await (await call('availability', parentToken)).json(), { enabled: true });
     assert.equal((await call('delete-delegate', parentToken, { targetUid: member.uid })).status, 403);
+    await db.doc(`admins/${delegate.uid}`).update({ enabled: false });
     assert.equal((await call('delete-delegate', parentToken, { targetUid: delegate.uid })).status, 200);
     await assert.rejects(adminAuth.getUser(delegate.uid), { code: 'auth/user-not-found' });
     assert.equal((await db.doc(`admins/${delegate.uid}`).get()).exists, false);

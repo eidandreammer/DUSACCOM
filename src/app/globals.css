@@ -12,6 +12,8 @@
 }
 
 :root {
+  --radius-control: 16px;
+  --radius-surface: 28px;
   --type-caption: 0.8125rem;
   --type-label: 0.875rem;
   --type-body: 1rem;
@@ -25,11 +27,10 @@
 @layer base {
   * {
     box-sizing: border-box;
-    --radius: 8px;
   }
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 110px;
+    scroll-padding-top: 120px;
   }
   body {
     margin: 0;
@@ -59,32 +60,38 @@
   :focus-visible {
     outline: 3px solid #287ab6;
     outline-offset: 4px;
-    border-radius: 8px !important;
   }
   ::selection {
     background: #f3d7dd;
     color: #102c41;
   }
 
-  /* ── Everywhere border radius 8px ───────────────────────────── */
+  /* Native continuous corners retain a rounded fallback in older browsers.
+     Full-width section backgrounds and circular profile controls keep their shape. */
   button:not(.header-profile),
   .button,
   .button-outline,
   .button-white,
   .icon-button,
   .lang-toggle,
-  input,
+  input:not([type="checkbox"]):not([type="radio"]),
   select,
   textarea,
   .form-field,
-  article,
   details,
   dialog,
-  .flag,
   .hero-photo,
   .hero-photo img,
   [class*="rounded"]:not([class*="rounded-full"]) {
-    border-radius: 8px !important;
+    border-radius: var(--radius-control) !important;
+    corner-shape: squircle;
+  }
+  .surface,
+  dialog,
+  form[class*="rounded"],
+  section[class*="rounded"] {
+    border-radius: var(--radius-surface) !important;
+    corner-shape: squircle;
   }
 
   /* ── All hover effects spend 1.5 seconds ─────────────────────── */
@@ -144,7 +151,7 @@
     gap: 24px;
     padding: 14px 24px;
     border: 1px solid var(--color-crimson);
-    border-radius: 8px !important;
+    border-radius: var(--radius-control) !important;
     color: white;
     background: var(--color-crimson);
     font-size: var(--type-label);
@@ -199,7 +206,7 @@
     width: 44px;
     align-items: center;
     justify-content: center;
-    border-radius: 8px !important;
+    border-radius: var(--radius-control) !important;
     transition: all 1.5s ease-in-out !important;
   }
   .icon-button:hover {
@@ -207,7 +214,7 @@
   }
 
   .lang-toggle {
-    border-radius: 8px !important;
+    border-radius: var(--radius-control) !important;
     transition: all 1.5s ease-in-out !important;
   }
 
@@ -561,7 +568,7 @@
   backdrop-filter: blur(14px);
 }
 .site-header.home-header .header-information { background-color: transparent; border-color: rgb(255 255 255 / 15%); }
-.site-header.home-header .header-surface { background-color: transparent; border-color: rgb(255 255 255 / 15%); }
+.site-header.home-header .header-surface { background-color: rgb(12 35 52 / 22%); border-color: rgb(255 255 255 / 15%); }
 .site-header.solid-header .header-information { background-color: transparent; }
 .site-header.solid-header .header-surface { background-color: transparent; }
 .site-header.home-header .header-menu-panel {
@@ -572,6 +579,8 @@
 }
 .site-header .header-brand { flex-shrink: 1; min-width: 88px; }
 .header-language { font-size: var(--type-label); }
+.header-infotep-mark { display: inline-flex; align-items: center; }
+.header-infotep-image { width: 125px; height: 30px; object-fit: contain; }
 .header-profile {
   display: inline-flex;
   align-items: center;

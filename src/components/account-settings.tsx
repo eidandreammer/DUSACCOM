@@ -84,7 +84,7 @@ export function AccountSettings({ onDeleted }: { onDeleted: () => void }) {
     finally { setBusy(false); }
   }
   const currentPassword = <label htmlFor={`${id}-${section}-current-password`}>{t.currentPassword}<input id={`${id}-${section}-current-password`} name="currentPassword" type="password" autoComplete="current-password" required maxLength={128} /></label>;
-  return <section ref={panel} id="account-settings" className={styles.panel} aria-labelledby={`${id}-title`}>
+  return <section ref={panel} id="account-settings" className={`surface ${styles.panel}`} aria-labelledby={`${id}-title`}>
     <h2 id={`${id}-title`}>{t.title}</h2>
     <details open={section === 'profile'}>
       <summary>{t.profile}</summary>

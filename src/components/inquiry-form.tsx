@@ -210,6 +210,7 @@ export function InquiryForm({
   return (<>
     <form
       ref={form}
+      id={kind === 'membership' ? 'membership-application' : undefined}
       method="post"
       action="/api/inquiries"
       onSubmit={submit}

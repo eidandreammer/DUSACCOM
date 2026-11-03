@@ -57,6 +57,12 @@ node tests/http-smoke.mjs https://dusaccom.web.app --static
 
 This checks public pages, images/scripts, metadata, 404 behavior, and that legacy server APIs remain absent. Account deletion uses the protected `/api/account-management/**` function route. Other Auth and Firestore operations run through their Firebase SDKs. Use the usage dashboards to monitor the active Blaze project.
 
+## Legacy authentication host
+
+The legacy host has a separate redirect-only configuration in `firebase.legacy.json`. Deploy it with `npm run deploy:legacy-auth` and verify it with `node tests/legacy-auth-smoke.mjs`. Its redirects must exclude `/__` paths: Firebase's email action handler loads `/__/firebase/init.json` on the same origin. Redirecting that configuration across domains breaks password-reset links even when the auth HTML returns HTTP 200. See [password-reset repair](FIREBASE_EMAIL_BRANDING.md#password-reset-repair--november-2-2026).
+
+The static `/__reset-password/` recovery page also stays on the legacy origin. It clears only HTTP cache through `Clear-Site-Data: "cache"`, allowing a regular browser to discard a permanent redirect saved before the repair. Open it in the affected browser, then reopen the latest reset email link. Do not redirect this page to the main site: clearing the main origin would leave the old origin's cached redirect intact.
+
 ## Connect an owned custom domain
 
 A domain is optional. The `.web.app` address is free. Buying or renewing a domain is not part of this deployment; use only a domain you already own and control.

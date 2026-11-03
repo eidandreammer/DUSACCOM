@@ -26,24 +26,29 @@ export default function Home() {
   return (
     <div className={styles.home}>
       {/* Keep this hook: the header tracks the hero's visibility. */}
-      <section className={`home-hero ${styles.hero}`} aria-labelledby="about-title">
-        <HeroCarousel />
+      <HeroCarousel>
         <div className={`${styles.container} ${styles.heroLayout}`}>
-          <div className={styles.heroCopy}>
+          <div className={`surface ${styles.heroCopy}`}>
             <p className={styles.label}>{copy.aboutEyebrow}</p>
             <h1 id="about-title" className={styles.heroTitle}>
               <span className={styles.heroBrand} aria-label="DUSACCOM"><span className={styles.brandBlue}>DUS</span><span className={styles.brandWhite}>AC</span><span className={styles.brandRed}>COM</span></span>
             </h1>
             <p className={styles.statement}>{copy.aboutStatement}</p>
             <p className={`${styles.body} ${styles.heroDescription}`}>{t.aboutPage.description}</p>
-            <a href="#mission" className={`${styles.link} ${styles.heroLink}`}>
-              {copy.discoverPurpose}
-              <ArrowDown size={18} aria-hidden="true" />
-            </a>
           </div>
-          <p className={styles.heroFootnote}>{copy.aboutFootnote}</p>
+          <div className={styles.heroFooter}>
+            <p className={styles.heroFootnote}>{copy.aboutFootnote}</p>
+            <div className={styles.heroActions}>
+              <a href="#membership-application" className={`${styles.primaryAction} hover-scale`}>
+                {copy.startMembership}<ArrowRight size={18} aria-hidden="true" />
+              </a>
+              <a href="#mission" className={`${styles.link} ${styles.heroLink}`}>
+                {copy.discoverPurpose}<ArrowDown size={18} aria-hidden="true" />
+              </a>
+            </div>
+          </div>
         </div>
-      </section>
+      </HeroCarousel>
 
       <section id="about" className={styles.about} aria-labelledby="about-section-title">
         <div className={`${styles.container} ${styles.sectionIntro}`}>
@@ -138,7 +143,7 @@ export default function Home() {
               <h2 id="training-title" className={styles.sectionTitle}>{copy.trainingTitle}</h2>
               <p className={styles.body}>{copy.trainingDescription}</p>
             </div>
-            <Image src="/imgs/INFOTEP logos's.png" alt="INFOTEP" width={800} height={800} sizes="(max-width: 760px) 112px, 180px" className={styles.infotepLogo} />
+            <Image src="/imgs/INFOTEP logos's.png" alt="INFOTEP" width={2248} height={2048} sizes="(max-width: 540px) 123.2px, (max-width: 760px) 156.8px, 252px" className={styles.infotepLogo} />
           </div>
           <div className={styles.trainingAreas}>
             {copy.trainingAreas.map((area) => (
@@ -165,7 +170,7 @@ export default function Home() {
             <p className={`${styles.label} ${styles.accent}`}>{copy.registrationFormEyebrow}</p>
             <h2 id="registration-form-title" className={styles.sectionTitle}>{t.membershipPage.applyTitle}</h2>
             <p className={`${styles.body} ${styles.formDescription}`}>{t.membershipPage.applyDesc}</p>
-            <div className={styles.formNote}>
+            <div className={`surface ${styles.formNote}`}>
               <h3 className={styles.ideaTitle}>{t.membershipPage.applyBoxTitle}</h3>
               <p className={styles.body}>{t.membershipPage.applyBoxDesc}</p>
             </div>

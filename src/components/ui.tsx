@@ -111,7 +111,7 @@ export function MembershipCards({ registrationHref, onSelect }: { registrationHr
         const Icon = { startup: Sparkles, 'small-business': BriefcaseBusiness, corporate: Globe2, nonprofit: HeartHandshake }[tier.id];
         const featured = 'featuredBadge' in tier;
         return (
-          <article key={tier.id} className={`${membershipStyles.card} ${featured ? membershipStyles.featured : ''}`}>
+          <article key={tier.id} className={`surface ${membershipStyles.card} ${featured ? membershipStyles.featured : ''}`}>
             <Icon size={25} strokeWidth={1.5} className={membershipStyles.icon} aria-hidden="true" />
             <span className={membershipStyles.eyebrow}>{tier.eyebrow}</span>
             <h3>{tier.name}</h3>

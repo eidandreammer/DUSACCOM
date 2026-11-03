@@ -3,9 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, ChevronDown, ChevronUp, Globe, Mail, Menu, Phone, X } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, ChevronUp, Globe, Menu, X } from 'lucide-react';
 import { ProfileMenu } from './profile-menu';
-import { site } from '@/lib/site';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
 
@@ -24,12 +23,16 @@ export function Brand({ large = false }: { large?: boolean }) {
   );
 }
 
+function InfotepMark() {
+  return <span className="header-infotep-mark"><Image src="/assets/infotep-nav-transparent.webp" alt="INFOTEP" width={300} height={72} className="header-infotep-image" /></span>;
+}
+
 export function Header() {
   const pathname = usePathname();
   const isHome = pathname === '/';
   const [overHero, setOverHero] = useState(isHome);
   const [hidden, setHidden] = useState(false);
-  const [headerHeight, setHeaderHeight] = useState(140);
+  const [headerHeight, setHeaderHeight] = useState(104);
   const header = useRef<HTMLElement>(null);
   const { lang, toggleLang } = useLanguage();
   const t = translations[lang];
@@ -87,8 +90,12 @@ export function Header() {
       clearTimeout(hideTimer);
       hideTimer = undefined;
     };
-    // The homepage may finish streaming after this header hydrates.
-    const heroVisible = () => isHome && (!hero || hero.getBoundingClientRect().bottom > 0);
+    // Streaming or hydration can replace the initially observed hero node.
+    // Always measure the current element rather than a detached earlier copy.
+    const heroVisible = () => {
+      const currentHero = isHome ? document.querySelector('.home-hero') : null;
+      return isHome && (!currentHero || currentHero.getBoundingClientRect().bottom > 0);
+    };
     const headerHasFocus = () => !!element?.contains(document.activeElement);
     const scheduleHide = () => {
       if (hideTimer !== undefined) return;
@@ -105,10 +112,8 @@ export function Header() {
       const exitedHero = previousInHero === true && !inHero;
       const initialUpdate = previousInHero === undefined;
       previousInHero = inHero;
-      const heroBounds = hero?.getBoundingClientRect();
-      // Start the white surface once 70% of the hero has scrolled above view.
-      // Keep the existing hide-on-scroll behavior tied to the full hero exit.
-      setOverHero(inHero && (!heroBounds || heroBounds.top > -heroBounds.height * 0.7));
+      // Keep the translucent surface until the hero has completely left view.
+      setOverHero(inHero);
       if (inHero || currentY <= 0 || open || dropdownOpen || profileOpen || headerHasFocus()) {
         clearHideTimer();
         setHidden(false);
@@ -158,15 +163,6 @@ export function Header() {
     <>
     {!isHome && <div aria-hidden="true" style={{ height: headerHeight }} />}
     <header ref={header} inert={hidden} className={`site-header ${overHero ? 'home-header text-white' : 'solid-header text-navy'} ${hidden ? 'is-hidden' : ''}`}>
-      <div className="header-information border-b">
-        <div className="container flex min-h-9 items-center justify-between gap-4 py-2 text-xs">
-          <span>{t.tagline}</span>
-          <div className="flex shrink-0 items-center gap-6">
-            <a className="hidden items-center gap-2 sm:flex" href={`mailto:${site.email}`}><Mail size={12} aria-hidden="true" />{site.email}</a>
-            <a href={`tel:${site.phoneHref}`} className="hidden items-center gap-2 md:flex"><Phone size={12} aria-hidden="true" />{site.phone}</a>
-          </div>
-        </div>
-      </div>
       <div className="header-surface relative border-b">
         <div className="container flex min-h-26 items-center gap-3 sm:gap-6">
           <Brand large />
@@ -183,7 +179,7 @@ export function Header() {
                 {registrationLinks.map(({ href, label, accent }) => <a key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} data-accent={accent} className="registration-link flex min-h-12 items-center rounded-lg px-4 py-3 text-sm font-medium leading-6">{label}</a>)}
               </div>
             </div>
-            <a href="/#infotep" className={navLinkClass('/infotep')}>{t.nav.infotep}</a>
+            <a href="/#infotep" className={navLinkClass('/infotep')}><InfotepMark /></a>
             <a href="/#events" onClick={closeNavigation} className={navLinkClass('/#events')}>{t.nav.events}</a>
             <Link href="/contact" aria-current={pathname === '/contact' ? 'page' : undefined} className={navLinkClass('/contact')}>{t.nav.contact}</Link>
           </nav>
@@ -202,7 +198,7 @@ export function Header() {
             <a href="/#register-form" onClick={closeNavigation} data-accent="red" className="registration-link flex min-h-11 items-center rounded-lg px-4 text-sm font-semibold">{t.nav.registration}<ArrowUpRight size={16} className="ml-2" aria-hidden="true" /></a>
             {registrationLinks.map(({ href, label, accent }) => <a key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} data-accent={accent} className="registration-link flex min-h-12 items-center rounded-lg px-4 py-2 text-sm">{label}</a>)}
           </details>
-          <a href="/#infotep" className={navLinkClass('/infotep')} onClick={closeNavigation}>{t.nav.infotep}</a>
+          <a href="/#infotep" className={navLinkClass('/infotep')} onClick={closeNavigation}><InfotepMark /></a>
           <a href="/#events" className={navLinkClass('/#events')} onClick={closeNavigation}>{t.nav.events}</a>
           <Link href="/contact" className={navLinkClass('/contact')} onClick={closeNavigation}>{t.nav.contact}</Link>
         </nav>

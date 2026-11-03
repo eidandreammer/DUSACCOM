@@ -89,7 +89,7 @@ export function DelegatedAdminManager() {
     finally { setSavingUid(''); }
   }
 
-  return <section id="administrator-team" className={styles.panel} aria-labelledby={`${id}-title`}>
+  return <section id="administrator-team" className={`surface ${styles.panel}`} aria-labelledby={`${id}-title`}>
     <h2 id={`${id}-title`}>{t.title}</h2>
     <p>{t.description}</p>
     <p className={accountStyles.hint}>{t.mailboxHint}</p>

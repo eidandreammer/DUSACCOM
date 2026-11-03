@@ -141,19 +141,19 @@ export function PrivacyProvider({ children }: { children: ReactNode }) {
               )}
             </p>
           </div>
-          <div className="flex shrink-0 gap-2">
+          <div className="flex shrink-0 flex-wrap gap-2">
             <button
               onClick={() => save('essential')}
-              className="button button-outline flex-1 px-4! text-xs!"
+              className="button button-outline flex-1 whitespace-nowrap px-4! text-xs!"
             >
               <span>{lang === 'en' ? 'Essential only' : 'Solo esenciales'}</span>
             </button>
             <button
               onClick={() => save('all')}
-              className="button flex-1 px-4! text-xs!"
+              className="button flex-1 whitespace-nowrap gap-2! px-4! text-xs!"
             >
               <span>{lang === 'en' ? 'Accept all' : 'Aceptar todo'}</span>
-              <Check size={16} aria-hidden="true" />
+              <Check size={16} className="shrink-0" aria-hidden="true" />
             </button>
           </div>
         </section>
