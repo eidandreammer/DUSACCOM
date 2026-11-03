@@ -2,9 +2,9 @@ import sharp from 'sharp';
 import { access, readFile } from 'node:fs/promises';
 // Use the edited source with transparent cutouts inside the emblem as well.
 await sharp('public/imgs/infotep-nav-transparent.png').trim().resize({ width: 300, height: 72, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } }).webp({ lossless: true }).toFile('public/assets/infotep-nav-transparent.webp');
-const culturalImages = JSON.parse(await readFile(new URL('../src/lib/hero-images.json', import.meta.url), 'utf8'));
-for (const { name, file } of culturalImages) {
-  const original = `public/imgs/Imágenes culturales dominicanas_files/${file}`;
+const heroImages = JSON.parse(await readFile(new URL('../src/lib/hero-images.json', import.meta.url), 'utf8'));
+for (const { name, file } of heroImages) {
+  const original = `public/imgs/Hero section images/${file}`;
   try { await access(original); }
   catch (error) {
     if (error.code !== 'ENOENT') throw error;
@@ -14,7 +14,7 @@ for (const { name, file } of culturalImages) {
   }
   await sharp(original).rotate().resize({ width: 1600, withoutEnlargement: true }).jpeg({ quality: 88 }).toFile(`public/assets/hero-${name}.jpg`);
 }
-for (const name of ['new-york', 'networking', ...culturalImages.map(({ name }) => `hero-${name}`)]) {
+for (const name of ['new-york', 'networking', ...heroImages.map(({ name }) => `hero-${name}`)]) {
   for (const width of [96, 160, 256, 384, 480, 768, 1200, 1600]) {
     await sharp(`public/assets/${name}.jpg`).resize({ width, withoutEnlargement: true }).webp({ quality: 82, effort: 6 }).toFile(`public/assets/${name}-${width}.webp`);
   }

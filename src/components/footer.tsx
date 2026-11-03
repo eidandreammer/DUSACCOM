@@ -13,7 +13,7 @@ export function Footer() {
   const t = translations[lang];
 
   return (
-    <footer className="bg-navy-deep pt-14 text-slate-300">
+    <footer className="bg-[#0c2334] pt-14 text-slate-300">
       <div className="container grid gap-10 pb-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.1fr]">
         {/* Brand column */}
         <div className="sm:col-span-2 lg:col-span-1">

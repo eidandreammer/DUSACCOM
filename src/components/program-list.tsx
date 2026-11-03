@@ -84,7 +84,7 @@ export function InitiativeCard({ initiative }: { initiative: Initiative }) {
     <article className="flex flex-col overflow-hidden rounded-[8px] border border-slate-200 bg-white">
       <div
         className={`relative flex h-56 flex-col justify-between overflow-hidden p-6 ${
-          art === 'navy' ? 'bg-[#173b50] text-white' : art === 'red' ? 'bg-crimson text-white' : 'bg-[#ece9e4] text-navy'
+          art === 'navy' ? 'bg-[#032a63] text-white' : art === 'red' ? 'bg-crimson text-white' : 'bg-[#ece9e4] text-navy'
         }`}
       >
         <span className="relative z-10 w-fit rounded-[8px] border border-current/35 px-2 py-1 text-xs tracking-widest uppercase">

@@ -13,6 +13,7 @@ import { DelegatedAdminManager } from '@/components/delegated-admin-manager';
 import { AccountSettings } from '@/components/account-settings';
 import { accountSettingsCopy } from '@/lib/account-settings-copy';
 import { accountContinuationHref, afterAuthentication } from '@/lib/account-navigation';
+import { passwordResetRecoveryHref } from '@/lib/password-reset';
 import styles from '@/components/account.module.css';
 
 export default function AccountPage() {
@@ -24,24 +25,37 @@ export default function AccountPage() {
   const [teamLogin, setTeamLogin] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
+  const [resetSent, setResetSent] = useState(false);
   const [error, setError] = useState('');
   useEffect(() => {
-    const selected = new URLSearchParams(window.location.search).get('mode');
+    const params = new URLSearchParams(window.location.search);
+    const selected = params.get('mode');
     if (selected === 'signup' || selected === 'reset') setMode(selected);
+    if (selected === 'reset' && params.get('resetSent') === '1') {
+      setResetSent(true);
+      params.delete('resetSent');
+      window.history.replaceState(null, '', `${window.location.pathname}?${params}${window.location.hash}`);
+    }
   }, []);
-  function changeMode(next: typeof mode) { setMode(next); if (next === 'signup') setTeamLogin(false); setError(''); setMessage(''); }
+  function changeMode(next: typeof mode) { setMode(next); if (next === 'signup') setTeamLogin(false); setError(''); setMessage(''); setResetSent(false); }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = String(data.get('email')).trim();
     const password = String(data.get('password') || '');
     const username = String(data.get('username') || '').trim();
-    setBusy(true); setError(''); setMessage('');
+    setBusy(true); setError(''); setMessage(''); setResetSent(false);
     try {
       const { auth } = getFirebase();
       const loginEmail = mode !== 'signup' && username ? teamLoginEmail(email, username) : email;
       auth.languageCode = lang;
-      if (mode === 'reset') { await sendPasswordResetEmail(auth, loginEmail, { url: `${site.url}${accountContinuationHref(window.location.search)}` }); setMessage(t.resetSent); }
+      if (mode === 'reset') {
+        await sendPasswordResetEmail(auth, loginEmail, { url: `${site.url}${accountContinuationHref(window.location.search)}` });
+        setResetSent(true);
+        if (['dusaccom.web.app', 'dusaccom.firebaseapp.com'].includes(window.location.hostname)) {
+          window.location.replace(passwordResetRecoveryHref(auth.app.options.projectId!, window.location.search));
+        }
+      }
       else if (mode === 'signup') {
         const credential = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(credential.user, { displayName: String(data.get('name')).trim() }).catch(() => {});
@@ -82,6 +96,7 @@ export default function AccountPage() {
       </>}
       {error && <p role="alert" className={styles.error}>{error}</p>}
       {message && <p role="status">{message}</p>}
+      {resetSent && <p role="status">{t.resetSent}</p>}
     </div>
     {user && !loading && <AccountSettings key={user.uid} onDeleted={() => { setError(''); setMessage(accountSettingsCopy[lang].deleted); }} />}
     <DelegatedAdminManager />

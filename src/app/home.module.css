@@ -41,7 +41,7 @@
   width: 100%;
   min-height: 100vh;
   background: var(--color-navy-deep);
-  color: white;
+  color: var(--color-white);
 }
 
 .home .heroImage {
@@ -64,7 +64,7 @@
   margin-block: auto;
   margin-left: -24px;
   padding: clamp(24px, 4vw, 48px);
-  border: 1px solid rgb(255 255 255 / 18%);
+  border: 1px solid rgb(254 254 254 / 18%);
   border-radius: 8px;
   background: transparent;
   -webkit-backdrop-filter: blur(12px);
@@ -89,7 +89,7 @@
 .home .statement {
   max-width: 24ch;
   margin: 28px 0 0;
-  color: #fff;
+  color: var(--color-white);
   font-size: var(--type-statement);
   font-weight: 400;
   line-height: 1.25;
@@ -126,21 +126,21 @@
 .home .heroLink {
   min-height: 52px;
   padding: 13px 22px;
-  border: 1px solid rgb(255 255 255 / 45%);
+  border: 1px solid rgb(254 254 254 / 45%);
   border-radius: var(--radius-control);
   corner-shape: squircle;
   background: var(--color-navy-deep);
-  color: white;
+  color: var(--color-white);
 }
 
-.home .heroFooter { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; padding-top: 24px; border-top: 1px solid rgb(255 255 255 / 24%); }
+.home .heroFooter { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; padding-top: 24px; border-top: 1px solid rgb(254 254 254 / 24%); }
 .home .heroActions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 16px 24px; }
 .home .heroActions a { margin: 0; }
 
 .home .heroLink:is(:hover, :focus-visible) {
-  background: #1c435f;
-  border-color: white;
-  color: white;
+  background: var(--color-navy);
+  border-color: var(--color-white);
+  color: var(--color-white);
 }
 
 .home .heroFootnote {
@@ -160,7 +160,7 @@
 
 .home .purpose {
   scroll-margin-top: 0;
-  background: white;
+  background: var(--color-white);
 }
 
 .home .sectionIntro {
@@ -206,8 +206,8 @@
 
 .home .involvement {
   padding-block: 88px;
-  background: var(--color-navy);
-  color: white;
+  background: #102c41;
+  color: var(--color-white);
 }
 
 .home .involvementColumns {
@@ -225,7 +225,7 @@
 .home .path + .path {
   padding-right: 0;
   padding-left: 80px;
-  border-left: 1px solid rgb(255 255 255 / 22%);
+  border-left: 1px solid rgb(254 254 254 / 22%);
 }
 
 .home .path .label {
@@ -260,21 +260,21 @@
 
 .home .primaryAction {
   background: var(--color-crimson);
-  color: white;
+  color: var(--color-white);
 }
 
 .home .primaryAction:hover {
-  background: #a32537;
+  background: var(--color-crimson);
 }
 
 .home .secondaryAction {
   border-color: #9aaeba;
-  color: white;
+  color: var(--color-white);
 }
 
 .home .secondaryAction:hover {
-  background: white;
-  border-color: white;
+  background: var(--color-white);
+  border-color: var(--color-white);
   color: var(--color-navy);
 }
 
@@ -308,7 +308,7 @@
 }
 
 .home .trainingLink:hover {
-  color: #8f2030;
+  color: var(--color-crimson);
 }
 
 .home .trainingAreas {
@@ -416,7 +416,7 @@
   .home .involvement { padding-block: 64px; }
   .home .involvementColumns { grid-template-columns: 1fr; gap: 44px; }
   .home .path { padding: 0; }
-  .home .path + .path { padding: 44px 0 0; border-top: 1px solid rgb(255 255 255 / 22%); border-left: 0; }
+  .home .path + .path { padding: 44px 0 0; border-top: 1px solid rgb(254 254 254 / 22%); border-left: 0; }
   .home .pathTitle { max-width: 22ch; margin-bottom: 20px; font-size: var(--type-h3); }
   .home .path .body { max-width: 48ch; margin-bottom: 28px; }
   .home .trainingIntro { gap: 24px; }
@@ -444,22 +444,22 @@
 /* Landing-page sections share the existing visual system and header offsets. */
 .home :is(.about, .register, .registrationForm) { padding-block: 116px; }
 .home section[id] { scroll-margin-top: 0; }
-.home .about { background: white; }
+.home .about { background: var(--color-white); }
 .home .purpose { background: #f5f6f7; }
 .home .aboutLink { margin-top: 24px; color: var(--color-crimson); }
-.home .aboutLink:hover { color: #8f2030; }
+.home .aboutLink:hover { color: var(--color-crimson); }
 .home .membershipIntro { display: flex; align-items: flex-end; justify-content: space-between; gap: 64px; }
 .home .membershipIntro > div { max-width: 720px; }
 .home .membershipIntro .label { color: #d4dee6; }
 .home .membershipIntro .pathTitle { max-width: 24ch; }
 .home .membershipIntro .body { color: #d4dee6; }
 .home .membershipCards { margin-top: 56px; color: var(--color-navy); }
-.home .membershipCards article { background: white; }
+.home .membershipCards article { background: var(--color-white); }
 .home .membershipFooter { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; align-items: start; margin-top: 20px; }
 .home .membershipFooter .membershipDisclaimer { grid-column: 1 / span 3; margin: 0; }
 .home .membershipRegistration { grid-column: 4; width: 100%; margin-top: 0; }
 .home .membershipDisclaimer { max-width: 82ch; margin: 28px 0 0; color: #d4dee6; font-size: var(--type-label); line-height: 1.8; }
-.home .register { background: white; }
+.home .register { background: var(--color-white); }
 .home .registrationSteps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; margin-top: 56px; padding: 0; list-style: none; }
 .home .registrationSteps li { border-top: 1px solid #d5dce1; padding-top: 24px; }
 .home .stepNumber { display: block; margin-bottom: 24px; color: var(--color-crimson); font-size: var(--type-label); }
@@ -467,7 +467,7 @@
 .home .registrationSteps .body { font-size: var(--type-body); }
 .home .trainingNext { display: flex; align-items: center; justify-content: space-between; gap: 48px; margin-top: 48px; padding-top: 32px; border-top: 1px solid #d5dce1; }
 .home .trainingNext .body { max-width: 65ch; font-size: var(--type-body); }
-.home .registrationForm { background: white; }
+.home .registrationForm { background: var(--color-white); }
 .home .formLayout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); align-items: start; gap: 80px; }
 .home .formDescription { margin-top: 28px; }
 .home .formNote { margin-top: 36px; padding: 28px; border: 1px solid #d5dce1; border-radius: 8px; background: #f5f6f7; }
@@ -493,9 +493,9 @@
 }
 
 .home .heroBrand { display: inline-block; white-space: nowrap; }
-.home .brandBlue { color: #4d91ff; }
-.home .brandWhite { color: #fff; }
-.home .brandRed { color: #f45b70; }
+.home .brandBlue { color: var(--color-navy); }
+.home .brandWhite { color: var(--color-white); }
+.home .brandRed { color: var(--color-crimson); }
 .home .trainingIntro { flex-direction: row; align-items: flex-start; }
 .home .trainingCopy { min-width: 0; }
 .home .infotepLogo { flex-shrink: 0; width: 252px; height: 252px; object-fit: contain; }

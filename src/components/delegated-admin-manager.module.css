@@ -1,4 +1,4 @@
-.panel { width: min(100%, 680px); margin: 32px auto 0; padding: 36px; border: 1px solid #d5dce1; border-radius: 12px; background: white; scroll-margin-top: 176px; }
+.panel { width: min(100%, 680px); margin: 32px auto 0; padding: 36px; border: 1px solid #d5dce1; border-radius: 12px; background: var(--color-white); scroll-margin-top: 176px; }
 .panel h2 { font-size: var(--type-h3); font-weight: 600; line-height: 1.3; }
 .panel > p { margin-block: 18px; line-height: 1.7; }
 .panel form { margin-top: 24px; }
@@ -8,14 +8,14 @@
 .team li + li { border-top: 1px solid #edf1f5; }
 .team h3 { font-weight: 600; overflow-wrap: anywhere; }
 .team p { color: #465766; font-size: var(--type-label); }
-.team button { min-height: 44px; flex-shrink: 0; padding: 10px 14px; border: 1px solid #a7b7c4; border-radius: 6px; color: #102c41; font-size: var(--type-label); }
+.team button { min-height: 44px; flex-shrink: 0; padding: 10px 14px; border: 1px solid #a7b7c4; border-radius: 6px; color: var(--color-navy); font-size: var(--type-label); }
 .team button:hover { background: #edf1f5; }
 .team button:disabled { opacity: .6; cursor: wait; }
 .identity { flex: 1; min-width: 0; }
 .identity p { overflow-wrap: anywhere; }
 .actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; max-width: 55%; }
-.team .deleteButton { color: #a32537; border-color: #bd3042; }
+.team .deleteButton { color: var(--color-crimson); border-color: var(--color-crimson); }
 .team .deleteButton:hover { background: #fff1f2; }
-.team .requestBadge { margin-top: 8px; color: #a32537; font-weight: 600; }
+.team .requestBadge { margin-top: 8px; color: var(--color-crimson); font-weight: 600; }
 @media (max-width: 540px) { .panel { padding: 24px; } .team li { align-items: flex-start; flex-direction: column; gap: 10px; } }
 @media (max-width: 540px) { .actions { max-width: 100%; justify-content: flex-start; } }

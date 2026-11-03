@@ -7,12 +7,12 @@
     <title>Password reset access | DUSACCOM</title>
     <style>
       * { box-sizing: border-box; }
-      body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px; background: #f4f6f7; color: #102c41; font: 16px/1.65 Arial, sans-serif; }
-      main { width: min(100%, 520px); padding: 32px; border: 1px solid #d5dce1; border-radius: 28px; corner-shape: squircle; background: white; }
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px; background: #f4f6f7; color: #032a63; font: 16px/1.65 Arial, sans-serif; }
+      main { width: min(100%, 520px); padding: 32px; border: 1px solid #d5dce1; border-radius: 28px; corner-shape: squircle; background: #fefefe; }
       h1 { margin: 0 0 20px; font-size: 28px; line-height: 1.2; }
       p { margin: 16px 0; }
-      a { color: #a32537; font-weight: 600; }
-      a:focus-visible { outline: 3px solid #287ab6; outline-offset: 4px; }
+      a { color: #cb0716; font-weight: 600; }
+      a:focus-visible { outline: 3px solid #032a63; outline-offset: 4px; }
       .spanish { margin-top: 28px; padding-top: 20px; border-top: 1px solid #d5dce1; }
     </style>
   </head>
@@ -28,5 +28,25 @@
         <p><a href="https://dusaccom.web.app/account/?mode=reset">Solicitar otro correo</a></p>
       </div>
     </main>
+    <script>
+      // Only return to the known account page. Never forward reset codes or
+      // arbitrary destinations from a URL to another origin.
+      const continuation = new URLSearchParams(window.location.search).get('continueUrl');
+      if (continuation) {
+        try {
+          const target = new URL(continuation);
+          if (target.origin === 'https://dusaccom.web.app' && target.pathname === '/account/' && !target.username && !target.password) {
+            const safe = new URL('/account/?mode=reset&resetSent=1', target.origin);
+            const intent = target.searchParams.get('intent');
+            const settings = target.searchParams.get('settings');
+            const event = target.searchParams.get('event');
+            if (['events', 'create-event', 'event-registration'].includes(intent)) safe.searchParams.set('intent', intent);
+            if (intent === 'event-registration' && /^[A-Za-z0-9_-]{1,128}$/.test(event || '')) safe.searchParams.set('event', event);
+            if (['profile', 'password', 'email', 'team', 'delete'].includes(settings)) safe.searchParams.set('settings', settings);
+            window.location.replace(safe.href);
+          }
+        } catch { /* Keep manual recovery available for an invalid destination. */ }
+      }
+    </script>
   </body>
 </html>

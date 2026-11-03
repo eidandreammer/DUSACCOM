@@ -67,7 +67,7 @@ export function ProfileMenu({ onOpenChange }: { onOpenChange: (open: boolean) =>
 
   return <div className={styles.wrapper} ref={wrapper}
     onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) changeOpen(false); }}>
-    <button ref={trigger} type="button" className="header-profile" data-signed-in={Boolean(user)}
+    <button ref={trigger} type="button" className="header-profile hover-scale" data-signed-in={Boolean(user)}
       aria-label={user ? `${t.account}: ${name}` : t.account} aria-expanded={open} aria-controls={`${id}-profile`}
       onClick={() => changeOpen(!open)}>
       {user && initial ? <span aria-hidden="true">{initial}</span> : <UserRound size={21} aria-hidden="true" />}
@@ -84,11 +84,11 @@ export function ProfileMenu({ onOpenChange }: { onOpenChange: (open: boolean) =>
           <div><dt>{membershipAccountCopy[lang].applicationStatus}</dt><dd>{membershipAccountCopy[lang].submitted}</dd></div>
         </dl>}
         {user ? <div className={styles.actions}>
-          <a href="/account/?settings=profile" className={styles.action} onClick={() => changeOpen(false)}>{accountSettingsCopy[lang].title}</a>
-          <button type="button" className={styles.action} disabled={busy} onClick={logout}>{busy ? t.working : t.signOut}</button>
+          <a href="/account/?settings=profile" className={`${styles.action} hover-scale`} onClick={() => changeOpen(false)}>{accountSettingsCopy[lang].title}</a>
+          <button type="button" className={`${styles.action} hover-scale`} disabled={busy} onClick={logout}>{busy ? t.working : t.signOut}</button>
         </div> : <div className={styles.actions}>
-          <a href={signInHref} className={styles.action} onClick={() => changeOpen(false)}>{t.signIn}</a>
-          <a href={signUpHref} className={styles.secondary} onClick={() => changeOpen(false)}>{t.signUp}</a>
+          <a href={signInHref} className={`${styles.action} hover-scale`} onClick={() => changeOpen(false)}>{t.signIn}</a>
+          <a href={signUpHref} className={`${styles.secondary} hover-scale`} onClick={() => changeOpen(false)}>{t.signUp}</a>
         </div>}
         {error && <p role="alert" className={styles.error}>{error}</p>}
       </>}

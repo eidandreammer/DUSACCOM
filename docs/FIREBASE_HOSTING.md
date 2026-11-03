@@ -61,7 +61,11 @@ This checks public pages, images/scripts, metadata, 404 behavior, and that legac
 
 The legacy host has a separate redirect-only configuration in `firebase.legacy.json`. Deploy it with `npm run deploy:legacy-auth` and verify it with `node tests/legacy-auth-smoke.mjs`. Its redirects must exclude `/__` paths: Firebase's email action handler loads `/__/firebase/init.json` on the same origin. Redirecting that configuration across domains breaks password-reset links even when the auth HTML returns HTTP 200. See [password-reset repair](FIREBASE_EMAIL_BRANDING.md#password-reset-repair--november-2-2026).
 
-The static `/__reset-password/` recovery page also stays on the legacy origin. It clears only HTTP cache through `Clear-Site-Data: "cache"`, allowing a regular browser to discard a permanent redirect saved before the repair. Open it in the affected browser, then reopen the latest reset email link. Do not redirect this page to the main site: clearing the main origin would leave the old origin's cached redirect intact.
+The static `/__reset-password/` recovery page is served on the legacy origin. It clears only HTTP cache through `Clear-Site-Data: "cache"`, allowing a regular browser to discard a permanent redirect saved before the repair. Open it in the affected browser, then reopen the latest reset email link. Do not configure a Hosting redirect for this page: clearing the main origin would leave the old origin's cached redirect intact.
+
+Reset requests on the current website now visit this recovery page automatically after Firebase accepts the request, then return to `/account/` with a confirmation. The recovery response must be served on the original origin before its script returns to the main site. It accepts only the canonical account-page destination and recognized navigation context. Deploy both Hosting configurations when updating this flow; `deploy:firebase` alone does not publish changes to `hosting-legacy/`.
+
+The current site's `/__/firebase/init.json` also permits non-credentialed cross-origin GET and its `Content-Type` preflight, with `no-store`. This lets older auth widgets initialize even when a browser retains the original cross-origin redirect. Keep these headers scoped to that public SDK configuration path; account APIs do not receive them. The live auth smoke check verifies the current destination's CORS and OPTIONS responses as well as the legacy endpoints.
 
 ## Connect an owned custom domain
 
