@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
+import { headers } from 'next/headers';
 import { AuthProvider } from '@/lib/auth-context';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
@@ -29,7 +30,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { width: 'device-width', initialScale: 1, themeColor: '#032a63' };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const nonce = process.env.FIREBASE_HOSTING === 'true' ? undefined : (await headers()).get('x-nonce') || undefined;
   const organization = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
@@ -57,6 +59,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </AuthProvider>
         </LanguageProvider>
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organization).replace(/</g, '\\u003c') }}
         />

@@ -4,6 +4,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { spawnSync } from 'node:child_process';
+import { buildSecurityHeaders } from './security-headers.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(import.meta.url);
@@ -22,10 +23,11 @@ const staging = await mkdtemp(join(tmpdir(), 'dusaccom-firebase-'));
 try {
   // Hosting on Spark serves static files. API routes stay in the original
   // checkout for the legacy server build; Firebase forms use Firestore instead.
-  for (const name of ['src', 'public', 'package.json', 'tsconfig.json', 'next-env.d.ts', 'next.config.ts', 'postcss.config.mjs']) {
+  for (const name of ['src', 'public', 'security', 'package.json', 'tsconfig.json', 'next-env.d.ts', 'next.config.ts', 'postcss.config.mjs']) {
     await cp(join(root, name), join(staging, name), { recursive: true });
   }
   await rm(join(staging, 'src/app/api'), { recursive: true, force: true });
+  await rm(join(staging, 'src/proxy.ts'), { force: true });
   await symlink(join(root, 'node_modules'), join(staging, 'node_modules'), 'dir');
   const result = spawnSync(process.execPath, [join(root, 'node_modules/next/dist/bin/next'), 'build', '--webpack'], {
     cwd: staging,
@@ -36,6 +38,7 @@ try {
   if (result.status !== 0) throw new Error(`Firebase static build failed (${result.status}).`);
   await rm(join(root, 'out'), { recursive: true, force: true });
   await cp(join(staging, 'out'), join(root, 'out'), { recursive: true });
+  await buildSecurityHeaders(join(root, 'out'));
   console.log(`Firebase Hosting export ready in out/ for ${siteUrl.origin}.`);
 } finally {
   await rm(staging, { recursive: true, force: true });
