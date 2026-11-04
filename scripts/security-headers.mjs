@@ -13,8 +13,8 @@ export async function buildSecurityHeaders(directory) {
       const hashes = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)]
         .filter(([, attrs]) => !/\bsrc\s*=/i.test(attrs)).map(([, , body]) => createHash('sha256').update(body).digest('base64'));
       const file = relative(directory, filename).replaceAll('\\', '/');
-      const path = file === 'index.html' ? '/' : file.endsWith('/index.html') ? `/${file.slice(0, -11)}` : `/${file.slice(0, -5)}`;
-      entries.push({ path, file, digest: createHash('sha256').update(html).digest('hex'), policy: contentSecurityPolicy({ hashes: [...new Set(hashes)] }) });
+      const route = file === 'index.html' ? '/' : file.endsWith('/index.html') ? `/${file.slice(0, -11)}` : `/${file.slice(0, -5)}`;
+      entries.push({ path: route, file, digest: createHash('sha256').update(html).digest('hex'), policy: contentSecurityPolicy({ hashes: [...new Set(hashes)] }) });
     }
   }
   await scan(directory);
