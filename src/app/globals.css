@@ -627,3 +627,42 @@
 .site-header .hover-scale {
   --button-hover-transitions: color 1s ease, background-color 1s ease, border-color 1s ease, box-shadow 1s ease, filter 1s ease;
 }
+
+/* The nav bar itself has no fill; its glass tint lives on rounded nav buttons. */
+.site-header.home-header,
+.site-header.solid-header { background-color: transparent; box-shadow: none; }
+.site-header.home-header .header-surface,
+.site-header.solid-header .header-surface { background-color: transparent; border-color: transparent; }
+.site-header .header-surface::before { content: none; }
+.header-pill {
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding-inline: 16px;
+  border: 1px solid rgb(254 254 254 / 15%);
+  border-radius: 14px;
+  background-color: rgb(3 42 99 / 22%);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+.site-header.home-header .header-pill:is(:hover, :focus-within) {
+  background-color: rgb(3 42 99 / 34%);
+  border-color: rgb(254 254 254 / 30%);
+}
+.site-header.home-header .header-nav-link-blue:is(:hover, :focus-visible) { color: var(--color-white); }
+/* Past the hero, the buttons become frosted white glass so text stays readable. */
+.site-header.solid-header .header-pill {
+  background-color: rgb(254 254 254 / 72%);
+  border-color: #e2e8f0;
+  box-shadow: 0 8px 24px rgb(3 42 99 / 8%);
+}
+.site-header .header-profile:not([data-signed-in='true']) {
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+.site-header.home-header .header-profile:not([data-signed-in='true']) { background-color: rgb(3 42 99 / 22%); }
+.site-header.solid-header .header-profile:not([data-signed-in='true']) { background-color: rgb(254 254 254 / 72%); }
+.header-pill-group { padding-inline: 16px 4px; }
+.header-pill-group > a { min-height: 0; }
+.header-pill-group > button { width: 32px; height: 32px; }
+.icon-button.header-pill { width: 44px; padding-inline: 0; }
