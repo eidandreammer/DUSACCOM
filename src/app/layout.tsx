@@ -7,6 +7,7 @@ import { Footer } from '@/components/footer';
 import { PrivacyProvider } from '@/components/privacy-controls';
 import { LanguageProvider } from '@/lib/language-context';
 import { site } from '@/lib/site';
+import { fontVariables } from './fonts';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -44,7 +45,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   };
 
   return (
-    <html lang="en">
+    <html lang="en" className={fontVariables}>
       <body>
         <a href="#main" className="fixed -top-24 left-5 z-[100] rounded-[8px] bg-white px-5 py-3 shadow focus:top-3">
           Skip to main content

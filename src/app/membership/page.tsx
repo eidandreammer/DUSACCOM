@@ -47,7 +47,7 @@ function MembershipContent() {
           <ol className="mt-10 grid gap-6 md:grid-cols-3">
             {m.steps.map((step, index) => (
               <li key={step.title} className="border-t border-slate-300 pt-6">
-                <span className="text-sm text-crimson">0{index + 1} /</span>
+                <span className="font-mid text-sm font-semibold text-crimson">0{index + 1} /</span>
                 <h3 className="mt-5 text-xl font-semibold tracking-tight">{step.title}</h3>
                 <p className="mt-4 max-w-sm text-sm leading-8 text-slate-600">{step.text}</p>
               </li>

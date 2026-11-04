@@ -8,17 +8,16 @@ import { ProfileMenu } from './profile-menu';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
 
-export function Brand({ large = false }: { large?: boolean }) {
+// The emblem is an image; the wordmark is live Merengue Bold text so it stays
+// crisp at every size and can change color with the header state.
+export function Brand() {
   return (
-    <Link href="/" className={`brand flex items-center shrink-0 ${large ? 'header-brand' : ''}`} aria-label="DUSACCOM home">
-      <Image
-        src="/imgs/DUSACCOM large logo.png"
-        alt="DUSACCOM"
-        width={2048}
-        height={1117}
-        priority
-        className={large ? 'header-brand-image' : 'h-12 w-auto object-contain'}
-      />
+    <Link href="/" className="brand header-brand" aria-label="DUSACCOM home">
+      <Image src="/assets/dusaccom-emblem.webp" alt="" width={188} height={192} priority className="header-brand-emblem" />
+      <span className="header-brand-wordmark" aria-hidden="true">
+        <span className="header-brand-name">DUSACCOM</span>
+        <span className="header-brand-region">New Jersey</span>
+      </span>
     </Link>
   );
 }
@@ -165,7 +164,7 @@ export function Header() {
     <header ref={header} inert={hidden} className={`site-header ${overHero ? 'home-header text-white' : 'solid-header text-navy'} ${hidden ? 'is-hidden' : ''}`}>
       <div className="header-surface relative border-b">
         <div className="container flex min-h-26 items-center gap-3 sm:gap-6">
-          <Brand large />
+          <Brand />
           <nav aria-label="Main navigation" className="ml-auto hidden items-center gap-2 lg:flex">
             <a href="/#about" className={`${navLinkClass('/about')} header-pill`}>{t.nav.about}</a>
             <div ref={registration} className="relative" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setDropdownOpen(false); }}>

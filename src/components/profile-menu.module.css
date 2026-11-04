@@ -9,7 +9,7 @@
 .membership { display: grid; gap: 12px; margin-bottom: 20px; padding-block: 16px; border-block: 1px solid #d5dce1; }
 .membership dt { color: #465766; font-size: var(--type-caption); line-height: 1.6; }
 .membership dd { margin: 2px 0 0; font-size: var(--type-label); font-weight: 600; line-height: 1.5; overflow-wrap: anywhere; }
-.action, .secondary { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; padding: 10px 16px; border-radius: 8px; font-size: var(--type-label); font-weight: 600; text-align: center; text-decoration: none; }
+.action, .secondary { font-family: var(--font-mid); display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; padding: 10px 16px; border-radius: 8px; font-size: var(--type-label); font-weight: 600; text-align: center; text-decoration: none; }
 .action { background: var(--color-navy); color: var(--color-white); }
 .action:hover { background: var(--color-navy); }
 .secondary { color: var(--color-navy); border: 1px solid #d5dce1; }

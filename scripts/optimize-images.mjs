@@ -1,6 +1,10 @@
 import sharp from 'sharp';
 import { access, readFile } from 'node:fs/promises';
 // Use the edited source with transparent cutouts inside the emblem as well.
+// Header emblem: the circular mark cut from the left of the large logo (the
+// DUSACCOM wordmark beside it is live Merengue text in the header).
+const emblem = await sharp('public/imgs/DUSACCOM large logo.png').extract({ left: 0, top: 0, width: 630, height: 1117 }).png().toBuffer();
+await sharp(emblem).trim().resize({ height: 192 }).webp({ lossless: true }).toFile('public/assets/dusaccom-emblem.webp');
 await sharp('public/imgs/infotep-nav-transparent.png').trim().resize({ width: 300, height: 72, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } }).webp({ lossless: true }).toFile('public/assets/infotep-nav-transparent.webp');
 const heroImages = JSON.parse(await readFile(new URL('../src/lib/hero-images.json', import.meta.url), 'utf8'));
 for (const { name, file } of heroImages) {

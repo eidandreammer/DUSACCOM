@@ -87,7 +87,7 @@ export function InitiativeCard({ initiative }: { initiative: Initiative }) {
           art === 'navy' ? 'bg-[#032a63] text-white' : art === 'red' ? 'bg-crimson text-white' : 'bg-[#ece9e4] text-navy'
         }`}
       >
-        <span className="relative z-10 w-fit rounded-[8px] border border-current/35 px-2 py-1 text-xs tracking-widest uppercase">
+        <span className="relative z-10 w-fit rounded-[8px] border border-current/35 px-2 py-1 font-mid text-xs tracking-widest uppercase">
           {category}
         </span>
         {art === 'light' ? (
@@ -98,12 +98,12 @@ export function InitiativeCard({ initiative }: { initiative: Initiative }) {
             className="absolute top-16 -right-16 size-60 rounded-full border border-white/20 before:absolute before:-inset-6 before:rounded-full before:border before:border-white/15 after:absolute after:-inset-12 after:rounded-full after:border after:border-white/10"
           />
         )}
-        <p className="relative z-10 text-[27px] leading-8 font-medium tracking-[-.04em]">
+        <p className="relative z-10 font-mid text-[27px] leading-8 font-medium tracking-[-.03em]">
           {tag[0]}
           <br />
           <span className={art === 'navy' ? 'text-red-200' : ''}>{tag[1]}</span>
         </p>
-        <span className="relative z-10 text-xs tracking-widest">{footerText}</span>
+        <span className="relative z-10 font-mid text-xs tracking-widest">{footerText}</span>
       </div>
 
       <div className="flex flex-1 flex-col p-6">

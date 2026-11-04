@@ -2,7 +2,7 @@
 .card { --card-padding: 24px; display: flex; flex-direction: column; border: 1px solid #d5dce1; border-radius: 8px; padding: var(--card-padding); background: var(--color-white); color: var(--color-navy); }
 .featured { border-color: var(--color-crimson); }
 .icon { flex-shrink: 0; margin-bottom: 24px; color: var(--color-crimson); }
-.eyebrow { display: block; font-size: var(--type-caption); line-height: 1.6; letter-spacing: .08em; color: #586b7b; font-weight: 600; }
+.eyebrow { display: block; font-family: var(--font-mid); font-size: var(--type-caption); line-height: 1.6; letter-spacing: .08em; color: #586b7b; font-weight: 600; }
 .card h3 { margin: 12px 0 24px; font-size: var(--type-h3); line-height: 1.25; font-weight: 600; letter-spacing: -.035em; }
 .content { display: flex; flex-direction: column; flex: 1; }
 .content p { margin: 18px 0 24px; color: #465766; font-size: var(--type-body); line-height: 1.8; }

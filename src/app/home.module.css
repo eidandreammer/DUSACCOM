@@ -11,6 +11,7 @@
 
 .home .label {
   margin: 0 0 24px;
+  font-family: var(--font-mid);
   font-size: var(--type-caption);
   font-weight: 600;
   line-height: 1.6;
@@ -80,9 +81,7 @@
 .home .heroTitle {
   margin: 0;
   font-size: var(--type-h1);
-  font-weight: 600;
-  line-height: 1.06;
-  letter-spacing: -0.055em;
+  line-height: var(--display-leading);
   text-wrap: balance;
 }
 
@@ -90,10 +89,11 @@
   max-width: 24ch;
   margin: 28px 0 0;
   color: var(--color-white);
+  font-family: var(--font-mid);
   font-size: var(--type-statement);
   font-weight: 400;
   line-height: 1.25;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.025em;
   text-wrap: balance;
 }
 
@@ -113,6 +113,7 @@
   align-items: center;
   justify-content: center;
   gap: 16px;
+  font-family: var(--font-mid);
   font-size: var(--type-body);
   font-weight: 600;
   line-height: 1.5;
@@ -170,13 +171,21 @@
   gap: 96px;
 }
 
+.home .sectionTitle,
+.home .pathTitle {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: var(--display-weight);
+  font-synthesis: style;
+  line-height: var(--display-leading);
+  letter-spacing: var(--display-tracking);
+  word-spacing: var(--display-word-spacing);
+}
+
 .home .sectionTitle {
   max-width: 18ch;
   margin: 0;
   font-size: var(--type-h2);
-  font-weight: 600;
-  line-height: 1.08;
-  letter-spacing: -0.045em;
   text-wrap: balance;
 }
 
@@ -237,9 +246,6 @@
   max-width: 20ch;
   margin: 0 0 24px;
   font-size: var(--type-h2);
-  font-weight: 500;
-  line-height: 1.15;
-  letter-spacing: -0.035em;
   text-wrap: balance;
 }
 
@@ -417,7 +423,7 @@
   .home .involvementColumns { grid-template-columns: 1fr; gap: 44px; }
   .home .path { padding: 0; }
   .home .path + .path { padding: 44px 0 0; border-top: 1px solid rgb(254 254 254 / 22%); border-left: 0; }
-  .home .pathTitle { max-width: 22ch; margin-bottom: 20px; font-size: var(--type-h3); }
+  .home .pathTitle { max-width: 22ch; margin-bottom: 20px; font-size: var(--type-h2); }
   .home .path .body { max-width: 48ch; margin-bottom: 28px; }
   .home .trainingIntro { gap: 24px; }
   .home .trainingCopy .body { margin-top: 24px; }
@@ -462,7 +468,7 @@
 .home .register { background: var(--color-white); }
 .home .registrationSteps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; margin-top: 56px; padding: 0; list-style: none; }
 .home .registrationSteps li { border-top: 1px solid #d5dce1; padding-top: 24px; }
-.home .stepNumber { display: block; margin-bottom: 24px; color: var(--color-crimson); font-size: var(--type-label); }
+.home .stepNumber { display: block; margin-bottom: 24px; color: var(--color-crimson); font-family: var(--font-mid); font-size: var(--type-label); font-weight: 600; }
 .home .registrationSteps .ideaTitle { font-size: var(--type-h3); }
 .home .registrationSteps .body { font-size: var(--type-body); }
 .home .trainingNext { display: flex; align-items: center; justify-content: space-between; gap: 48px; margin-top: 48px; padding-top: 32px; border-top: 1px solid #d5dce1; }
@@ -512,7 +518,8 @@
   .home .membershipFooter .membershipDisclaimer { grid-column: 1; grid-row: 2; }
   .home .trainingAreas { grid-template-columns: 1fr; }
   .home .trainingArea { padding-inline: 0; }
-  .home .trainingIntro { gap: 16px; }
+  /* Give the display heading the full width; the logo sits above it. */
+  .home .trainingIntro { flex-direction: column-reverse; gap: 16px; }
   .home .infotepLogo { width: 123.2px; height: 123.2px; }
 }
 

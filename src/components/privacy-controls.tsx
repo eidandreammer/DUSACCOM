@@ -166,7 +166,7 @@ export function CookieSettings() {
   const open = useContext(Preferences);
   const { lang } = useLanguage();
   return (
-    <button onClick={open} className="min-h-11 text-left hover:text-white">
+    <button onClick={open} className="min-h-11 text-left font-sans hover:text-white">
       {lang === 'en' ? 'Cookie Settings' : 'Configuración de Cookies'}
     </button>
   );
