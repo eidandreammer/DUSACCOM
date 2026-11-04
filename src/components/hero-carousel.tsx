@@ -32,7 +32,7 @@ export function HeroCarousel({ children }: { children: ReactNode }) {
     advance();
   }
 
-  return <section className={`home-hero ${styles.hero}`} aria-labelledby="about-title" onClick={onHeroClick}>
+  return <section className={`home-hero ${styles.hero}`} data-active-image={images[active].file} aria-labelledby="about-title" onClick={onHeroClick}>
     <div className={styles.heroSlides} aria-hidden="true">
       {images.map(({ name }, index) => <Image key={name} src={`/assets/hero-${name}.jpg`} alt="" fill sizes="100vw" priority={index === 0}
         loading={index === 0 ? undefined : 'eager'} className={`${styles.heroImage} ${index === active ? styles.heroImageActive : ''}`} />)}
