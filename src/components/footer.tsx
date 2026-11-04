@@ -7,6 +7,7 @@ import { site } from '@/lib/site';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
 import { FooterAccount } from './footer-account';
+import { BiteSitesBadge } from './bitesites-badge';
 
 export function Footer() {
   const { lang } = useLanguage();
@@ -83,6 +84,7 @@ export function Footer() {
           <CookieSettings />
         </div>
       </div>
+      <BiteSitesBadge />
     </footer>
   );
 }

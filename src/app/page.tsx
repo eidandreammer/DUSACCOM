@@ -28,24 +28,24 @@ export default function Home() {
       {/* Keep this hook: the header tracks the hero's visibility. */}
       <HeroCarousel>
         <div className={`${styles.container} ${styles.heroLayout}`}>
-          <div className={`surface ${styles.heroCopy}`}>
+          <header className={`surface ${styles.heroCopy}`}>
             <p className={styles.label}>{copy.aboutEyebrow}</p>
             <h1 id="about-title" className={styles.heroTitle}>
               <span className={styles.heroBrand} aria-label="DUSACCOM"><span className={styles.brandBlue}>DUS</span><span className={styles.brandWhite}>AC</span><span className={styles.brandRed}>COM</span></span>
             </h1>
             <p className={styles.statement}>{copy.aboutStatement}</p>
             <p className={`${styles.body} ${styles.heroDescription}`}>{t.aboutPage.description}</p>
-          </div>
+          </header>
           <div className={styles.heroFooter}>
             <p className={styles.heroFootnote}>{copy.aboutFootnote}</p>
-            <div className={styles.heroActions}>
+            <nav className={styles.heroActions} aria-label={lang === 'en' ? 'Explore DUSACCOM' : 'Explora DUSACCOM'}>
               <a href="#membership-application" className={`${styles.primaryAction} hover-scale`}>
                 {copy.startMembership}<ArrowRight size={18} aria-hidden="true" />
               </a>
               <a href="#mission" className={`${styles.link} ${styles.heroLink}`}>
                 {copy.discoverPurpose}<ArrowDown size={18} aria-hidden="true" />
               </a>
-            </div>
+            </nav>
           </div>
         </div>
       </HeroCarousel>

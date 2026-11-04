@@ -6,43 +6,44 @@ import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { PrivacyProvider } from '@/components/privacy-controls';
 import { LanguageProvider } from '@/lib/language-context';
-import { site } from '@/lib/site';
+import { canonicalUrl, site, socialImage } from '@/lib/site';
+import { BusinessJsonLd, dusaccomEntity } from '@/components/business-json-ld';
 import { fontVariables } from './fonts';
 import './globals.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: 'DUSACCOM | Two Nations. One Business Community.', template: '%s | DUSACCOM' },
+  title: { default: 'DUSACCOM | Dominican USA Chamber of Commerce', template: '%s | DUSACCOM' },
   description: site.description,
-  alternates: { canonical: '/' },
+  applicationName: site.name,
+  alternates: { canonical: canonicalUrl() },
   openGraph: {
     type: 'website',
     siteName: site.fullName,
     locale: 'en_US',
-    title: 'DUSACCOM — Two nations. One business community.',
+    title: 'DUSACCOM | Dominican USA Chamber of Commerce',
     description: site.description,
-    url: '/',
-    images: [{ url: '/assets/new-york.jpg', width: 1400, height: 933, alt: 'New York City skyline at golden hour' }],
+    url: canonicalUrl(),
+    images: [socialImage],
   },
-  twitter: { card: 'summary_large_image' },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'DUSACCOM | Dominican USA Chamber of Commerce',
+    description: site.description,
+    images: [socialImage],
+  },
   icons: { icon: '/assets/favicon.ico' },
-  robots: { index: true, follow: true },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1, 'max-video-preview': -1 },
+  },
 };
 
 export const viewport: Viewport = { width: 'device-width', initialScale: 1, themeColor: '#032a63' };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const nonce = process.env.FIREBASE_HOSTING === 'true' ? undefined : (await headers()).get('x-nonce') || undefined;
-  const organization = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: site.fullName,
-    alternateName: site.name,
-    url: site.url,
-    email: site.email,
-    telephone: site.phoneHref,
-    description: site.description,
-  };
 
   return (
     <html lang="en" className={fontVariables}>
@@ -59,11 +60,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             </PrivacyProvider>
           </AuthProvider>
         </LanguageProvider>
-        <script
-          nonce={nonce}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organization).replace(/</g, '\\u003c') }}
-        />
+        <BusinessJsonLd business={dusaccomEntity} nonce={nonce} />
       </body>
     </html>
   );
