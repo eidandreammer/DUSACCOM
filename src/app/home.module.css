@@ -147,6 +147,9 @@
 .home .heroFootnote {
   margin: 0;
   max-width: 42ch;
+  background: transparent;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   color: #d9e2e9;
   font-size: var(--type-caption);
   line-height: 1.6;
