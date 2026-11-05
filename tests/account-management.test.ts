@@ -61,6 +61,20 @@ test('the API fails closed until bypassing parent approval through Firebase clie
   assert.equal((await call('begin-self-deletion')).status, 503);
 });
 
+test('account management accepts the two site origins and rejects lookalikes', async () => {
+  const f = fixture();
+  for (const origin of ['https://dusaccom.web.app', 'https://dusaccnj.org']) {
+    const response = await f.call('availability', 'parent', {}, origin);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('access-control-allow-origin'), origin);
+  }
+  for (const origin of ['https://dusaccnj.org.evil.example', 'http://dusaccnj.org', 'https://evil.example']) {
+    const response = await f.call('availability', 'parent', {}, origin);
+    assert.equal(response.status, 403);
+    assert.equal(response.headers.get('access-control-allow-origin'), null);
+  }
+});
+
 test('only the enabled parent can permanently delete its own delegates', async () => {
   const f = fixture();
   for (const actor of ['person', 'other-parent', 'delegate']) assert.equal((await f.call('delete-delegate', actor, { targetUid: 'delegate' })).status, 403);
