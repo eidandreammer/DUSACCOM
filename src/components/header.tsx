@@ -3,10 +3,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, ChevronDown, ChevronUp, Globe, Menu, X } from 'lucide-react';
+import { ChevronDown, Globe, Menu, X } from 'lucide-react';
 import { ProfileMenu } from './profile-menu';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
+import { homeLink, isNavigationLinkCurrent, navigationGroups, type NavigationLink } from '@/lib/navigation';
 
 // The emblem is an image; the wordmark is live Merengue Bold text so it stays
 // crisp at every size and can change color with the header state.
@@ -36,22 +37,33 @@ export function Header() {
   const { lang, toggleLang } = useLanguage();
   const t = translations[lang];
   const [open, setOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const RegistrationChevron = dropdownOpen ? ChevronUp : ChevronDown;
+  const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
+  const [currentHash, setCurrentHash] = useState('');
   const [profileOpen, setProfileOpen] = useState(false);
   const toggle = useRef<HTMLButtonElement>(null);
-  const registrationToggle = useRef<HTMLButtonElement>(null);
-  const registration = useRef<HTMLDivElement>(null);
-  const registrationLinks = [{ href: '/#register-form', label: t.nav.viewTiers, accent: 'red' }, { href: '/#events', label: t.nav.events, accent: 'blue' }];
-  const registrationActive = pathname === '/membership';
-  const closeNavigation = () => { setOpen(false); setDropdownOpen(false); };
+  const closeNavigation = () => { setOpen(false); setDropdownOpen(null); };
+  const followLink = (href: string) => {
+    setCurrentHash(href.includes('#') ? `#${href.split('#')[1]}` : '');
+    closeNavigation();
+  };
+
+  useEffect(() => {
+    const updateHash = () => setCurrentHash(window.location.hash);
+    updateHash();
+    window.addEventListener('hashchange', updateHash);
+    window.addEventListener('popstate', updateHash);
+    return () => {
+      window.removeEventListener('hashchange', updateHash);
+      window.removeEventListener('popstate', updateHash);
+    };
+  }, [pathname]);
 
   useEffect(() => {
     function escape(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         if (dropdownOpen) {
-          setDropdownOpen(false);
-          registrationToggle.current?.focus();
+          header.current?.querySelector<HTMLButtonElement>('[data-group-toggle][aria-expanded="true"]')?.focus();
+          setDropdownOpen(null);
         } else if (open) {
           setOpen(false);
           toggle.current?.focus();
@@ -59,7 +71,10 @@ export function Header() {
       }
     }
     function outside(e: PointerEvent) {
-      if (!registration.current?.contains(e.target as Node)) setDropdownOpen(false);
+      if (!(e.target instanceof Element) || !header.current?.contains(e.target) ||
+          e.target.closest('[data-navigation-group]')?.getAttribute('data-navigation-group') !== dropdownOpen) {
+        setDropdownOpen(null);
+      }
     }
     document.addEventListener('keydown', escape);
     document.addEventListener('pointerdown', outside);
@@ -156,7 +171,33 @@ export function Header() {
   }, [isHome, pathname, open, dropdownOpen, profileOpen]);
 
   const navLinkClass = (href: string) =>
-    `header-nav-link hover-scale ${href === '/about' || href === '/infotep' || href === '/contact' ? 'header-nav-link-blue' : ''} flex min-h-12 items-center text-base font-semibold transition-colors ${pathname === href ? 'is-active' : ''}`;
+    `header-nav-link hover-scale flex min-h-12 items-center text-base font-semibold transition-colors ${isNavigationLinkCurrent(href, pathname, currentHash) ? 'is-active' : ''}`;
+  const renderLink = (link: NavigationLink, className: string) => (
+    <Link key={link.href} href={link.href} onClick={() => followLink(link.href)}
+      aria-current={isNavigationLinkCurrent(link.href, pathname, currentHash) ? (link.href.includes('#') ? 'location' : 'page') : undefined}
+      className={className}>
+      {link.label === 'infotep' ? <InfotepMark /> : t.nav[link.label]}
+    </Link>
+  );
+  const renderGroups = (mobile: boolean) => navigationGroups.map(group => {
+    const panelId = mobile ? `mobile-${group.id}-submenu` : group.id === 'participate' ? 'registration-submenu' : `${group.id}-submenu`;
+    const groupKey = `${mobile ? 'mobile' : 'desktop'}-${group.id}`;
+    const expanded = dropdownOpen === groupKey;
+    const active = group.links.some(link => isNavigationLinkCurrent(link.href, pathname, currentHash));
+    return (
+      <div key={group.id} data-navigation-group={groupKey} className={mobile ? 'registration-details border-t py-1' : 'relative'}
+        onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setDropdownOpen(null); }}>
+        <button type="button" data-group-toggle aria-expanded={expanded} aria-controls={panelId}
+          className={`header-nav-link hover-scale flex min-h-12 items-center gap-2 text-base font-semibold ${mobile ? 'w-full justify-between py-3' : 'header-pill'} ${active ? 'is-active' : ''}`}
+          onClick={() => setDropdownOpen(expanded ? null : groupKey)}>
+          {t.nav[group.label]}<ChevronDown size={16} aria-hidden="true" className={expanded ? 'rotate-180' : ''} />
+        </button>
+        <div id={panelId} hidden={!expanded} className={mobile ? 'pb-2' : 'header-menu-panel absolute top-full right-0 max-h-[calc(100dvh-140px)] w-80 overflow-y-auto rounded-lg border p-2'}>
+          {group.links.map(link => renderLink(link, 'registration-link hover-scale flex min-h-12 items-center rounded-lg px-4 py-3 text-sm font-medium leading-6'))}
+        </div>
+      </div>
+    );
+  });
 
   return (
     <>
@@ -165,41 +206,21 @@ export function Header() {
       <div className="header-surface relative border-b">
         <div className="container flex min-h-26 items-center gap-3 sm:gap-6">
           <Brand />
-          <nav aria-label="Main navigation" className="ml-auto hidden items-center gap-2 lg:flex">
-            <a href="/#about" className={`${navLinkClass('/about')} header-pill`}>{t.nav.about}</a>
-            <div ref={registration} className="relative" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setDropdownOpen(false); }}>
-              <div className="header-pill header-pill-group flex items-center">
-                <a href="/#register-form" onClick={closeNavigation} className={navLinkClass(registrationActive ? pathname : '/membership')}>{t.nav.registration}</a>
-                <button type="button" ref={registrationToggle} className="header-nav-link hover-scale flex size-11 items-center justify-center" aria-label={`${t.nav.registration}: ${t.nav.quickLinks}`} aria-expanded={dropdownOpen} aria-controls="registration-submenu" onClick={() => setDropdownOpen(previous => !previous)}>
-                  <RegistrationChevron size={16} aria-hidden="true" className="pointer-events-none block shrink-0" />
-                </button>
-              </div>
-              <div id="registration-submenu" hidden={!dropdownOpen} className="header-menu-panel absolute top-full right-0 w-80 rounded-lg border p-2">
-                {registrationLinks.map(({ href, label, accent }) => <a key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} data-accent={accent} className="registration-link hover-scale flex min-h-12 items-center rounded-lg px-4 py-3 text-sm font-medium leading-6">{label}</a>)}
-              </div>
-            </div>
-            <a href="/#infotep" className={`${navLinkClass('/infotep')} header-pill`}><InfotepMark /></a>
-            <a href="/#events" onClick={closeNavigation} className={`${navLinkClass('/#events')} header-pill`}>{t.nav.events}</a>
-            <Link href="/contact" aria-current={pathname === '/contact' ? 'page' : undefined} className={`${navLinkClass('/contact')} header-pill`}>{t.nav.contact}</Link>
+          <nav aria-label={t.nav.mainNavigation} className="ml-auto hidden items-center gap-2 lg:flex">
+            {renderLink(homeLink, `${navLinkClass('/')} header-pill`)}
+            {renderGroups(false)}
           </nav>
           <div className="header-controls ml-auto flex shrink-0 items-center gap-2 lg:ml-0">
             <button onClick={toggleLang} aria-label={t.nav.shiftLangAria} className="header-language header-pill hover-scale inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-bold hover:border-crimson">
               <Globe size={16} aria-hidden="true" /><span>{lang === 'en' ? 'EN / ES' : 'ES / EN'}</span>
             </button>
-            <button ref={toggle} className="icon-button header-pill hover-scale lg:hidden" aria-label={open ? t.nav.closeMenu : t.nav.openMenu} aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen(!open)}>{open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}</button>
+            <button ref={toggle} className="icon-button header-pill hover-scale lg:hidden" aria-label={open ? t.nav.closeMenu : t.nav.openMenu} aria-expanded={open} aria-controls="mobile-navigation" onClick={() => { setOpen(!open); setDropdownOpen(null); }}>{open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}</button>
             <ProfileMenu onOpenChange={setProfileOpen} />
           </div>
         </div>
-        <nav id="mobile-navigation" aria-label="Mobile navigation" hidden={!open} className="header-menu-panel absolute top-full right-0 left-0 max-h-[calc(100dvh-84px)] overflow-y-auto border-t px-6 py-4 lg:hidden">
-          <a href="/#about" className={navLinkClass('/about')} onClick={closeNavigation}>{t.nav.about}</a>
-          <details className="registration-details border-y py-1">
-            <summary className="header-nav-link hover-scale cursor-pointer py-3 text-base font-semibold">{t.nav.registration}</summary>
-            <a href="/#register-form" onClick={closeNavigation} data-accent="red" className="registration-link hover-scale flex min-h-11 items-center rounded-lg px-4 text-sm font-semibold">{t.nav.registration}<ArrowUpRight size={16} className="ml-2" aria-hidden="true" /></a>
-            {registrationLinks.map(({ href, label, accent }) => <a key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} data-accent={accent} className="registration-link hover-scale flex min-h-12 items-center rounded-lg px-4 py-2 text-sm">{label}</a>)}
-          </details>
-          <a href="/#infotep" className={navLinkClass('/infotep')} onClick={closeNavigation}><InfotepMark /></a>
-          <a href="/#events" className={navLinkClass('/#events')} onClick={closeNavigation}>{t.nav.events}</a>
-          <Link href="/contact" className={navLinkClass('/contact')} onClick={closeNavigation}>{t.nav.contact}</Link>
+        <nav id="mobile-navigation" aria-label={t.nav.mobileNavigation} hidden={!open} className="header-menu-panel absolute top-full right-0 left-0 max-h-[calc(100dvh-104px)] overflow-y-auto border-t px-6 py-4 lg:hidden">
+          {renderLink(homeLink, navLinkClass('/'))}
+          {renderGroups(true)}
         </nav>
       </div>
     </header>

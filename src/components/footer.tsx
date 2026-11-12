@@ -6,6 +6,7 @@ import { CookieSettings } from './privacy-controls';
 import { site } from '@/lib/site';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
+import { homeLink, legalLinks, navigationGroups } from '@/lib/navigation';
 import { FooterAccount } from './footer-account';
 import { BiteSitesBadge } from './bitesites-badge';
 
@@ -15,7 +16,7 @@ export function Footer() {
 
   return (
     <footer className="bg-[#0c2334] pt-14 text-slate-300">
-      <div className="container grid gap-10 pb-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.1fr]">
+      <div className="container grid gap-10 pb-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(3,minmax(0,1fr))]">
         {/* Brand column */}
         <div className="sm:col-span-2 lg:col-span-1">
           <Link href="/" aria-label="DUSACCOM home" className="inline-block">
@@ -41,19 +42,19 @@ export function Footer() {
           </div>
         </div>
 
-        {/* The Chamber links */}
-        <div className="footer-links">
-          <h2>{t.footer.chamberTitle}</h2>
-          <a href="/#about">{t.footer.about}</a>
-          <a href="/#mission">{t.footer.mission}</a>
-          <a href="/#membership">{t.footer.becomeMember}</a>
-          <a href="/#register-form">{t.nav.registration}</a>
-          <a href="/#infotep">{t.footer.infotep}</a>
-          <a href="/#events">{t.nav.events}</a>
-        </div>
+        {navigationGroups.map(group => (
+          <div key={group.id}>
+            <nav className="footer-links" aria-labelledby={`footer-${group.id}`}>
+              <h2 id={`footer-${group.id}`}>{t.nav[group.label]}</h2>
+              {group.id === 'chamber' && <Link href={homeLink.href}>{t.nav[homeLink.label]}</Link>}
+              {group.links.map(link => <Link key={link.href} href={link.href}>{t.nav[link.label]}</Link>)}
+            </nav>
+            {group.id === 'participate' && <div className="mt-6"><FooterAccount /></div>}
+          </div>
+        ))}
 
         {/* Let's connect links */}
-        <div className="footer-links">
+        <div className="footer-links sm:col-span-2 lg:col-span-4">
           <h2>{t.footer.connectTitle}</h2>
           <a href={`mailto:${site.email}`}>{site.email}</a>
           <a href={`tel:${site.phoneHref}`}>{site.phone}</a>
@@ -66,7 +67,6 @@ export function Footer() {
             {t.footer.noPayments}
           </span>
         </div>
-        <FooterAccount />
       </div>
 
       {/* Bottom bar */}
@@ -75,12 +75,11 @@ export function Footer() {
           © {new Date().getFullYear()} {site.fullName}. {t.footer.rightsReserved}
         </span>
         <div className="flex flex-wrap gap-5">
-          <Link className="flex min-h-11 items-center hover:text-white" href="/privacy">
-            {t.footer.privacy}
-          </Link>
-          <Link className="flex min-h-11 items-center hover:text-white" href="/terms">
-            {t.footer.terms}
-          </Link>
+          {legalLinks.map(link => (
+            <Link key={link.href} className="flex min-h-11 items-center hover:text-white" href={link.href}>
+              {t.footer[link.label]}
+            </Link>
+          ))}
           <CookieSettings />
         </div>
       </div>
