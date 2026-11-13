@@ -28,7 +28,10 @@ for (const path of paths) {
     assert.match(html, /<option value="nonprofit">/, 'Nonprofit registration is available');
     assert.match(html, /href="#register-form"/, 'Membership cards lead to the main-page form');
     assert.match(html, /home-hero/, 'Header visibility hook is preserved');
-    for (const { name } of heroImages) assert.match(html, new RegExp(`/assets/hero-${name}-`), `Cultural hero photo ${name} is present`);
+    // The slideshow prerenders its active image and loads later slides in the
+    // browser. Check the baseline image and fetch every configured slide asset.
+    assert.match(html, new RegExp(`/assets/hero-${heroImages[0].name}-`), 'Initial hero photo is prerendered');
+    for (const { name } of heroImages) assets.add(`/assets/hero-${name}-1200.webp`);
     for (const photo of ['culture-carnival', 'culture-dance']) assert.doesNotMatch(html, new RegExp(`/assets/hero-${photo}-`), `Removed cultural hero photo ${photo} is absent`);
     assert.match(html, /id="registration-submenu"/, 'Registration dropdown is preserved');
     assert.match(html, /id="mobile-navigation"/, 'Mobile navigation is preserved');

@@ -12,7 +12,11 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "cleanUrls": true,
     "trailingSlash": true,
-    "rewrites": [{ "source": "/api/account-management/**", "function": { "functionId": "accountApi", "region": "us-east4" } }],
+    "rewrites": [
+      { "source": "/api/account-management/**", "function": { "functionId": "accountApi", "region": "us-east4" } },
+      { "source": "/api/account-password", "function": { "functionId": "accountPasswordApi", "region": "us-east4" } },
+      { "source": "/api/account-email/**", "function": { "functionId": "accountEmailApi", "region": "us-east4" } }
+    ],
     "headers": [
       { "source": "**", "headers": [
         { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" },

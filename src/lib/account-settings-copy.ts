@@ -1,5 +1,6 @@
 export const accountSettingsCopy = {
   en: {
+    verifyEmail: 'Send email verification link', verificationSent: 'A verification link was sent to your current email address.',
     title: 'Account settings', profile: 'Edit profile', password: 'Change password', email: 'Change email',
     name: 'Full name', currentPassword: 'Current password', newPassword: 'New password', confirmPassword: 'Confirm new password', newEmail: 'New email address',
     save: 'Save changes', saving: 'Saving…', nameSaved: 'Your name was updated.', passwordSaved: 'Your password was changed.',
@@ -22,6 +23,7 @@ export const accountSettingsCopy = {
     tooEarly: 'Hold the button continuously for five seconds.', failed: 'The change could not be completed. Please try again.',
   },
   es: {
+    verifyEmail: 'Enviar enlace de verificación', verificationSent: 'Enviamos un enlace de verificación a tu correo actual.',
     title: 'Configuración de la cuenta', profile: 'Editar perfil', password: 'Cambiar contraseña', email: 'Cambiar correo',
     name: 'Nombre completo', currentPassword: 'Contraseña actual', newPassword: 'Nueva contraseña', confirmPassword: 'Confirmar nueva contraseña', newEmail: 'Nuevo correo electrónico',
     save: 'Guardar cambios', saving: 'Guardando…', nameSaved: 'Tu nombre fue actualizado.', passwordSaved: 'Tu contraseña fue cambiada.',

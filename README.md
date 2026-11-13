@@ -8,6 +8,10 @@ The website runs on classic Firebase Hosting and the existing Firebase backend. 
 
 [Membership applications](docs/MEMBERSHIP_ACCOUNTS.md) require sign-in or consented account creation and save private company/pathway details for the profile card. Contact and event forms support guests.
 
+## Account emails
+
+Production account email uses Resend with `noreply@dusaccnj.org`. Password resets, email verification, and verified address changes use branded English/Spanish templates with Firebase-generated secure action links on `dusaccnj.org`. Welcome, Account settings password-change, and deletion notices are delivered by the private account-email queue. Firebase SMTP also uses Resend for native security/recovery messages. See [account email setup and validation](docs/ACCOUNT_EMAILS.md).
+
 ## Start
 
 Requires Node.js 22.16+ and npm.

@@ -13,6 +13,7 @@ import { DelegatedAdminManager } from '@/components/delegated-admin-manager';
 import { AccountSettings } from '@/components/account-settings';
 import { accountSettingsCopy } from '@/lib/account-settings-copy';
 import { accountContinuationHref, afterAuthentication } from '@/lib/account-navigation';
+import { accountEmailRequest, sendAccountVerificationEmail } from '@/lib/account-management';
 import { passwordResetRecoveryHref } from '@/lib/password-reset';
 import styles from '@/components/account.module.css';
 
@@ -50,15 +51,17 @@ export default function AccountPage() {
       const loginEmail = mode !== 'signup' && username ? teamLoginEmail(email, username) : email;
       auth.languageCode = lang;
       if (mode === 'reset') {
-        await sendPasswordResetEmail(auth, loginEmail, { url: `${site.url}${accountContinuationHref(window.location.search)}` });
+        if (process.env.NEXT_PUBLIC_ACCOUNT_EMAILS_ENABLED === 'true') await accountEmailRequest('password-reset', { email: loginEmail, lang, continueUrl: `${site.url}${accountContinuationHref(window.location.search)}` }, false);
+        else await sendPasswordResetEmail(auth, loginEmail, { url: `${site.url}${accountContinuationHref(window.location.search)}` });
         setResetSent(true);
-        if (['dusaccom.web.app', 'dusaccom.firebaseapp.com'].includes(window.location.hostname)) {
+        if (process.env.NEXT_PUBLIC_ACCOUNT_EMAILS_ENABLED !== 'true' && ['dusaccom.web.app', 'dusaccom.firebaseapp.com'].includes(window.location.hostname)) {
           window.location.replace(passwordResetRecoveryHref(auth.app.options.projectId!, window.location.search));
         }
       }
       else if (mode === 'signup') {
         const credential = await createUserWithEmailAndPassword(auth, email, password);
         await updateProfile(credential.user, { displayName: String(data.get('name')).trim() }).catch(() => {});
+        if (process.env.NEXT_PUBLIC_ACCOUNT_EMAILS_ENABLED === 'true') await sendAccountVerificationEmail(lang).catch(() => {});
       } else await signInWithEmailAndPassword(auth, loginEmail, password);
       if (mode !== 'reset') window.location.replace(afterAuthentication(window.location.search));
     } catch (error) { setError(error instanceof Error && error.message === 'team/invalid-login' ? teamCopy[lang].invalid : accountError(error, lang)); }

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { getFirebase } from './firebase';
+import { sendAccountVerificationEmail } from './account-management';
 import { teamLoginEmail } from './team-login';
 
 const signup = z.object({
@@ -10,13 +11,14 @@ const signup = z.object({
   confirmation: z.string().min(8).max(128),
 }).strict().refine(input => input.password === input.confirmation);
 
-export async function createMembershipAccount(input: z.input<typeof signup>) {
+export async function createMembershipAccount(input: z.input<typeof signup>, lang: 'en' | 'es' = 'en') {
   const values = signup.parse(input);
   const { auth } = getFirebase();
   const credential = await createUserWithEmailAndPassword(auth, values.email, values.password);
   // The login already exists if the optional name update fails. Preserve the
   // successful account creation; its name can also be edited in settings.
   await updateProfile(credential.user, { displayName: values.name }).catch(() => {});
+  if (process.env.NEXT_PUBLIC_ACCOUNT_EMAILS_ENABLED === 'true') await sendAccountVerificationEmail(lang).catch(() => {});
   return credential.user;
 }
 export async function signInForMembership(email: string, password: string, username = '') {

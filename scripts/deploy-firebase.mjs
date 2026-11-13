@@ -19,6 +19,9 @@ const mode = process.argv[2];
 if (mode && !['--hosting-only', '--accounts'].includes(mode)) throw new Error('Unknown deployment mode.');
 const filename = join(root, `.firebase-hosting-only.${randomUUID()}.json`);
 const config = JSON.parse(await readFile(join(root, 'firebase.json'), 'utf8'));
+if (process.env.NEXT_PUBLIC_ACCOUNT_EMAILS_ENABLED !== 'true') {
+  config.hosting.rewrites = config.hosting.rewrites.filter(rule => !['accountPasswordApi', 'accountEmailApi'].includes(rule.function?.functionId));
+}
 if (mode !== '--accounts') config.hosting.headers.push(...await staticSecurityHeaders(join(root, 'out')));
 if (mode === '--hosting-only') {
   delete config.functions;

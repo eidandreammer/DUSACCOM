@@ -5,7 +5,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { useAuth } from '@/lib/auth-context';
 import { useLanguage } from '@/lib/language-context';
 import { getFirebase } from '@/lib/firebase';
-import { beginAccountDeletion, changeAccountEmail, changeAccountName, changeAccountPassword, finishAccountDeletion, requestDelegateDeletion } from '@/lib/account-management';
+import { beginAccountDeletion, changeAccountEmail, changeAccountName, changeAccountPassword, finishAccountDeletion, requestDelegateDeletion, sendAccountVerificationEmail } from '@/lib/account-management';
 import { accountSettingsCopy, settingsError } from '@/lib/account-settings-copy';
 import { teamCopy } from '@/lib/team-copy';
 import { useAccountDeletion } from '@/lib/use-account-deletion';
@@ -56,10 +56,16 @@ export function AccountSettings({ onDeleted }: { onDeleted: () => void }) {
     setBusy(true);
     try {
       if (action === 'profile') { await changeAccountName(String(data.get('displayName'))); await refreshAccount(); setMessage(t.nameSaved); }
-      else if (action === 'password') { await changeAccountPassword(String(data.get('currentPassword')), String(data.get('newPassword'))); await refreshAccount(); setMessage(t.passwordSaved); }
+      else if (action === 'password') { await changeAccountPassword(String(data.get('currentPassword')), String(data.get('newPassword')), lang); await refreshAccount(); setMessage(t.passwordSaved); }
       else { await changeAccountEmail(String(data.get('currentPassword')), String(data.get('newEmail')), lang); setMessage(t.emailSent); }
       form.reset();
     } catch (error) { setError(settingsError(error, lang)); }
+    finally { setBusy(false); }
+  }
+  async function verifyEmail() {
+    setBusy(true); setError(''); setMessage('');
+    try { await sendAccountVerificationEmail(lang); setMessage(t.verificationSent); }
+    catch (error) { setError(settingsError(error, lang)); }
     finally { setBusy(false); }
   }
   function cancel() { if (!busy) { setConfirming(false); setConfirmation(''); setError(''); } }
@@ -86,6 +92,7 @@ export function AccountSettings({ onDeleted }: { onDeleted: () => void }) {
   const currentPassword = <label htmlFor={`${id}-${section}-current-password`}>{t.currentPassword}<input id={`${id}-${section}-current-password`} name="currentPassword" type="password" autoComplete="current-password" required maxLength={128} /></label>;
   return <section ref={panel} id="account-settings" className={`surface ${styles.panel}`} aria-labelledby={`${id}-title`}>
     <h2 id={`${id}-title`}>{t.title}</h2>
+    {!user.emailVerified && !parentUid && <button type="button" className={accountStyles.secondary} disabled={busy} onClick={verifyEmail}>{t.verifyEmail}</button>}
     <details open={section === 'profile'}>
       <summary>{t.profile}</summary>
       <form className={accountStyles.form} onSubmit={event => save(event, 'profile')}>
