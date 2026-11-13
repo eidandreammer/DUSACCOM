@@ -77,5 +77,5 @@ const verified = await readConfig();
 const result = verified.notification?.sendEmail;
 if (result?.method !== 'CUSTOM_SMTP' || result.smtp?.host !== smtp.host || result.smtp?.senderEmail !== smtp.senderEmail) throw new Error('Firebase SMTP configuration read-back failed.');
 console.log('Firebase: Resend SMTP and noreply@dusaccnj.org configured and read back successfully.');
-console.log(customTemplates ? 'DUSACCOM action-email templates and domain applied.' : 'Firebase locks action-email text and handler URL on this project; its existing DUSACCOM templates and working Firebase action handler remain in use through Resend SMTP.');
+console.log(customTemplates ? 'DUSACCOM action-email templates and domain applied.' : 'Firebase locks native action-email templates and the handler URL on this project. Native text uses the Google Auth Platform brand for %APP_NAME%; verify that brand is DUSACCOM. Branded website action emails are sent separately through Resend.');
 console.log('Next: install the RESEND_API_KEY secret, enable ACCOUNT_EMAILS_ENABLED in functions and NEXT_PUBLIC_ACCOUNT_EMAILS_ENABLED in the website, deploy functions then Hosting, and test delivery to an authorized test mailbox.');

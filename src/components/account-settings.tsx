@@ -57,7 +57,11 @@ export function AccountSettings({ onDeleted }: { onDeleted: () => void }) {
     try {
       if (action === 'profile') { await changeAccountName(String(data.get('displayName'))); await refreshAccount(); setMessage(t.nameSaved); }
       else if (action === 'password') { await changeAccountPassword(String(data.get('currentPassword')), String(data.get('newPassword')), lang); await refreshAccount(); setMessage(t.passwordSaved); }
-      else { await changeAccountEmail(String(data.get('currentPassword')), String(data.get('newEmail')), lang); setMessage(t.emailSent); }
+      else {
+        const email = String(data.get('newEmail')).trim();
+        await changeAccountEmail(String(data.get('currentPassword')), email, lang);
+        setMessage(t.emailSent.replace('{email}', email));
+      }
       form.reset();
     } catch (error) { setError(settingsError(error, lang)); }
     finally { setBusy(false); }
@@ -121,7 +125,7 @@ export function AccountSettings({ onDeleted }: { onDeleted: () => void }) {
           <label htmlFor={`${id}-email-current`}>{t.currentPassword}<input id={`${id}-email-current`} name="currentPassword" type="password" autoComplete="current-password" required maxLength={128} /></label>
           <label htmlFor={`${id}-new-email`}>{t.newEmail}<input id={`${id}-new-email`} name="newEmail" type="email" autoComplete="email" required maxLength={254} /></label>
           <p className={styles.hint}>{t.emailHint}</p>
-          <button className={accountStyles.primary}>{busy ? t.saving : t.save}</button>
+          <button className={accountStyles.primary}>{busy ? t.sendingEmailConfirmation : t.sendEmailConfirmation}</button>
         </fieldset>
       </form>}
     </details>
