@@ -29,13 +29,14 @@ const orphanSchema = targetSchema.extend({ username: z.string().regex(/^[a-z][a-
 const isRoot = (role: Role | undefined) => role?.enabled === true && role.parentUid == null;
 const hash = async (value: string) => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value)))).map(byte => byte.toString(16).padStart(2, '0')).join('');
 
-export function createAccountHandler({ store, verify, isEnabled = async () => true, now = Date.now, origin = 'https://dusaccom.web.app' }: {
-  store: AccountStore; verify: (token: string) => Promise<Identity>; isEnabled?: () => Promise<boolean>; now?: () => number; origin?: string;
+export function createAccountHandler({ store, verify, isEnabled = async () => true, now = Date.now, origins = ['https://dusaccom.web.app', 'https://dusaccnj.org'] }: {
+  store: AccountStore; verify: (token: string) => Promise<Identity>; isEnabled?: () => Promise<boolean>; now?: () => number; origins?: readonly string[];
 }) {
   return async (request: Request): Promise<Response> => {
     const headers = new Headers({ 'Cache-Control': 'no-store', 'Content-Type': 'application/json', 'Vary': 'Origin' });
     const reply = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers });
-    if (request.headers.get('origin') !== origin) return reply({ error: 'account/forbidden-origin' }, 403);
+    const origin = request.headers.get('origin');
+    if (!origin || !origins.includes(origin)) return reply({ error: 'account/forbidden-origin' }, 403);
     headers.set('Access-Control-Allow-Origin', origin);
     headers.set('Access-Control-Allow-Headers', 'Authorization, Content-Type');
     headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
