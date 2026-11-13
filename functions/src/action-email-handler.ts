@@ -25,7 +25,7 @@ export function accountContinuation(value = 'https://dusaccnj.org/account/') {
 export function ownedActionLink(generated: string, lang: 'en' | 'es') {
   const url = new URL(generated);
   if (url.protocol !== 'https:' || !url.searchParams.get('oobCode') || !url.searchParams.get('apiKey') || !['resetPassword', 'verifyEmail', 'verifyAndChangeEmail'].includes(url.searchParams.get('mode') || '')) throw new Error('Invalid generated action link.');
-  url.host = 'dusaccnj.org'; url.pathname = '/__/auth/action'; url.hash = '';
+  url.host = 'dusaccnj.org'; url.pathname = url.searchParams.get('mode') === 'resetPassword' ? '/account/reset-password/' : '/__/auth/action'; url.hash = '';
   url.searchParams.set('lang', lang);
   return url.href;
 }

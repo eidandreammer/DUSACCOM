@@ -32,6 +32,7 @@ test('reset mail is generic for missing accounts and uses the owned secure actio
   assert.equal(response.status, 200);
   assert.equal(f.sent[0].to, 'qa@example.com');
   const url = new URL(f.sent[0].actionUrl);
+  assert.equal(url.pathname, '/account/reset-password/');
   assert.equal(url.origin, 'https://dusaccnj.org'); assert.equal(url.searchParams.get('oobCode'), 'one-time-code'); assert.equal(url.searchParams.get('lang'), 'es');
   f.missing(); const missing = await f.call('password-reset', input, '');
   assert.deepEqual(await missing.json(), await response.json()); assert.equal(f.sent.length, 1);
@@ -58,6 +59,12 @@ test('account continuations strip arbitrary state; email templates escape action
   assert.equal(accountContinuation('https://dusaccom.web.app/account/?settings=email&redirect=https://attacker.example'), 'https://dusaccnj.org/account/?settings=email');
   assert.throws(() => ownedActionLink('https://attacker.example/?mode=resetPassword', 'en'));
   const link = ownedActionLink(generated, 'en');
+  assert.equal(new URL(link).pathname, '/account/reset-password/');
+  for (const mode of ['verifyEmail', 'verifyAndChangeEmail']) {
+    const generatedAction = new URL(generated);
+    generatedAction.searchParams.set('mode', mode);
+    assert.equal(new URL(ownedActionLink(generatedAction.href, 'es')).pathname, '/__/auth/action');
+  }
   for (const kind of ['password-reset', 'verify-email', 'change-email'] as const) {
     const mail = accountEmail(kind, '<script>', 'en', link);
     assert.ok(mail.subject.includes('DUSACCOM'));

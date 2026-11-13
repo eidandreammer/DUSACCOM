@@ -154,7 +154,24 @@ export const accountPasswordApi = onRequest({
 
 import { createActionEmailHandler, generateResetActionLink } from './action-email-handler';
 import { firebaseAuthBackend } from './auth-backend';
+import { createResetPasswordHandler, createResetPasswordCompletion, firebasePasswordReset } from './reset-password-handler';
 const mailRateStore = firebaseAuthBackend(db, auth).store;
+const resetCompletion = createResetPasswordCompletion({
+  verify: code => firebasePasswordReset(process.env.ACCOUNT_RESET_WEB_API_KEY || '', code),
+  async stage(email, lang, id) {
+    const user = await auth.getUserByEmail(email);
+    if (user.disabled || !user.email) throw new Error('Account unavailable.');
+    await outbox.doc(id).create({ kind: 'password-changed', to: user.email, name: user.displayName || '', lang, status: 'staged', createdAt: Date.now() });
+  },
+  reset: async (code, password) => { await firebasePasswordReset(process.env.ACCOUNT_RESET_WEB_API_KEY || '', code, password); },
+  ready: async id => { await outbox.doc(id).update({ status: 'ready' }); },
+  cancel: async id => { await outbox.doc(id).set({ status: 'cancelled', finishedAt: FieldValue.serverTimestamp() }); },
+});
+const resetCompletionHandler = createResetPasswordHandler({
+  enabled: () => emailEnabled() && Boolean(process.env.ACCOUNT_RESET_WEB_API_KEY),
+  reserve: async keys => Boolean(await mailRateStore.reserve(keys, Date.now())),
+  complete: resetCompletion,
+});
 const actionEmailHandler = createActionEmailHandler({
   enabled: emailEnabled,
   verify: async token => {
@@ -184,7 +201,8 @@ export const accountEmailApi = onRequest({
   if (raw.length > 2048) { res.status(413).json({ error: 'account/invalid-request' }); return; }
   const headers = new Headers();
   for (const [name, value] of Object.entries(req.headers)) if (value != null) headers.set(name, Array.isArray(value) ? value.join(',') : value);
-  const response = await actionEmailHandler(new Request(`https://dusaccnj.org${req.originalUrl}`, {
+  const handle = req.path.replace(/\/$/, '') === '/api/account-email/complete-password-reset' ? resetCompletionHandler : actionEmailHandler;
+  const response = await handle(new Request(`https://dusaccnj.org${req.originalUrl}`, {
     method: req.method, headers, ...(req.method === 'GET' || req.method === 'HEAD' ? {} : { body: raw.toString('utf8') }),
   }), req.ip || req.socket.remoteAddress || 'unknown');
   response.headers.forEach((value, name) => res.setHeader(name, value));
