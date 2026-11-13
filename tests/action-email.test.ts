@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { createActionEmailHandler, ownedActionLink, accountContinuation } from '../functions/src/action-email-handler';
+import { createActionEmailHandler, ownedActionLink, accountContinuation, generateResetActionLink } from '../functions/src/action-email-handler';
 import { accountEmail } from '../functions/src/account-email';
 
 const generated = 'https://original-project.firebaseapp.com/__/auth/action?mode=resetPassword&apiKey=public-key&oobCode=one-time-code';
@@ -65,4 +65,17 @@ test('account continuations strip arbitrary state; email templates escape action
     assert.ok(!mail.html.includes('<script>'));
   }
   assert.throws(() => accountEmail('password-reset', '', 'en', 'https://attacker.example/'));
+});
+
+
+test('missing reset accounts bypass the provider link assertion without hiding real failures', async () => {
+  let generatedCount = 0;
+  const provider = {
+    async getUserByEmail() { throw Object.assign(new Error('Missing'), { code: 'auth/user-not-found' }); },
+    async generatePasswordResetLink() { generatedCount++; throw new Error('Internal link assertion for missing account'); },
+  };
+  assert.equal(await generateResetActionLink(provider, 'missing@example.com', 'https://dusaccnj.org/account/'), null);
+  assert.equal(generatedCount, 0);
+  await assert.rejects(generateResetActionLink({ ...provider, async getUserByEmail() { throw new Error('Permission failure'); } }, 'qa@example.com', 'https://dusaccnj.org/account/'), /Permission failure/);
+  assert.equal(await generateResetActionLink({ async getUserByEmail() { return {}; }, async generatePasswordResetLink() { return generated; } }, 'qa@example.com', 'https://dusaccnj.org/account/'), generated);
 });

@@ -152,7 +152,7 @@ export const accountPasswordApi = onRequest({
   res.status(response.status).send(await response.text());
 });
 
-import { createActionEmailHandler } from './action-email-handler';
+import { createActionEmailHandler, generateResetActionLink } from './action-email-handler';
 import { firebaseAuthBackend } from './auth-backend';
 const mailRateStore = firebaseAuthBackend(db, auth).store;
 const actionEmailHandler = createActionEmailHandler({
@@ -171,8 +171,7 @@ const actionEmailHandler = createActionEmailHandler({
     const settings = { url: continueUrl };
     if (kind === 'verify-email') return auth.generateEmailVerificationLink(email, settings);
     if (kind === 'change-email') return auth.generateVerifyAndChangeEmailLink(email, newEmail!, settings);
-    try { return await auth.generatePasswordResetLink(email, settings); }
-    catch (error) { if ((error as { code?: string }).code === 'auth/user-not-found') return null; throw error; }
+    return generateResetActionLink(auth, email, continueUrl);
   },
   send: input => deliverAccountEmail(input, resendApiKey.value()),
 });

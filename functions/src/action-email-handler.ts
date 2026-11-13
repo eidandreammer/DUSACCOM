@@ -29,6 +29,20 @@ export function ownedActionLink(generated: string, lang: 'en' | 'es') {
   url.searchParams.set('lang', lang);
   return url.href;
 }
+// Identity Platform's enumeration protection can return no link for a missing
+// account, which Admin SDK 14 reports as an internal assertion. Resolve the
+// account with the privileged lookup first so missing accounts remain generic.
+export async function generateResetActionLink(provider: {
+  getUserByEmail(email: string): Promise<unknown>;
+  generatePasswordResetLink(email: string, settings: { url: string }): Promise<string>;
+}, email: string, continueUrl: string) {
+  try { await provider.getUserByEmail(email); }
+  catch (error) {
+    if (['auth/user-not-found', 'auth/email-not-found'].includes((error as { code?: string }).code || '')) return null;
+    throw error;
+  }
+  return provider.generatePasswordResetLink(email, { url: continueUrl });
+}
 export function createActionEmailHandler(deps: {
   enabled(): boolean;
   verify(token: string): Promise<Identity>;
