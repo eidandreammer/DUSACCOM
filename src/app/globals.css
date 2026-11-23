@@ -629,7 +629,7 @@
     }
   }
 }
-.footer-logo { width: 260px; max-width: 100%; }
+.footer-logo { width: 200px; max-width: 100%; }
 .footer-logo .footer-logo-image {
   display: block;
   width: 100%;
@@ -781,7 +781,32 @@
 }
 .site-header.home-header .header-profile:not([data-signed-in='true']) { background-color: rgb(3 42 99 / 22%); }
 .site-header.solid-header .header-profile:not([data-signed-in='true']) { background-color: rgb(254 254 254 / 72%); }
+/* Language selector: one pill holding a globe and three toggle buttons (EN / ES / PT). */
+.lang-switch { display: inline-flex; gap: 2px; padding: 3px 4px 3px 10px; }
+.lang-switch-icon { flex-shrink: 0; margin-right: 4px; }
+.lang-switch-option {
+  min-width: 34px;
+  min-height: 36px;
+  padding-inline: 6px;
+  border-radius: 10px;
+  font-size: var(--type-label);
+  font-weight: 700;
+  letter-spacing: .02em;
+  color: inherit;
+  transition: background-color .2s ease, color .2s ease;
+}
+.lang-switch-option:hover { background-color: rgb(254 254 254 / 18%); }
+.site-header.solid-header .lang-switch-option:hover { background-color: rgb(3 42 99 / 8%); }
+.lang-switch-option[aria-pressed='true'] { background-color: var(--color-crimson); color: var(--color-white, #fff); }
+@media (max-width: 400px) {
+  .lang-switch { padding-inline: 4px; }
+  .lang-switch-icon { display: none; }
+  .lang-switch-option { min-width: 32px; padding-inline: 4px; }
+}
 .header-pill-group { padding-inline: 16px 4px; }
 .header-pill-group > a { min-height: 0; }
 .header-pill-group > button { width: 32px; height: 32px; }
 .icon-button.header-pill { width: 44px; padding-inline: 0; }
+
+/* BiteSites credit strip: sits right under the footer's own bottom bar. */
+footer .bitesites-credit { margin-top: 12px; }

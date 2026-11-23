@@ -8,7 +8,13 @@ import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
 import { homeLink, legalLinks, navigationGroups } from '@/lib/navigation';
 import { FooterAccount } from './footer-account';
-import { BiteSitesBadge } from './bitesites-badge';
+import BiteSitesCreditFooter from './bitesites/bitesites-credit-footer.jsx';
+
+const madeBy = {
+  en: { eyebrow: 'Made by', label: 'Made by BiteSites — visit bitesites.org' },
+  es: { eyebrow: 'Hecho por', label: 'Hecho por BiteSites — visita bitesites.org' },
+  pt: { eyebrow: 'Feito por', label: 'Feito por BiteSites — visite bitesites.org' },
+} as const;
 
 export function Footer() {
   const { lang } = useLanguage();
@@ -19,13 +25,14 @@ export function Footer() {
       <div className="container grid gap-8 pb-12 lg:grid-cols-[minmax(220px,1fr)_minmax(0,2fr)]">
         {/* Brand column */}
         <div className="max-w-sm">
-          <Link href="/" aria-label="DUSACCOM home" className="inline-block">
+          <Link href="/" aria-label={t.common.brandHomeAria} className="inline-block">
             <div className="footer-logo">
               <Image
-                src="/imgs/DUSACCOM complete logo.png"
-                alt="DUSACCOM complete logo"
-                width={2248}
-                height={2048}
+                src="/assets/dominican-usa-chamber-of-commerce-nj-logo-reversed.svg"
+                alt={t.common.logoAlt}
+                width={214}
+                height={200}
+                unoptimized
                 className="footer-logo-image"
               />
             </div>
@@ -34,10 +41,10 @@ export function Footer() {
             {t.footer.description}
           </p>
           <div className="mt-6 flex items-center gap-3 text-xs tracking-wider">
-            <span className="flag flag-dr rounded-[8px]" role="img" aria-label="Dominican Republic flag" />
+            <span className="flag flag-dr rounded-[8px]" role="img" aria-label={t.common.drFlag} />
             {t.footer.dominicanRepublic}
             <span className="text-slate-500">/</span>
-            <span className="flag flag-us rounded-[8px]" role="img" aria-label="United States flag" />
+            <span className="flag flag-us rounded-[8px]" role="img" aria-label={t.common.usFlag} />
             {t.footer.unitedStates}
           </div>
         </div>
@@ -59,6 +66,7 @@ export function Footer() {
             <h2>{t.footer.connectTitle}</h2>
             <a href={`mailto:${site.email}`}>{site.email}</a>
             <a href={`tel:${site.phoneHref}`}>{site.phone}</a>
+            <a href={site.directionsUrl} target="_blank" rel="noreferrer">{site.addressLine}</a>
             <Link href="/contact" className="flex items-center gap-3">
               <span>{t.footer.contactTeam}</span>
               <ArrowUpRight size={14} aria-hidden="true" />
@@ -85,7 +93,10 @@ export function Footer() {
           <CookieSettings />
         </div>
       </div>
-      <BiteSitesBadge />
+
+      <div className="container pb-8">
+        <BiteSitesCreditFooter onDark logoSrc="/assets/bitesites-logo-full.webp" eyebrow={madeBy[lang].eyebrow} label={madeBy[lang].label} />
+      </div>
     </footer>
   );
 }

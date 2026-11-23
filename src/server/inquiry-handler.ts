@@ -73,7 +73,7 @@ export function createInquiryHandler(getStore: () => Promise<InquiryStore>, cano
     } catch (error) {
       const unavailable = error instanceof ServiceUnavailable;
       log('error', 'inquiry.failed', { requestId, code: unavailable ? 'storage_unavailable' : 'unexpected', status: unavailable ? 503 : 500, durationMs: Date.now() - started });
-      return reject(unavailable ? 'Online inquiries are temporarily unavailable. Please email dusaccom1@gmail.com or call 646-326-6052.' : 'We couldn’t confirm your inquiry. Please try again or contact us directly.', unavailable ? 503 : 500);
+      return reject(unavailable ? 'Online inquiries are temporarily unavailable. Please email admin@dusaccnj.org or call 646-326-6052.' : 'We couldn’t confirm your inquiry. Please try again or contact us directly.', unavailable ? 503 : 500);
     }
   };
 }

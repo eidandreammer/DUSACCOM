@@ -3,7 +3,7 @@ import { pageMetadata } from '@/lib/site';
 
 export const metadata = pageMetadata(
   'Terms of Use',
-  'Read the terms for using the DUSACCOM website, including membership inquiries, community information, and business resources.',
+  'Terms for using the Dominican USA Chamber of Commerce of New Jersey website, including membership inquiries, community information, and business resources.',
   '/terms',
 );
 

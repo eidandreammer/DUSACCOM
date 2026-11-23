@@ -58,7 +58,7 @@ export default function About() {
           <div className="relative h-96 rounded-[8px] bg-mist lg:h-[550px]">
             <Image
               src="/assets/networking.jpg"
-              alt="Community members sharing ideas and perspectives"
+              alt={translations[lang].common.communityAlt}
               fill
               sizes="(max-width:1023px) 100vw, 50vw"
               className="rounded-[8px] object-cover"
@@ -111,6 +111,14 @@ export default function About() {
             <p className="mt-6 max-w-md text-sm leading-8 text-slate-600">
               {a.leadershipDesc}
             </p>
+            <figure className="mt-8 flex items-center gap-5">
+              <Image src="/assets/heidy-hernandez-president-dominican-usa-chamber-of-commerce.jpg" alt={translations[lang].homeOverview.presidentAlt}
+                width={1200} height={1607} sizes="120px" className="h-[150px] w-[112px] shrink-0 rounded-[8px] object-cover object-top" />
+              <figcaption>
+                <span className="block font-display text-2xl italic">Heidy Hernández</span>
+                <span className="mt-1 block font-mid text-sm font-semibold text-crimson">{translations[lang].homeOverview.presidentRole}</span>
+              </figcaption>
+            </figure>
           </div>
           <div className="flex flex-col justify-center rounded-[8px] border border-slate-200 bg-mist p-8 lg:p-10">
             <span className="mb-5 font-mid text-xs font-semibold tracking-widest text-slate-600">

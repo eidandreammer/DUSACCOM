@@ -3,7 +3,7 @@
 import { useEffect, useId, useState, type FormEvent } from 'react';
 import { createUserWithEmailAndPassword, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
 import { useAuth } from '@/lib/auth-context';
-import { useLanguage } from '@/lib/language-context';
+import { useLanguage, FIREBASE_LANG } from '@/lib/language-context';
 import { firebaseConfigured, getFirebase } from '@/lib/firebase';
 import { accountCopy, accountError } from '@/lib/account-copy';
 import { site } from '@/lib/site';
@@ -15,6 +15,9 @@ import { accountSettingsCopy } from '@/lib/account-settings-copy';
 import { accountContinuationHref, afterAuthentication } from '@/lib/account-navigation';
 import { accountEmailRequest, sendAccountVerificationEmail } from '@/lib/account-management';
 import { passwordResetRecoveryHref } from '@/lib/password-reset';
+import { GoogleSignInButton } from '@/components/google-sign-in-button';
+import { MyEvents } from '@/components/my-events';
+import { completeGoogleRedirect } from '@/lib/google-sign-in';
 import styles from '@/components/account.module.css';
 
 export default function AccountPage() {
@@ -38,6 +41,12 @@ export default function AccountPage() {
       window.history.replaceState(null, '', `${window.location.pathname}?${params}${window.location.hash}`);
     }
   }, []);
+  useEffect(() => {
+    if (!firebaseConfigured) return;
+    // Finish a Google sign-in that fell back to a full-page redirect.
+    completeGoogleRedirect().then(result => { if (result) window.location.replace(afterAuthentication(window.location.search)); })
+      .catch(error => setError(accountError(error, lang)));
+  }, [lang]);
   function changeMode(next: typeof mode) { setMode(next); if (next === 'signup') setTeamLogin(false); setError(''); setMessage(''); setResetSent(false); }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -49,7 +58,7 @@ export default function AccountPage() {
     try {
       const { auth } = getFirebase();
       const loginEmail = mode !== 'signup' && username ? teamLoginEmail(email, username) : email;
-      auth.languageCode = lang;
+      auth.languageCode = FIREBASE_LANG[lang];
       if (mode === 'reset') {
         if (process.env.NEXT_PUBLIC_ACCOUNT_EMAILS_ENABLED === 'true') await accountEmailRequest('password-reset', { email: loginEmail, lang, continueUrl: `${site.url}${accountContinuationHref(window.location.search)}` }, false);
         else await sendPasswordResetEmail(auth, loginEmail, { url: `${site.url}${accountContinuationHref(window.location.search)}` });
@@ -85,6 +94,7 @@ export default function AccountPage() {
           <button type="button" aria-pressed={mode === 'signin'} disabled={busy} onClick={() => changeMode('signin')}>{t.signIn}</button>
           <button type="button" aria-pressed={mode === 'signup'} disabled={busy} onClick={() => changeMode('signup')}>{t.signUp}</button>
         </div>
+        {mode !== 'reset' && <GoogleSignInButton disabled={busy} onSignedIn={() => window.location.replace(afterAuthentication(window.location.search))} />}
         <form onSubmit={submit} className={styles.form}>
           {mode === 'signup' && <label htmlFor={`${id}-name`}>{t.name}<input id={`${id}-name`} name="name" autoComplete="name" required maxLength={100} /></label>}
           <label htmlFor={`${id}-email`}>{t.email}<input id={`${id}-email`} name="email" type="email" autoComplete="email" required maxLength={254} /></label>
@@ -101,6 +111,7 @@ export default function AccountPage() {
       {message && <p role="status">{message}</p>}
       {resetSent && <p role="status">{t.resetSent}</p>}
     </div>
+    {user && !loading && !user.isAnonymous && <MyEvents />}
     {user && !loading && <AccountSettings key={user.uid} onDeleted={() => { setError(''); setMessage(accountSettingsCopy[lang].deleted); }} />}
     <DelegatedAdminManager />
   </section>;

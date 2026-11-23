@@ -3,6 +3,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfi
 import { getFirebase } from './firebase';
 import { sendAccountVerificationEmail } from './account-management';
 import { teamLoginEmail } from './team-login';
+import type { Lang } from './translations';
 
 const signup = z.object({
   agreeToCreateAccount: z.literal(true),
@@ -11,7 +12,7 @@ const signup = z.object({
   confirmation: z.string().min(8).max(128),
 }).strict().refine(input => input.password === input.confirmation);
 
-export async function createMembershipAccount(input: z.input<typeof signup>, lang: 'en' | 'es' = 'en') {
+export async function createMembershipAccount(input: z.input<typeof signup>, lang: Lang = 'en') {
   const values = signup.parse(input);
   const { auth } = getFirebase();
   const credential = await createUserWithEmailAndPassword(auth, values.email, values.password);

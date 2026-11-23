@@ -6,7 +6,7 @@ import { PageIntro, Eyebrow, ProgramIcon, ButtonLink, ClosingCTA } from '@/compo
 import { ProgramList } from '@/components/program-list';
 import { InquiryForm } from '@/components/inquiry-form';
 import { initiatives, type Program } from '@/lib/content';
-import { useLanguage } from '@/lib/language-context';
+import { useLanguage, type Lang } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
 
 function ProgramSelection({ onChange }: { onChange: (value: string) => void }) {
@@ -22,22 +22,26 @@ function ProgramsContent() {
   const list = translations[lang].programsList;
   const [selected, setSelected] = useState('');
 
-  const featuresMap: Record<string, { en: string[]; es: string[] }> = {
+  const featuresMap: Record<string, Record<Lang, string[]>> = {
     'business-development': {
       en: ['Business planning and growth conversations', 'Introductions to relevant resources', 'Learning opportunities for entrepreneurs'],
       es: ['Conversaciones de planificación y crecimiento empresarial', 'Presentaciones a recursos relevantes', 'Oportunidades de aprendizaje para emprendedores'],
+      pt: ['Conversas sobre planejamento e crescimento do negócio', 'Apresentações a recursos relevantes', 'Oportunidades de aprendizado para empreendedores'],
     },
     'networking': {
       en: ['Business-to-business introductions', 'Community networking opportunities', 'Conversations with fellow business owners'],
       es: ['Presentaciones de negocio a negocio', 'Oportunidades de networking comunitario', 'Diálogo con otros propietarios de negocios'],
+      pt: ['Apresentações entre empresas', 'Oportunidades de networking na comunidade', 'Conversas com outros empresários'],
     },
     'trade': {
       en: ['Cross-border business conversations', 'Dominican–American business connections', 'Resources for exploring new markets'],
       es: ['Conversaciones comerciales transfronterizas', 'Conexiones de negocios dominico-estadounidenses', 'Recursos para explorar nuevos mercados'],
+      pt: ['Conversas de negócios além das fronteiras', 'Conexões de negócios entre dominicanos e americanos', 'Recursos para explorar novos mercados'],
     },
     'community': {
       en: ['Local business community initiatives', 'Entrepreneur engagement', 'Collaborations for shared growth'],
       es: ['Iniciativas comunitarias de negocios locales', 'Participación de emprendedores', 'Colaboraciones para el crecimiento compartido'],
+      pt: ['Iniciativas da comunidade de negócios locais', 'Engajamento de empreendedores', 'Colaborações para o crescimento compartilhado'],
     },
   };
 

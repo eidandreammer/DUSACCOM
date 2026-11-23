@@ -3,7 +3,7 @@ import { pageMetadata } from '@/lib/site';
 
 export const metadata = pageMetadata(
   'Business Programs & Networking',
-  'Explore DUSACCOM programs for business development, networking, Dominican–U.S. trade connections, and community engagement.',
+  'Networking, workshops, and cross-border business programs from the Dominican USA Chamber of Commerce of New Jersey for Latino and multicultural entrepreneurs.',
   '/programs',
 );
 

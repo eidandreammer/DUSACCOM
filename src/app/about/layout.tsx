@@ -3,7 +3,7 @@ import { pageMetadata } from '@/lib/site';
 
 export const metadata = pageMetadata(
   'About the Chamber',
-  'Meet DUSACCOM, the Dominican USA Chamber of Commerce, and learn about our mission to connect businesses and strengthen our community.',
+  'Learn about the Dominican USA Chamber of Commerce of New Jersey: Dominican roots, an open door for Latin American and multicultural entrepreneurs, our mission, vision, and leadership.',
   '/about',
 );
 

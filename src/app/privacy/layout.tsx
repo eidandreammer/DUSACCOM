@@ -3,7 +3,7 @@ import { pageMetadata } from '@/lib/site';
 
 export const metadata = pageMetadata(
   'Privacy Policy',
-  'Read how DUSACCOM handles inquiries, account information, cookies, and privacy choices on the Dominican USA Chamber of Commerce website.',
+  'How the Dominican USA Chamber of Commerce of New Jersey handles inquiries, account information, cookies, and privacy choices.',
   '/privacy',
 );
 

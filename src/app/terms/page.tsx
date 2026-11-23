@@ -9,13 +9,9 @@ export default function Terms() {
   return (
     <>
       <PageIntro
-        eyebrow={lang === 'en' ? 'DUSACCOM · WEBSITE POLICIES' : 'DUSACCOM · POLÍTICAS DEL SITIO WEB'}
-        title={lang === 'en' ? 'Terms of Service' : 'Términos de Servicio'}
-        description={
-          lang === 'en'
-            ? 'Website terms · October 23, 2026'
-            : 'Términos del sitio web · 23 de octubre de 2026'
-        }
+        eyebrow={{ en: 'DUSACCOM · WEBSITE POLICIES', es: 'DUSACCOM · POLÍTICAS DEL SITIO WEB', pt: 'DUSACCOM · POLÍTICAS DO SITE' }[lang]}
+        title={{ en: 'Terms of Service', es: 'Términos de Servicio', pt: 'Termos de Serviço' }[lang]}
+        description={{ en: 'Website terms · October 23, 2026', es: 'Términos del sitio web · 23 de octubre de 2026', pt: 'Termos do site · 23 de outubro de 2026' }[lang]}
       />
       <article className="section">
         <div className="container max-w-3xl! editorial-content">
@@ -59,7 +55,7 @@ export default function Terms() {
                 <a href={`tel:${site.phoneHref}`}>{site.phone}</a>.
               </p>
             </>
-          ) : (
+          ) : lang === 'es' ? (
             <>
               <h2>Uso de este sitio web</h2>
               <p>
@@ -96,6 +92,46 @@ export default function Terms() {
               <p>
                 Para cualquier consulta o para verificar información vigente, comunícate a{' '}
                 <a href={`mailto:${site.email}`}>{site.email}</a> o llama al{' '}
+                <a href={`tel:${site.phoneHref}`}>{site.phone}</a>.
+              </p>
+            </>
+          ) : (
+            <>
+              <h2>Uso deste site</h2>
+              <p>
+                Este site apresenta a Câmara de Comércio Dominicano-Americana dos EUA e a sua comunidade de negócios. Use o
+                site de forma legal e respeitosa. Não tente atrapalhar o funcionamento do site, contornar os seus controles
+                nem usar indevidamente os formulários de solicitação.
+              </p>
+              <h2>Associação e programas</h2>
+              <p>
+                Os tipos de associação e os benefícios listados são informações introdutórias e propostas. Os benefícios
+                aprovados, as anuidades, a elegibilidade, os serviços e a disponibilidade devem ser confirmados diretamente
+                com a DUSACCOM. Enviar uma solicitação não estabelece uma associação nem uma parceria.
+              </p>
+              <h2>Eventos e manifestações de interesse</h2>
+              <p>
+                A menos que estejam marcadas explicitamente como confirmadas, as iniciativas são conceitos propostos. Datas,
+                locais, requisitos de entrada e detalhes de inscrição são confirmados separadamente. O recibo da solicitação
+                confirma que o site recebeu a sua mensagem; ele não reserva uma vaga nem constitui inscrição em um evento.
+                Um formulário identificado como Inscrição no Evento registra a sua inscrição em um evento confirmado do
+                capítulo e fornece um número de referência depois de salvo.
+              </p>
+              <h2>Sem pagamentos online</h2>
+              <p>
+                Este site não cobra pagamentos, não solicita dados de cartão nem inclui os visitantes em nenhum contrato pago.
+                Qualquer futuro acordo de associação ou de pagamento deve ser analisado e aceito separadamente.
+              </p>
+              <h2>Recursos para negócios</h2>
+              <p>
+                Os recursos do site oferecem informações gerais sobre negócios. Eles não são aconselhamento profissional
+                individualizado nem garantia de resultados. Confirme os detalhes e procure o apoio profissional adequado à sua
+                situação.
+              </p>
+              <h2>Contato</h2>
+              <p>
+                Para dúvidas ou para confirmar informações atuais, entre em contato pelo e-mail{' '}
+                <a href={`mailto:${site.email}`}>{site.email}</a> ou ligue para{' '}
                 <a href={`tel:${site.phoneHref}`}>{site.phone}</a>.
               </p>
             </>

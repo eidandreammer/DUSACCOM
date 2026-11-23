@@ -33,8 +33,15 @@ export const dusaccomEntity: BusinessEntity = {
   description: site.description,
   email: site.email,
   telephone: site.phoneHref,
-  logo: new URL('/imgs/DUSACCOM complete logo.png', site.url).href,
-  image: new URL('/assets/new-york.jpg', site.url).href,
+  logo: new URL('/assets/dominican-usa-chamber-of-commerce-nj-logo.svg', site.url).href,
+  image: new URL('/assets/dusaccom-og.jpg', site.url).href,
+  address: {
+    streetAddress: site.address.street,
+    addressLocality: site.address.city,
+    addressRegion: site.address.region,
+    postalCode: site.address.postalCode,
+    addressCountry: site.address.country,
+  },
 };
 
 export function BusinessJsonLd({ business, nonce }: { business: BusinessEntity; nonce?: string }) {

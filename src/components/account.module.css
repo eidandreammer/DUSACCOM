@@ -19,3 +19,19 @@
 .form button:disabled, .panel button:disabled { opacity: .6; cursor: wait; }
 .hint { color: #465766; font-size: var(--type-caption); line-height: 1.7; }
 @media (max-width: 540px) { .panel { padding: 24px; } }
+
+/* Google sign-in */
+.googleBlock { display: grid; gap: 12px; margin-top: 20px; }
+.googleButton { display: inline-flex; width: 100%; min-height: 48px; align-items: center; justify-content: center; gap: 12px; padding: 12px 20px;
+  border: 1px solid #c9d3dc; border-radius: var(--radius-control); background: #fff; color: #1f2933; font-family: var(--font-mid); font-size: 1rem; font-weight: 600; cursor: pointer; }
+.googleButton:hover:not(:disabled) { border-color: var(--color-navy); background: #f7f9fb; }
+.googleButton:disabled { opacity: 0.6; cursor: progress; }
+.googleMark { display: inline-grid; width: 24px; height: 24px; place-items: center; border-radius: 50%; background: var(--color-navy); color: #fff; font-size: 0.8rem; font-weight: 700; }
+.divider { display: flex; align-items: center; gap: 12px; margin: 4px 0 0; color: #6b7a88; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #dde4ea; }
+
+/* My events */
+.eventList { display: grid; gap: 12px; margin: 20px 0 0; padding: 0; list-style: none; }
+.eventItem { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 16px 18px; border: 1px solid #dde4ea; border-radius: 8px; background: #fff; }
+.eventItem strong { display: block; color: var(--color-navy); font-family: var(--font-mid); font-size: 1.05rem; }
+.eventMeta { display: flex; align-items: center; gap: 6px; margin-top: 6px; color: #465766; font-size: 0.875rem; }

@@ -1,3 +1,4 @@
+import { SkipLink } from '@/components/skip-link';
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode } from 'react';
 import { headers } from 'next/headers';
@@ -13,7 +14,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  title: { default: 'DUSACCOM | Dominican USA Chamber of Commerce', template: '%s | DUSACCOM' },
+  title: { default: 'DUSACCOM | Dominican Roots. A Business Community Open to All.', template: '%s | DUSACCOM' },
   description: site.description,
   applicationName: site.name,
   alternates: { canonical: canonicalUrl() },
@@ -21,14 +22,14 @@ export const metadata: Metadata = {
     type: 'website',
     siteName: site.fullName,
     locale: 'en_US',
-    title: 'DUSACCOM | Dominican USA Chamber of Commerce',
+    title: 'DUSACCOM | Dominican Roots. A Business Community Open to All.',
     description: site.description,
     url: canonicalUrl(),
     images: [socialImage],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'DUSACCOM | Dominican USA Chamber of Commerce',
+    title: 'DUSACCOM | Dominican Roots. A Business Community Open to All.',
     description: site.description,
     images: [socialImage],
   },
@@ -46,12 +47,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const nonce = process.env.FIREBASE_HOSTING === 'true' ? undefined : (await headers()).get('x-nonce') || undefined;
 
   return (
-    <html lang="en" className={fontVariables}>
+    // Browser extensions (e.g. crxemulator) inject attributes on <html> before hydration.
+    <html lang="en" className={fontVariables} suppressHydrationWarning>
       <body>
-        <a href="#main" className="fixed -top-24 left-5 z-[100] rounded-[8px] bg-white px-5 py-3 shadow focus:top-3">
-          Skip to main content
-        </a>
         <LanguageProvider>
+          <SkipLink />
           <AuthProvider>
             <PrivacyProvider>
               <Header />

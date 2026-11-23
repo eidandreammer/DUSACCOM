@@ -12,3 +12,9 @@ out/
 .env*
 !.env.example
 .dev.vars*
+
+# Raw media sources and review renders (large); only the scripts are tracked
+media/*
+!media/encode/
+!media/build-nj-logo.py
+!media/deploy-hosting-firestore.mjs

@@ -4,10 +4,11 @@ import { useId, useState, type FormEvent } from 'react';
 import { getFirebase } from '@/lib/firebase';
 import { createMembershipAccount, signInForMembership } from '@/lib/membership-account';
 import { teamCopy } from '@/lib/team-copy';
-import { useLanguage } from '@/lib/language-context';
+import { useLanguage, FIREBASE_LANG } from '@/lib/language-context';
 import { accountCopy, accountError } from '@/lib/account-copy';
 import { membershipAccountCopy } from '@/lib/membership-account-copy';
 import { ConfirmationDialog } from './confirmation-dialog';
+import { GoogleSignInButton } from './google-sign-in-button';
 import styles from './account.module.css';
 
 export function MembershipAccountDialog({ email, name, onCancel, onComplete }: {
@@ -31,7 +32,7 @@ export function MembershipAccountDialog({ email, name, onCancel, onComplete }: {
     setBusy(true);
     try {
       const { auth } = getFirebase();
-      auth.languageCode = lang;
+      auth.languageCode = FIREBASE_LANG[lang];
       if (mode === 'signup') {
         await createMembershipAccount({ agreeToCreateAccount: true, email: email.trim(), password,
           name: String(data.get('name')), confirmation: String(data.get('confirmation')) }, lang);
@@ -46,6 +47,7 @@ export function MembershipAccountDialog({ email, name, onCancel, onComplete }: {
     description={mode === 'offer' ? t.question : t.hint} busy={busy} cancelLabel={mode === 'offer' ? t.cancel : undefined} onCancel={onCancel}>
     <p><strong>{email}</strong></p>
     {mode === 'offer' ? <div className={styles.form}>
+      <GoogleSignInButton disabled={busy} onSignedIn={() => onComplete(false)} />
       <button type="button" className={styles.primary} onClick={() => setMode('signup')}>{t.create}</button>
       <button type="button" className={styles.secondary} onClick={() => setMode('signin')}>{t.signIn}</button>
     </div> : <form key={mode} className={styles.form} onSubmit={submit}>

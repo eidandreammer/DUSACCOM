@@ -3,7 +3,7 @@ import { pageMetadata } from '@/lib/site';
 
 export const metadata = pageMetadata(
   'Chamber Membership',
-  'Explore DUSACCOM membership options for startups, small businesses, corporations, and nonprofits. Connect with our Dominican–U.S. business community.',
+  'Join the Dominican USA Chamber of Commerce of New Jersey. Membership options for startups, small businesses, corporate partners, and nonprofits. Everyone is welcome.',
   '/membership',
 );
 

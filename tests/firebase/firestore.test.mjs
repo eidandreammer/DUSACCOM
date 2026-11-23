@@ -82,3 +82,50 @@ test('every enabled administrator can read, edit and delete events created by an
   await assertSucceeds(deleteDoc(doc(other, 'events', 'shared-event')));
   await environment.withSecurityRulesDisabled(async context => { assert.equal((await getDoc(doc(context.firestore(), 'events', 'shared-event'))).exists(), false); });
 });
+
+test('event translations: admins may write Spanish/Portuguese text, only the backend writes translation metadata', async () => {
+  const admin = environment.authenticatedContext('creator-admin').firestore();
+  const member = environment.authenticatedContext('member').firestore();
+  const visitor = environment.unauthenticatedContext().firestore();
+  // Admins create events with or without Portuguese fields (older clients omit them).
+  await assertSucceeds(setDoc(doc(admin, 'events', 'no-pt'), payload('creator-admin')));
+  await assertSucceeds(setDoc(doc(admin, 'events', 'with-pt'), { ...payload('creator-admin'), titlePt: 'Evento comunitário', descriptionPt: 'Conheça a câmara' }));
+  await assertSucceeds(setDoc(doc(admin, 'events', 'blank-pt'), { ...payload('creator-admin'), titlePt: '', descriptionPt: '' }));
+  await assertSucceeds(updateDoc(doc(admin, 'events', 'no-pt'), { titlePt: 'Evento', descriptionPt: 'Descrição' }));
+  await assertSucceeds(updateDoc(doc(admin, 'events', 'with-pt'), { titlePt: 'a'.repeat(160), descriptionPt: 'b'.repeat(2000) }));
+  for (const bad of [{ titlePt: 'a'.repeat(161) }, { descriptionPt: 'b'.repeat(2001) }, { titlePt: 42 }, { descriptionPt: null }]) {
+    await assertFails(setDoc(doc(admin, 'events', 'bad-pt'), { ...payload('creator-admin'), ...bad }));
+    await assertFails(updateDoc(doc(admin, 'events', 'with-pt'), bad));
+  }
+  // Non-admins cannot write translated text.
+  await assertFails(updateDoc(doc(member, 'events', 'with-pt'), { titlePt: 'Member edit' }));
+  await assertFails(updateDoc(doc(visitor, 'events', 'with-pt'), { descriptionPt: 'Visitor edit' }));
+  await assertFails(setDoc(doc(member, 'events', 'member-pt'), { ...payload('member'), titlePt: 'x' }));
+
+  // Clients (even admins) cannot add or change the translation map; well-formed or malformed.
+  const translation = { sourceHash: 'a'.repeat(64), es: 'auto', pt: 'auto', fields: { titleEs: 'b'.repeat(64) }, translatedAt: Timestamp.fromMillis(1_800_000_000_000) };
+  await assertFails(setDoc(doc(admin, 'events', 'forged-translation'), { ...payload('creator-admin'), translation }));
+  await assertFails(setDoc(doc(admin, 'events', 'malformed-translation'), { ...payload('creator-admin'), translation: 'auto' }));
+  await assertFails(updateDoc(doc(admin, 'events', 'no-pt'), { translation }));
+  await assertFails(updateDoc(doc(admin, 'events', 'no-pt'), { translation: { es: 'manual' } }));
+  await assertFails(updateDoc(doc(member, 'events', 'no-pt'), { translation }));
+
+  // After the backend (Admin SDK) has added machine text + metadata, admin edits that
+  // send only a subset of fields still validate against the merged document.
+  await environment.withSecurityRulesDisabled(async context => {
+    await updateDoc(doc(context.firestore(), 'events', 'with-pt'), { titleEs: 'Evento comunitario', descriptionEs: 'Conoce la cámara', titlePt: 'Evento comunitário', descriptionPt: 'Conheça a câmara', translation });
+  });
+  await assertSucceeds(getDoc(doc(visitor, 'events', 'with-pt')));
+  await assertSucceeds(updateDoc(doc(admin, 'events', 'with-pt'), {
+    title: 'Updated community event', titleEs: 'Evento comunitario', description: 'Meet the chamber', descriptionEs: 'Conoce la cámara',
+    titlePt: 'Evento comunitário', descriptionPt: 'Conheça a câmara', location: 'Newark', category: 'Networking',
+    startsAt: '2027-01-15T23:00:00.000Z', timeZone: 'America/New_York', status: 'confirmed', registration: 'closed',
+  }));
+  await assertSucceeds(updateDoc(doc(admin, 'events', 'with-pt'), { titlePt: '' }));
+  await assertFails(updateDoc(doc(admin, 'events', 'with-pt'), { translation: { ...translation, es: 'manual' } }));
+  await assertFails(updateDoc(doc(admin, 'events', 'with-pt'), { translation: deleteField() }));
+  await assertFails(updateDoc(doc(admin, 'events', 'with-pt'), { createdBy: 'other-admin' }));
+  const stored = (await getDoc(doc(admin, 'events', 'with-pt'))).data();
+  assert.equal(stored.translation.sourceHash, translation.sourceHash);
+  assert.equal(stored.createdBy, 'creator-admin');
+});

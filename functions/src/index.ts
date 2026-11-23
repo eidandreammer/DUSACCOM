@@ -1,7 +1,10 @@
 import { applicationDefault, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
+import { FieldValue, getFirestore } from 'firebase-admin/firestore';
+import { logger } from 'firebase-functions';
+import { onDocumentWritten } from 'firebase-functions/v2/firestore';
 import { onRequest } from 'firebase-functions/v2/https';
+import { googleTranslator, planEventTranslation } from './event-translation';
 import { createAccountHandler, type AccountStore, type Challenge, type DeletionRequest, type Role } from './account-handler';
 
 initializeApp();
@@ -63,12 +66,45 @@ export const accountApi = onRequest({
   res.status(response.status).send(await response.text());
 });
 
+// Event auto-translation (see docs/FIREBASE_HOSTING.md, "Event auto-translation").
+// Dedicated runtime identity with only Cloud Translation User + Cloud Datastore User
+// (+ Eventarc Event Receiver for the trigger). Same email pattern as dusaccom-accounts.
+const TRANSLATOR_SERVICE_ACCOUNT = 'dusaccom-translator@dusaccom-community-2026.iam.gserviceaccount.com';
+const emulator = process.env.FUNCTIONS_EMULATOR === 'true';
+// Emulator-only override so local tests can point at a mock and never reach the paid API.
+const emulatorEndpoint = emulator ? process.env.EVENT_TRANSLATION_ENDPOINT : undefined;
+const translate = googleTranslator({
+  endpoint: emulatorEndpoint,
+  getAccessToken: async () => emulatorEndpoint ? 'emulator' : (await applicationDefault().getAccessToken()).access_token,
+});
+
+export const translateEvent = onDocumentWritten({
+  document: 'events/{id}', region: 'us-east4', retry: false,
+  minInstances: 0, maxInstances: 2, timeoutSeconds: 60, memory: '256MiB',
+  serviceAccount: TRANSLATOR_SERVICE_ACCOUNT,
+}, async event => {
+  const after = event.data?.after;
+  if (!after?.exists) return;
+  if (emulator && !emulatorEndpoint) return; // Never call the real API from emulators.
+  try {
+    const plan = await planEventTranslation(after.data(), translate, {
+      now: FieldValue.serverTimestamp(),
+      log: (message, details) => logger.warn(message, { eventId: event.params.id, ...details }),
+    });
+    if (!plan) return;
+    // If an admin saved again meanwhile, skip; their write triggers a fresh run.
+    await after.ref.update(plan, { lastUpdateTime: after.updateTime });
+    logger.info('Event translations updated.', { eventId: event.params.id, fields: Object.keys(plan).filter(key => key !== 'translation') });
+  } catch (error) {
+    // retry is off; log and leave the document as-is (the UI falls back to English).
+    logger.warn('Event translation was not saved.', { eventId: event.params.id, error: error instanceof Error ? error.message : String(error) });
+  }
+});
+
 // Auth action emails (reset, verification, address changes) use Resend SMTP in
 // Identity Platform. These handlers add the account lifecycle/security notices.
 import { region } from 'firebase-functions/v1';
-import { onDocumentWritten } from 'firebase-functions/v2/firestore';
 import { defineSecret } from 'firebase-functions/params';
-import { FieldValue } from 'firebase-admin/firestore';
 import { createHash } from 'node:crypto';
 import { deliverAccountEmail, type AccountEmailKind } from './account-email';
 import { createPasswordHandler } from './password-handler';

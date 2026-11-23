@@ -5,26 +5,26 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, Globe, Menu, X } from 'lucide-react';
 import { ProfileMenu } from './profile-menu';
-import { useLanguage } from '@/lib/language-context';
+import { LANGS, useLanguage, type Lang } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
 import { homeLink, isNavigationLinkCurrent, navigationGroups, type NavigationLink } from '@/lib/navigation';
 
-// The emblem is an image; the wordmark is live Merengue Bold text so it stays
+const LANGUAGE_NAMES: Record<Lang, string> = { en: 'English', es: 'Español', pt: 'Português' };
+
+// The emblem is the vector flag seal with the NJ medallion; the wordmark is live Merengue Bold text so it stays
 // crisp at every size and can change color with the header state.
 export function Brand() {
+  const { lang } = useLanguage();
+  const c = translations[lang].common;
   return (
-    <Link href="/" className="brand header-brand" aria-label="DUSACCOM home">
-      <Image src="/assets/dusaccom-emblem.webp" alt="" width={188} height={192} priority className="header-brand-emblem" />
+    <Link href="/" className="brand header-brand" aria-label={c.brandHomeAria}>
+      <Image src="/assets/dominican-usa-chamber-of-commerce-nj-logo.svg" alt={c.logoAlt} width={214} height={200} priority unoptimized className="header-brand-emblem" />
       <span className="header-brand-wordmark" aria-hidden="true">
         <span className="header-brand-name">DUSACCOM</span>
         <span className="header-brand-region">New Jersey</span>
       </span>
     </Link>
   );
-}
-
-function InfotepMark() {
-  return <span className="header-infotep-mark"><Image src="/assets/infotep-nav-transparent.webp" alt="INFOTEP" width={300} height={72} className="header-infotep-image" /></span>;
 }
 
 export function Header() {
@@ -34,7 +34,7 @@ export function Header() {
   const [hidden, setHidden] = useState(false);
   const [headerHeight, setHeaderHeight] = useState(104);
   const header = useRef<HTMLElement>(null);
-  const { lang, toggleLang } = useLanguage();
+  const { lang, setLang } = useLanguage();
   const t = translations[lang];
   const [open, setOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
@@ -175,8 +175,8 @@ export function Header() {
   const renderLink = (link: NavigationLink, className: string) => (
     <Link key={link.href} href={link.href} onClick={() => followLink(link.href)}
       aria-current={isNavigationLinkCurrent(link.href, pathname, currentHash) ? (link.href.includes('#') ? 'location' : 'page') : undefined}
-      className={className}>
-      {link.label === 'infotep' ? <InfotepMark /> : t.nav[link.label]}
+      title={link.label === 'infotep' ? t.nav.infotepTitle : undefined} className={className}>
+      {t.nav[link.label]}
     </Link>
   );
   const renderGroups = (mobile: boolean) => navigationGroups.map(group => {
@@ -211,9 +211,13 @@ export function Header() {
             {renderGroups(false)}
           </nav>
           <div className="header-controls ml-auto flex shrink-0 items-center gap-2 lg:ml-0">
-            <button onClick={toggleLang} aria-label={t.nav.shiftLangAria} className="header-language header-pill hover-scale inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-bold hover:border-crimson">
-              <Globe size={16} aria-hidden="true" /><span>{lang === 'en' ? 'EN / ES' : 'ES / EN'}</span>
-            </button>
+            <div role="group" aria-label={t.nav.languageLabel} className="header-language header-pill lang-switch">
+              <Globe size={16} aria-hidden="true" className="lang-switch-icon" />
+              {LANGS.map(code => (
+                <button key={code} type="button" lang={code} aria-pressed={lang === code} aria-label={LANGUAGE_NAMES[code]} title={LANGUAGE_NAMES[code]}
+                  className="lang-switch-option" onClick={() => setLang(code)}>{code.toUpperCase()}</button>
+              ))}
+            </div>
             <button ref={toggle} className="icon-button header-pill hover-scale lg:hidden" aria-label={open ? t.nav.closeMenu : t.nav.openMenu} aria-expanded={open} aria-controls="mobile-navigation" onClick={() => { setOpen(!open); setDropdownOpen(null); }}>{open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}</button>
             <ProfileMenu onOpenChange={setProfileOpen} />
           </div>

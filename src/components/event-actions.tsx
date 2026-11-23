@@ -9,6 +9,7 @@ import { accountCopy } from '@/lib/account-copy';
 import { eventTitle } from '@/lib/events';
 import type { Initiative } from '@/lib/content';
 import { EventCreator } from './event-creator';
+import { EventRegistrations } from './event-registrations';
 import styles from './event-calendar.module.css';
 
 export function EventActions({ event, onEdit, onDeleted }: { event: Initiative; onEdit: () => void; onDeleted: () => void }) {
@@ -17,6 +18,7 @@ export function EventActions({ event, onEdit, onDeleted }: { event: Initiative; 
   const t = accountCopy[lang];
   const id = useId();
   const [confirming, setConfirming] = useState(false);
+  const [viewing, setViewing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const deleteButton = useRef<HTMLButtonElement>(null);
@@ -54,9 +56,11 @@ export function EventActions({ event, onEdit, onDeleted }: { event: Initiative; 
   if (!user || !isAdmin) return null;
   return <div className={styles.adminActions}>
     <div className={styles.actionRow}>
+      <button type="button" className={`${styles.editButton} hover-scale`} disabled={busy} onClick={() => setViewing(true)}>{t.registrations}</button>
       <button type="button" className={`${styles.editButton} hover-scale`} disabled={busy} onClick={onEdit}>{t.editEvent}</button>
       <button ref={deleteButton} type="button" className={`${styles.deleteButton} hover-scale`} disabled={busy} aria-haspopup="dialog" aria-expanded={confirming} aria-controls={`${id}-delete`} onClick={() => { setConfirming(true); setError(''); }}>{t.deleteEvent}</button>
     </div>
+    {viewing && <EventRegistrations event={event} onClose={() => setViewing(false)} />}
     {confirming && <dialog ref={confirmation} id={`${id}-delete`} className={styles.deleteDialog}
       aria-labelledby={`${id}-delete-title`} aria-describedby={`${id}-delete-hint`} aria-busy={busy}
       onCancel={event => { event.preventDefault(); cancel(); }}

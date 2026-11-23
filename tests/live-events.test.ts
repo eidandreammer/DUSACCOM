@@ -33,3 +33,17 @@ test('editing displays event-local time independently of the browser time zone',
   assert.equal(eventTimeToInput('2027-11-07T06:30:45.123Z', 'America/New_York'), '2027-11-07T01:30');
   assert.equal(eventTimeToInput('2027-01-15T01:30:00.000Z', 'America/Los_Angeles'), '2027-01-14T17:30');
 });
+
+test('live events carry Spanish and Portuguese text, and older events without Portuguese still load', async () => {
+  const { eventDescription, eventTitle } = await import('../src/lib/events');
+  const payload = { title: 'Business mixer', titleEs: 'Encuentro', description: 'Meet owners', descriptionEs: 'Conoce empresarios', location: 'New York', category: 'Networking', startsAt: '2027-01-15T23:00:00.000Z', timeZone: 'America/New_York', status: 'confirmed', registration: 'open', createdBy: 'admin' };
+  const legacy = liveEvent('legacy', payload)!;
+  assert.equal(eventTitle(legacy, 'pt'), 'Business mixer');
+  assert.equal(eventTitle(legacy, 'es'), 'Encuentro');
+  const translated = liveEvent('translated', { ...payload, titlePt: 'Encontro', descriptionPt: 'Conheça empresários', translation: { sourceHash: 'a'.repeat(64), es: 'manual', pt: 'auto', fields: {} } })!;
+  assert.equal(eventTitle(translated, 'pt'), 'Encontro');
+  assert.equal(eventDescription(translated, 'pt'), 'Conheça empresários');
+  assert.equal(eventDescription(translated, 'en'), 'Meet owners');
+  assert.equal(eventTitle(liveEvent('blank', { ...payload, titleEs: '', titlePt: '' })!, 'es'), 'Business mixer');
+  assert.equal(liveEvent('too-long', { ...payload, titlePt: 'x'.repeat(161) }), null);
+});

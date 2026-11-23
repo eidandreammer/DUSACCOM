@@ -1,4 +1,6 @@
-export const accountSettingsCopy = {
+import type { Lang } from './translations';
+
+const settingsBase = {
   en: {
     verifyEmail: 'Send email verification link', verificationSent: 'A verification link was sent to your current email address.',
     title: 'Account settings', profile: 'Edit profile', password: 'Change password', email: 'Change email',
@@ -49,7 +51,37 @@ export const accountSettingsCopy = {
   },
 };
 
-export function settingsError(error: unknown, lang: 'en' | 'es') {
+type SettingsBaseShape = Record<keyof typeof settingsBase.en, string>;
+// Parity: Record<Lang, Shape> makes a missing or extra key in any language a compile error.
+export const accountSettingsCopy: Record<Lang, SettingsBaseShape> = {
+  ...settingsBase,
+  pt: {
+    verifyEmail: 'Enviar link de verificação', verificationSent: 'Enviamos um link de verificação para o seu e-mail atual.',
+    sendEmailConfirmation: 'Enviar confirmação para o novo e-mail', sendingEmailConfirmation: 'Enviando confirmação…',
+    title: 'Configurações da conta', profile: 'Editar perfil', password: 'Alterar senha', email: 'Alterar e-mail',
+    name: 'Nome completo', currentPassword: 'Senha atual', newPassword: 'Nova senha', confirmPassword: 'Confirmar nova senha', newEmail: 'Novo endereço de e-mail',
+    save: 'Salvar alterações', saving: 'Salvando…', nameSaved: 'Seu nome foi atualizado.', passwordSaved: 'Sua senha foi alterada.',
+    emailSent: 'Enviamos um link de verificação para o seu novo e-mail. Abra-o para concluir a alteração e depois entre com esse e-mail.',
+    emailHint: 'Seu e-mail só muda depois que você verificar o novo endereço. Os delegados existentes mantêm o e-mail de login compartilhado atual.',
+    sharedEmailHint: 'Este é um e-mail de login compartilhado da equipe. O seu administrador principal o gerencia.',
+    mismatch: 'As novas senhas não coincidem.', invalidName: 'Informe um nome com 2 a 100 caracteres.', invalidPassword: 'Use uma senha com 8 a 128 caracteres.',
+    deleteAccount: 'Excluir conta', deleteTitle: 'Excluir a sua conta?', deleteHint: 'Isto remove o seu acesso de forma permanente. Os eventos publicados permanecem. Exclua primeiro os seus delegados se você gerencia uma equipe.',
+    verify: 'Confirme a senha para continuar', verifyHint: 'Confirme a sua senha atual e depois mantenha o botão de excluir pressionado por cinco segundos.',
+    hold: 'Mantenha pressionado por 5 segundos para excluir', holding: 'Continue segurando…', holdHint: 'Mantenha o mouse ou o toque pressionado, ou segure Espaço ou Enter. Soltar antes cancela.',
+    deleting: 'Excluindo…', cancel: 'Cancelar', close: 'Fechar', confirm: 'Confirmar exclusão', deleted: 'Sua conta foi excluída.',
+    requestDeletion: 'Solicitar exclusão da conta', requestTitle: 'Solicitar a exclusão da sua conta?', requestHint: 'O seu administrador principal precisa aprovar esta solicitação. Seu acesso continua ativo até a aprovação.',
+    requested: 'Sua solicitação de exclusão foi enviada ao seu administrador principal.', pending: 'Solicitação de exclusão aguardando aprovação do administrador principal.', declined: 'O seu administrador principal recusou a solicitação anterior. Você pode enviar uma nova.',
+    delegateDeleteTitle: 'Excluir esta conta de delegado?', delegateDeleteHint: 'Isto remove de forma permanente o login e o acesso de administrador do delegado. Os eventos publicados permanecem.',
+    approve: 'Aprovar e excluir', decline: 'Recusar solicitação', requestBadge: 'Exclusão solicitada', retryDelete: 'Tentar excluir novamente',
+    delegateDeleted: 'A conta do delegado foi excluída.', requestDeclined: 'A solicitação de exclusão foi recusada.',
+    unavailable: 'A exclusão de contas está temporariamente indisponível. Tente novamente mais tarde.',
+    recent: 'Confirme a sua senha atual novamente para continuar.', parentRequired: 'Somente o administrador principal pode realizar esta ação.',
+    delegatesRemain: 'Exclua as contas dos seus delegados antes de excluir a sua conta principal.', expired: 'Esta confirmação expirou. Feche a janela e comece de novo.',
+    tooEarly: 'Mantenha o botão pressionado continuamente por cinco segundos.', failed: 'Não foi possível concluir a alteração. Tente novamente.',
+  },
+};
+
+export function settingsError(error: unknown, lang: Lang) {
   const t = accountSettingsCopy[lang];
   const code = (error as { code?: string })?.code;
   if (['auth/wrong-password', 'auth/invalid-credential', 'auth/requires-recent-login', 'account/recent-login-required', 'account/sign-in-required'].includes(code || '')) return t.recent;

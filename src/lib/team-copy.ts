@@ -1,4 +1,6 @@
-export const teamCopy = {
+import type { Lang } from './translations';
+
+const teamBase = {
   en: {
     title: 'Administrator team', manage: 'Manage administrator team', delegated: 'Delegated administrator',
     description: 'Add administrators under your account. They can create, edit, and delete events, but cannot add or manage administrators.',
@@ -37,7 +39,31 @@ export const teamCopy = {
   },
 };
 
-export function teamError(error: unknown, lang: 'en' | 'es') {
+type TeamBaseShape = Record<keyof typeof teamBase.en, string>;
+// Parity: Record<Lang, Shape> makes a missing or extra key in any language a compile error.
+export const teamCopy: Record<Lang, TeamBaseShape> = {
+  ...teamBase,
+  pt: {
+    title: 'Equipe de administradores', manage: 'Gerenciar equipe de administradores', delegated: 'Administrador delegado',
+    description: 'Adicione administradores à sua conta. Eles podem criar, editar e excluir eventos, mas não podem adicionar nem gerenciar administradores.',
+    sharedEmail: 'E-mail compartilhado', mailboxHint: 'Cada pessoa entra com este e-mail, o seu próprio nome de usuário e a sua própria senha. O administrador principal deve manter o acesso à caixa de entrada compartilhada: ela controla a recuperação de senha dessas contas.',
+    username: 'Nome de usuário', usernameHint: 'Use de 3 a 24 letras, números, sublinhados ou hifens. Comece com uma letra.',
+    useUsername: 'Entrar com um nome de usuário da equipe', signInHint: 'Informe o nome de usuário que o seu administrador principal deu a você.',
+    name: 'Nome completo', password: 'Senha inicial', create: 'Adicionar administrador', creating: 'Adicionando administrador…',
+    created: 'Administrador adicionado. Compartilhe o nome de usuário e a senha de forma privada.',
+    empty: 'Ainda não há administradores delegados.', active: 'Ativo', disabled: 'Desativado', disable: 'Desativar acesso', enable: 'Ativar acesso',
+    loading: 'Carregando a sua equipe…', saving: 'Salvando…', saved: 'Acesso do administrador atualizado.',
+    unsupported: 'Contas de equipe com e-mail compartilhado exigem atualmente um endereço do Gmail ou do Googlemail.',
+    invalid: 'Confira o nome, o nome de usuário e a senha. As senhas devem ter pelo menos 8 caracteres.',
+    exists: 'Este nome de usuário já está registrado com o e-mail compartilhado. Escolha outro nome de usuário.',
+    failed: 'Não foi possível salvar o administrador. Verifique a sua conexão e tente novamente.',
+    loadFailed: 'Não foi possível carregar a sua equipe de administradores. Atualize a página para tentar de novo.',
+    permission: 'Somente um administrador principal ativo pode gerenciar a sua própria equipe.',
+    cleanup: 'A criação da conta não foi concluída e não pôde ser revertida. Entre em contato com a câmara antes de tentar este nome de usuário novamente.',
+  },
+};
+
+export function teamError(error: unknown, lang: Lang) {
   const copy = teamCopy[lang];
   const code = (error as { code?: string })?.code;
   const message = (error as { message?: string })?.message;

@@ -1,6 +1,10 @@
 import { EmailAuthProvider, reauthenticateWithCredential, sendEmailVerification, signOut, signInWithEmailAndPassword, updatePassword, updateProfile, verifyBeforeUpdateEmail } from 'firebase/auth';
 import { getFirebase } from './firebase';
 import { site } from './site';
+import { FIREBASE_LANG } from './language-context';
+import type { Lang } from './translations';
+
+const emailLang = (lang: Lang): 'en' | 'es' => (lang === 'es' ? 'es' : 'en');
 
 export class AccountManagementError extends Error {
   constructor(readonly code: string) { super(code); }
@@ -35,7 +39,7 @@ export async function reauthenticateAccount(password: string) {
   await user.getIdToken(true);
   return user;
 }
-export async function changeAccountPassword(currentPassword: string, newPassword: string, lang: 'en' | 'es' = 'en') {
+export async function changeAccountPassword(currentPassword: string, newPassword: string, lang: Lang = 'en') {
   if (newPassword.length < 8 || newPassword.length > 128) throw new AccountManagementError('account/invalid-password');
   const user = await reauthenticateAccount(currentPassword);
   if (process.env.NEXT_PUBLIC_ACCOUNT_EMAILS_ENABLED !== 'true') {
@@ -45,7 +49,7 @@ export async function changeAccountPassword(currentPassword: string, newPassword
   const response = await fetch('/api/account-password', {
     method: 'POST', credentials: 'omit', redirect: 'error',
     headers: { Authorization: `Bearer ${await user.getIdToken(true)}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password: newPassword, lang, operationId: crypto.randomUUID() }),
+    body: JSON.stringify({ password: newPassword, lang: emailLang(lang), operationId: crypto.randomUUID() }),
     signal: AbortSignal.timeout(60000),
   });
   const result = await response.json().catch(() => null) as { ok?: boolean; error?: string } | null;
@@ -53,17 +57,18 @@ export async function changeAccountPassword(currentPassword: string, newPassword
   // Admin password changes revoke old refresh tokens; establish the new session.
   await signInWithEmailAndPassword(getFirebase().auth, user.email!, newPassword);
 }
-export async function changeAccountEmail(currentPassword: string, email: string, lang: 'en' | 'es') {
+export async function changeAccountEmail(currentPassword: string, email: string, lang: Lang) {
   const user = await reauthenticateAccount(currentPassword);
-  getFirebase().auth.languageCode = lang;
-  if (process.env.NEXT_PUBLIC_ACCOUNT_EMAILS_ENABLED === 'true') await accountEmailRequest('change-email', { email: email.trim(), lang });
+  getFirebase().auth.languageCode = FIREBASE_LANG[lang];
+  // Branded account emails exist in English and Spanish; Portuguese readers get English.
+  if (process.env.NEXT_PUBLIC_ACCOUNT_EMAILS_ENABLED === 'true') await accountEmailRequest('change-email', { email: email.trim(), lang: emailLang(lang) });
   else await verifyBeforeUpdateEmail(user, email.trim(), { url: `${site.url}/account/` });
 }
-export async function sendAccountVerificationEmail(lang: 'en' | 'es') {
+export async function sendAccountVerificationEmail(lang: Lang) {
   const { auth } = getFirebase();
   if (!auth.currentUser) throw new AccountManagementError('account/sign-in-required');
-  auth.languageCode = lang;
-  if (process.env.NEXT_PUBLIC_ACCOUNT_EMAILS_ENABLED === 'true') await accountEmailRequest('verify-email', { lang });
+  auth.languageCode = FIREBASE_LANG[lang];
+  if (process.env.NEXT_PUBLIC_ACCOUNT_EMAILS_ENABLED === 'true') await accountEmailRequest('verify-email', { lang: emailLang(lang) });
   else await sendEmailVerification(auth.currentUser, { url: `${site.url}/account/` });
 }
 export async function changeAccountName(displayName: string) {

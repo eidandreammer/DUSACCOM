@@ -17,9 +17,11 @@ Production account email uses Resend with `noreply@dusaccnj.org`. Password reset
 Requires Node.js 22.16+ and npm.
 
 ```sh
-npm ci
-npm run dev
+npm ci --include=dev
+NODE_ENV=development npm run dev
 ```
+
+> **Dev dependencies:** always install with `--include=dev`. If your shell has `NODE_ENV=production` set (it is on the main Mac), plain `npm ci` / `npm install` silently skips devDependencies (TypeScript, Tailwind, test tools) and builds/typechecks fail. Run the dev server with `NODE_ENV=development npm run dev`.
 
 Pages: `/`, `/about`, `/programs`, `/membership`, `/contact`, `/resources/[slug]`, `/privacy`, `/terms`. The membership and programs pages are server-rendered with validated URL selections. Other public content is prerendered. All routes retain an SSR/static HTML baseline with small client components for forms, filters, navigation, and consent.
 
@@ -58,7 +60,7 @@ Do not run a raw `wrangler deploy` against the Sites-managed project or change i
 
 ## Branding and approved content
 
-Official contact: **646-326-6052** · **dusaccom1@gmail.com**.
+Official contact: **646-326-6052** · **admin@dusaccnj.org**.
 
 Edit typed content in `src/lib/content.ts`. Board profiles, member milestones, testimonials, and partners have explicit typed collections, initially empty because no approved names, quotes, logos, or milestones were supplied. The layouts support approved records without fabricated endorsements. Membership benefits/pathways and event concepts are clearly described as proposed; pricing, dates, venues, registration, and approval must be confirmed by the Chamber.
 

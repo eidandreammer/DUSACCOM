@@ -10,13 +10,9 @@ export default function Privacy() {
   return (
     <>
       <PageIntro
-        eyebrow={lang === 'en' ? 'DUSACCOM · WEBSITE POLICIES' : 'DUSACCOM · POLÍTICAS DEL SITIO WEB'}
-        title={lang === 'en' ? 'Privacy Policy' : 'Política de Privacidad'}
-        description={
-          lang === 'en'
-            ? 'Website privacy notice · October 30, 2026'
-            : 'Aviso de privacidad del sitio web · 30 de octubre de 2026'
-        }
+        eyebrow={{ en: 'DUSACCOM · WEBSITE POLICIES', es: 'DUSACCOM · POLÍTICAS DEL SITIO WEB', pt: 'DUSACCOM · POLÍTICAS DO SITE' }[lang]}
+        title={{ en: 'Privacy Policy', es: 'Política de Privacidad', pt: 'Política de Privacidade' }[lang]}
+        description={{ en: 'Website privacy notice · October 30, 2026', es: 'Aviso de privacidad del sitio web · 30 de octubre de 2026', pt: 'Aviso de privacidade do site · 30 de outubro de 2026' }[lang]}
       />
       <article className="section">
         <div className="container max-w-3xl! editorial-content">
@@ -79,7 +75,7 @@ export default function Privacy() {
                 <a href={`tel:${site.phoneHref}`}>{site.phone}</a>
               </p>
             </>
-          ) : (
+          ) : lang === 'es' ? (
             <>
               <h2>Tus consultas</h2>
               <p>
@@ -134,6 +130,69 @@ export default function Privacy() {
               <h2>Contacto</h2>
               <p>
                 Cámara de Comercio Dominico-Estadounidense (DUSACCOM)
+                <br />
+                <a href={`mailto:${site.email}`}>{site.email}</a>
+                <br />
+                <a href={`tel:${site.phoneHref}`}>{site.phone}</a>
+              </p>
+            </>
+          ) : (
+            <>
+              <h2>Suas solicitações</h2>
+              <p>
+                Quando você envia uma solicitação, este site coleta o seu nome, o seu e-mail, a sua empresa (se informada), o
+                assunto, a mensagem e o seu consentimento. Essas informações são armazenadas no banco de dados de solicitações
+                hospedado pela Câmara para que a equipe possa analisar e responder. Solicitações de associação e manifestações
+                de interesse em eventos não estabelecem uma associação, não realizam nenhum pagamento nem reservam presença.
+              </p>
+              <p>Os formulários de inscrição em eventos coletam os mesmos dados de contato para registrar a sua inscrição em um evento programado do capítulo. Um número de referência de confirmação é exibido depois que a inscrição é salva.</p>
+              <h2>Sua conta e o calendário</h2>
+              <p>As contas usam o Google Firebase Authentication para processar o seu e-mail, a sua senha e o seu nome. O Firebase mantém você conectado usando o armazenamento do navegador. As permissões de administrador e os eventos publicados ficam armazenados no Cloud Firestore. Os detalhes dos eventos são públicos; os registros de administrador só podem ser lidos pelo usuário correspondente. Criar uma conta não estabelece uma associação paga à Câmara. Entre em contato com a Câmara para solicitar a exclusão da conta.</p>
+              <h2>Como usamos as suas informações</h2>
+              <p>
+                As informações que você fornece são usadas para tratar a sua solicitação, conversar sobre opções relevantes de
+                associação ou de programas e entrar em contato com você sobre o seu pedido. Não envie dados de pagamento nem
+                outras informações pessoais sensíveis. Os dados de contato da DUSACCOM estão abaixo, caso você prefira ligar ou
+                escrever.
+              </p>
+              <h2>Segurança e prevenção de abusos</h2>
+              {firebaseForms ? <p>
+                As solicitações são armazenadas de forma privada no Google Cloud Firestore. Quando você envia um formulário, o
+                Firebase cria um identificador de visitante armazenado no seu navegador, separado da sua conta de membro. Ele
+                vincula o seu comprovante ao seu navegador e limita envios repetidos. Seus dados de contato não são
+                publicados. O Google pode processar metadados técnicos da requisição conforme as suas próprias políticas.
+                Entre em contato com a Câmara para solicitar a exclusão da sua solicitação ou do identificador de visitante.
+              </p> : <p>
+                O site usa serviços de hospedagem e de banco de dados para entregar as páginas e armazenar as solicitações.
+                Para reduzir abusos automatizados, um identificador de rede temporário e criptografado e uma contagem de
+                requisições podem ser armazenados para limitar a frequência. Endereços IP brutos não são gravados no banco de
+                dados de solicitações nem nos registros do aplicativo. O provedor de hospedagem pode processar metadados
+                técnicos da requisição conforme as suas próprias políticas.
+              </p>}
+              <h2>Preferências e estatísticas opcionais</h2>
+              <p>
+                A sua preferência sobre cookies é salva no armazenamento local do seu navegador. As estatísticas opcionais
+                ficam desativadas, a menos que você selecione &quot;Aceitar todos&quot;. Nenhum ID de medição de estatísticas
+                está configurado por padrão. Se for configurado, o Google Analytics e os recursos de conversão só são
+                carregados com o seu consentimento. O conteúdo dos formulários não é incluído nos eventos de estatísticas.
+                Você pode mudar a sua escolha a qualquer momento em &quot;Configurações de Cookies&quot;, no rodapé.
+              </p>
+              <h2>Serviços externos</h2>
+              <p>
+                Os links de e-mail e de telefone abrem os aplicativos do seu dispositivo. As políticas dos respectivos
+                provedores se aplicam quando você usa esses serviços. As fotos ilustrativas são servidas por este site, sem
+                requisitar imagens de serviços de fotos de terceiros.
+              </p>
+              <h2>Suas escolhas e pedidos de informação</h2>
+              <p>
+                Para perguntar sobre as informações que você compartilhou, solicitar uma correção ou exclusão, ou retirar o
+                seu consentimento de contato, escreva para <a href={`mailto:${site.email}`}>{site.email}</a> ou ligue para{' '}
+                <a href={`tel:${site.phoneHref}`}>{site.phone}</a>. A Câmara pode explicar as práticas aplicáveis de retenção
+                e tratamento da sua solicitação.
+              </p>
+              <h2>Contato</h2>
+              <p>
+                Câmara de Comércio Dominicano-Americana dos EUA (DUSACCOM)
                 <br />
                 <a href={`mailto:${site.email}`}>{site.email}</a>
                 <br />

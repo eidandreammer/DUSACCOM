@@ -12,6 +12,20 @@ import { eventTimeToInput, eventTimeToISO, liveEventSchema } from '@/lib/live-ev
 import type { Initiative } from '@/lib/content';
 import styles from './account.module.css';
 import calendarStyles from './event-calendar.module.css';
+import type { Lang } from '@/lib/translations';
+
+// Local strings for event auto-translation (kept here so shared copy modules stay untouched).
+const translationCopy: Record<Lang, { titlePt: string; descriptionPt: string; hint: string; note: string }> = {
+  en: { titlePt: 'Portuguese title (optional)', descriptionPt: 'Portuguese description (optional)',
+    hint: 'Leave the Spanish and Portuguese fields blank to translate automatically. Anything you type is kept; clear a field to translate it again.',
+    note: 'Spanish and Portuguese translations are added automatically in a few seconds.' },
+  es: { titlePt: 'Título en portugués (opcional)', descriptionPt: 'Descripción en portugués (opcional)',
+    hint: 'Deja en blanco los campos en español y portugués para traducirlos automáticamente. Lo que escribas se conserva; borra un campo para volver a traducirlo.',
+    note: 'Las traducciones al español y al portugués se añaden automáticamente en unos segundos.' },
+  pt: { titlePt: 'Título em português (opcional)', descriptionPt: 'Descrição em português (opcional)',
+    hint: 'Deixe os campos em espanhol e português em branco para traduzi-los automaticamente. O que você escrever será mantido; apague um campo para traduzi-lo novamente.',
+    note: 'As traduções para espanhol e português são adicionadas automaticamente em alguns segundos.' },
+};
 
 export function EventCreator({ categories = [], event: existingEvent, onCancel, onPublished }: {
   categories?: readonly string[]; event?: Initiative; onCancel?: () => void; onPublished: (startsAt: string, zone: string) => void;
@@ -19,6 +33,7 @@ export function EventCreator({ categories = [], event: existingEvent, onCancel, 
   const { user, isAdmin, loading } = useAuth();
   const { lang } = useLanguage();
   const t = accountCopy[lang];
+  const tr = translationCopy[lang];
   const id = useId();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -44,6 +59,7 @@ export function EventCreator({ categories = [], event: existingEvent, onCancel, 
     setPublished(false); setError('');
     if (!startsAt || (!existingEvent && Date.parse(startsAt) <= Date.now())) { setError(existingEvent ? t.validDate : t.future); return; }
     const payload = liveEventSchema.safeParse({ title: text('title'), titleEs: text('titleEs'), description: text('description'), descriptionEs: text('descriptionEs'),
+      titlePt: text('titlePt'), descriptionPt: text('descriptionPt'),
       location: text('location'), category: category === '' ? text('newCategory') : category, startsAt, timeZone: text('timeZone'), status: 'confirmed', registration: existingEvent ? text('registration') : 'open', createdBy: user.uid });
     if (!payload.success) { setError(t.failed); return; }
     setBusy(true);
@@ -77,7 +93,7 @@ export function EventCreator({ categories = [], event: existingEvent, onCancel, 
     <h3 id={`${id}-title`}>{existingEvent ? t.editEvent : <button ref={toggle} type="button" className={calendarStyles.creatorToggle} aria-expanded={expanded} aria-controls={`${id}-form`} disabled={busy} onClick={() => setExpanded(value => !value)}>
       {t.addEvent}<ChevronDown size={20} aria-hidden="true" style={{ transform: expanded ? 'rotate(180deg)' : undefined }} />
     </button>}</h3>
-    {published && <p role="status" className={styles.hint}>{t.published}</p>}
+    {published && <p role="status" className={styles.hint}>{t.published} {tr.note}</p>}
     <div id={`${id}-form`} hidden={!expanded}>
     <p className={calendarStyles.creatorHint}>{t.adminHint}</p>
     <form className={styles.form} onSubmit={publish}>
@@ -90,9 +106,12 @@ export function EventCreator({ categories = [], event: existingEvent, onCancel, 
         </select></label>
         {category === '' && <label htmlFor={`${id}-new-category`}>{t.newCategory}<input id={`${id}-new-category`} name="newCategory" required maxLength={60} pattern=".*\S.*" /></label>}
         <details>
-          <summary>{lang === 'es' ? 'Opciones adicionales' : 'More options'}</summary>
+          <summary>{{ en: 'More options', es: 'Opciones adicionales', pt: 'Mais opções' }[lang]}</summary>
+          <p className={calendarStyles.creatorHint}>{tr.hint}</p>
           <label htmlFor={`${id}-title-es`}>{t.eventTitleEs}<input id={`${id}-title-es`} name="titleEs" maxLength={160} defaultValue={existingEvent?.titleEs} /></label>
           <label htmlFor={`${id}-description-es`}>{t.descriptionEs}<textarea id={`${id}-description-es`} name="descriptionEs" maxLength={2000} defaultValue={existingEvent?.descriptionEs} /></label>
+          <label htmlFor={`${id}-title-pt`}>{tr.titlePt}<input id={`${id}-title-pt`} name="titlePt" maxLength={160} defaultValue={existingEvent?.titlePt} /></label>
+          <label htmlFor={`${id}-description-pt`}>{tr.descriptionPt}<textarea id={`${id}-description-pt`} name="descriptionPt" maxLength={2000} defaultValue={existingEvent?.descriptionPt} /></label>
         </details>
         <label htmlFor={`${id}-location`}>{t.location}<input id={`${id}-location`} name="location" required maxLength={240} defaultValue={existingEvent?.location} /></label>
         <label htmlFor={`${id}-date`}>{t.date}<input id={`${id}-date`} name="date" type="datetime-local" required defaultValue={initialDate} /></label>
