@@ -106,9 +106,11 @@ export function Header() {
     };
     // Streaming or hydration can replace the initially observed hero node.
     // Always measure the current element rather than a detached earlier copy.
+    // "Over the hero" means the dark hero still fills the space behind the whole bar.
+    // Measuring to 0 kept white text over the white section below for a full bar height.
     const heroVisible = () => {
       const currentHero = isHome ? document.querySelector('.home-hero') : null;
-      return isHome && (!currentHero || currentHero.getBoundingClientRect().bottom > 0);
+      return isHome && (!currentHero || currentHero.getBoundingClientRect().bottom > (element?.offsetHeight ?? 0));
     };
     const headerHasFocus = () => !!element?.contains(document.activeElement);
     const scheduleHide = () => {

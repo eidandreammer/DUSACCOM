@@ -539,9 +539,9 @@
   .header-brand { --brand-size: 17px; }
 }
 @media (max-width: 760px) {
-  /* The logo gets whatever the EN/ES, menu and profile buttons (≈211px) and
-     the 20px gutters leave; the logo is ≈8.4 × --brand-size wide. */
-  .header-brand { --brand-size: clamp(11px, calc((100vw - 266px) / 8.4), 20px); }
+  /* The logo gets whatever the EN/ES/PT pill, menu and profile buttons (≈214px),
+     the gutters and gaps leave; the logo is ≈8.4 × --brand-size wide. */
+  .header-brand { --brand-size: clamp(10px, calc((100vw - 290px) / 8.4), 20px); min-width: 0; }
   .hero-layout { padding-block: 180px 28px; gap: 32px; }
   .hero-shade { background: linear-gradient(90deg, rgb(3 42 99 / 90%), rgb(3 42 99 / 55%)), linear-gradient(0deg, rgb(3 42 99 / 80%), transparent); }
   .hero-actions { width: 100%; }
@@ -689,7 +689,8 @@
 .site-header.solid-header .header-information { background-color: transparent; }
 .site-header.solid-header .header-surface { background-color: transparent; }
 .site-header.home-header .header-menu-panel {
-  background-color: rgb(254 254 254 / 16%);
+  /* Navy glass, not white: the panel can hang past the hero over white sections. */
+  background-color: rgb(3 42 99 / 82%);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   box-shadow: 0 12px 32px rgb(3 42 99 / 20%);
@@ -798,7 +799,7 @@
 .lang-switch-option:hover { background-color: rgb(254 254 254 / 18%); }
 .site-header.solid-header .lang-switch-option:hover { background-color: rgb(3 42 99 / 8%); }
 .lang-switch-option[aria-pressed='true'] { background-color: var(--color-crimson); color: var(--color-white, #fff); }
-@media (max-width: 400px) {
+@media (max-width: 480px) {
   .lang-switch { padding-inline: 4px; }
   .lang-switch-icon { display: none; }
   .lang-switch-option { min-width: 32px; padding-inline: 4px; }
