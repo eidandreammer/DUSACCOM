@@ -1,5 +1,7 @@
 # Firebase authentication email branding
 
+Current status (November 12, 2026): the Google Auth Platform public brand is **DUSACCOM**, which fixes `%APP_NAME%` in native Firebase security messages. A newly delivered recovery notice confirmed the correct subject and body. Website action emails use branded Resend templates. The native callback URL remains locked to the original Firebase host; the backend project ID must stay unchanged. See [ACCOUNT_EMAILS.md](ACCOUNT_EMAILS.md) for current behavior and live verification. The sections below record earlier troubleshooting.
+
 The live website is https://dusaccom.web.app. Its Firebase CLI project alias is `dusaccom`, resolving to project number `969342544667` and preserving existing accounts, roles, inquiries, and calendar data. The alias does not rename the Firebase backend. The global project ID `dusaccom` was checked and is unavailable. Both new Hosting domains are authorized for Authentication; existing authorized domains remain for compatibility.
 
 ## Confirmed email service

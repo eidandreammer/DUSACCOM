@@ -2,10 +2,12 @@ import type { Lang } from './translations';
 
 const settingsBase = {
   en: {
+    verifyEmail: 'Send email verification link', verificationSent: 'A verification link was sent to your current email address.',
     title: 'Account settings', profile: 'Edit profile', password: 'Change password', email: 'Change email',
     name: 'Full name', currentPassword: 'Current password', newPassword: 'New password', confirmPassword: 'Confirm new password', newEmail: 'New email address',
     save: 'Save changes', saving: 'Saving…', nameSaved: 'Your name was updated.', passwordSaved: 'Your password was changed.',
-    emailSent: 'A verification link was sent to your new email. Open it to complete the change, then sign in with that email.',
+    sendEmailConfirmation: 'Send confirmation to new email', sendingEmailConfirmation: 'Sending confirmation…',
+    emailSent: 'Email change pending. We sent a confirmation link to {email}. Your current email is still active. Confirm from the new mailbox to complete the change, then sign in with the new email.',
     emailHint: 'Your email changes only after you verify the new address. Existing delegates keep their current shared login email.',
     sharedEmailHint: 'This is a shared team login email. Your parent administrator manages it.',
     mismatch: 'The new passwords do not match.', invalidName: 'Enter a name between 2 and 100 characters.', invalidPassword: 'Use a password between 8 and 128 characters.',
@@ -24,10 +26,12 @@ const settingsBase = {
     tooEarly: 'Hold the button continuously for five seconds.', failed: 'The change could not be completed. Please try again.',
   },
   es: {
+    verifyEmail: 'Enviar enlace de verificación', verificationSent: 'Enviamos un enlace de verificación a tu correo actual.',
     title: 'Configuración de la cuenta', profile: 'Editar perfil', password: 'Cambiar contraseña', email: 'Cambiar correo',
     name: 'Nombre completo', currentPassword: 'Contraseña actual', newPassword: 'Nueva contraseña', confirmPassword: 'Confirmar nueva contraseña', newEmail: 'Nuevo correo electrónico',
     save: 'Guardar cambios', saving: 'Guardando…', nameSaved: 'Tu nombre fue actualizado.', passwordSaved: 'Tu contraseña fue cambiada.',
-    emailSent: 'Enviamos un enlace de verificación a tu nuevo correo. Ábrelo para completar el cambio e inicia sesión con ese correo.',
+    sendEmailConfirmation: 'Enviar confirmación al nuevo correo', sendingEmailConfirmation: 'Enviando confirmación…',
+    emailSent: 'Cambio de correo pendiente. Enviamos un enlace de confirmación a {email}. Tu correo actual sigue activo. Confirma desde el nuevo buzón para completar el cambio y luego inicia sesión con el nuevo correo.',
     emailHint: 'Tu correo cambia después de verificar la nueva dirección. Los delegados existentes conservan su correo compartido actual.',
     sharedEmailHint: 'Este es un correo compartido del equipo. Tu administrador principal lo administra.',
     mismatch: 'Las nuevas contraseñas no coinciden.', invalidName: 'Ingresa un nombre de entre 2 y 100 caracteres.', invalidPassword: 'Usa una contraseña de entre 8 y 128 caracteres.',
@@ -52,6 +56,8 @@ type SettingsBaseShape = Record<keyof typeof settingsBase.en, string>;
 export const accountSettingsCopy: Record<Lang, SettingsBaseShape> = {
   ...settingsBase,
   pt: {
+    verifyEmail: 'Enviar link de verificação', verificationSent: 'Enviamos um link de verificação para o seu e-mail atual.',
+    sendEmailConfirmation: 'Enviar confirmação para o novo e-mail', sendingEmailConfirmation: 'Enviando confirmação…',
     title: 'Configurações da conta', profile: 'Editar perfil', password: 'Alterar senha', email: 'Alterar e-mail',
     name: 'Nome completo', currentPassword: 'Senha atual', newPassword: 'Nova senha', confirmPassword: 'Confirmar nova senha', newEmail: 'Novo endereço de e-mail',
     save: 'Salvar alterações', saving: 'Salvando…', nameSaved: 'Seu nome foi atualizado.', passwordSaved: 'Sua senha foi alterada.',

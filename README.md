@@ -8,6 +8,10 @@ The website runs on classic Firebase Hosting and the existing Firebase backend. 
 
 [Membership applications](docs/MEMBERSHIP_ACCOUNTS.md) require sign-in or consented account creation and save private company/pathway details for the profile card. Contact and event forms support guests.
 
+## Account emails
+
+Production account email uses Resend with `noreply@dusaccnj.org`. Password resets, email verification, and verified address changes use branded English/Spanish templates with Firebase-generated secure action links on `dusaccnj.org`. Welcome, Account settings password-change, and deletion notices are delivered by the private account-email queue. Firebase SMTP also uses Resend for native security/recovery messages. See [account email setup and validation](docs/ACCOUNT_EMAILS.md).
+
 ## Start
 
 Requires Node.js 22.16+ and npm.
@@ -71,6 +75,8 @@ Semantic landmarks, a skip link, keyboard-visible focus, native form controls, a
 ## SEO, analytics, and operational readiness
 
 Next Metadata config supplies title templates, descriptions, canonical URLs, OpenGraph/Twitter cards, and organization structured data. `sitemap.ts` and `robots.ts` generate public crawl metadata. `GET /api/health` is a minimal liveness endpoint that exposes no database or private data.
+
+See [technical SEO files and commands](docs/TECHNICAL_SEO.md) for the full implementation, reusable business schema, semantic landing-page skeleton, hero image sizing, and Firebase/server verification instructions.
 
 Copy `.env.example` for site-origin configuration. Set `NEXT_PUBLIC_GA_ID` only when an approved Google Analytics property is ready. No tracking is enabled by default. Analytics load only after consent; form contents never enter conversion events. Optional pixel integrations can listen to the `dusaccom:analytics` custom event, emitted only after consent. Respect later consent withdrawal. Conversions include page views, inquiry option selection, and confirmed inquiry acceptance.
 

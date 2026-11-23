@@ -12,7 +12,11 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "cleanUrls": true,
     "trailingSlash": true,
-    "rewrites": [{ "source": "/api/account-management/**", "function": { "functionId": "accountApi", "region": "us-east4" } }],
+    "rewrites": [
+      { "source": "/api/account-management/**", "function": { "functionId": "accountApi", "region": "us-east4" } },
+      { "source": "/api/account-password", "function": { "functionId": "accountPasswordApi", "region": "us-east4" } },
+      { "source": "/api/account-email/**", "function": { "functionId": "accountEmailApi", "region": "us-east4" } }
+    ],
     "headers": [
       { "source": "**", "headers": [
         { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" },
@@ -26,6 +30,10 @@
         { "key": "Access-Control-Allow-Methods", "value": "GET, HEAD, OPTIONS" },
         { "key": "Access-Control-Allow-Headers", "value": "Content-Type" },
         { "key": "Cache-Control", "value": "no-store" }
+      ] },
+      { "source": "/account/reset-password{,/**}", "headers": [
+        { "key": "Cache-Control", "value": "no-store" },
+        { "key": "Referrer-Policy", "value": "no-referrer" }
       ] },
       { "source": "/_next/static/**", "headers": [{ "key": "Cache-Control", "value": "public,max-age=31536000,immutable" }] },
       { "source": "/assets/**", "headers": [{ "key": "Cache-Control", "value": "public,max-age=2592000,stale-while-revalidate=86400" }] },

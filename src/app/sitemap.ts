@@ -1,5 +1,11 @@
 import type { MetadataRoute } from 'next';
-import { site } from '@/lib/site';
-import { resources } from '@/lib/content';
+import { canonicalUrl } from '@/lib/site';
+import { publicPagePaths } from '@/lib/navigation';
+
+// Generate from the route/content list at build time, including Firebase export.
 export const dynamic = 'force-static';
-export default function sitemap(): MetadataRoute.Sitemap { return ['', '/about/', '/programs/', '/membership/', '/infotep/', '/contact/', '/privacy/', '/terms/', ...resources.map(item => `/resources/${item.slug}/`)].map(path => ({ url: `${site.url}${path}`, changeFrequency: path.includes('/resources/') ? 'monthly' : 'weekly', priority: path === '' ? 1 : .7 })); }
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  // Add lastModified only when actual content modification dates are available.
+  return publicPagePaths.map(path => ({ url: canonicalUrl(path) }));
+}

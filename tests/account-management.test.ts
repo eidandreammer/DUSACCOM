@@ -151,3 +151,18 @@ test('hold confirmation cancels on release and requires a new full five-second h
   hold.start(); hold.start(); advance(4999); assert.equal(count, 0); advance(1); assert.equal(count, 1);
   hold.cancel(); advance(10000); assert.equal(count, 1);
 });
+
+test('account API accepts only its explicitly configured production origins', async () => {
+  const handler = createAccountHandler({
+    store: {} as AccountStore, isEnabled: async () => true,
+    origins: ['https://dusaccnj.org', 'https://dusaccom.web.app'],
+    verify: async () => ({ uid: 'member', authTime: Date.now() }),
+  });
+  for (const origin of ['https://dusaccnj.org', 'https://dusaccom.web.app', 'https://attacker.example']) {
+    const response = await handler(new Request('https://dusaccnj.org/api/account-management/availability', {
+      method: 'POST', headers: { Origin: origin, Authorization: 'Bearer valid', 'Content-Type': 'application/json' }, body: '{}',
+    }));
+    assert.equal(response.status, origin === 'https://attacker.example' ? 403 : 200);
+    if (response.ok) assert.equal(response.headers.get('Access-Control-Allow-Origin'), origin);
+  }
+});

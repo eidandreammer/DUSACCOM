@@ -6,6 +6,7 @@ import { CookieSettings } from './privacy-controls';
 import { site } from '@/lib/site';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
+import { homeLink, legalLinks, navigationGroups } from '@/lib/navigation';
 import { FooterAccount } from './footer-account';
 import BiteSitesCreditFooter from './bitesites/bitesites-credit-footer.jsx';
 
@@ -21,9 +22,9 @@ export function Footer() {
 
   return (
     <footer className="bg-[#0c2334] pt-14 text-slate-300">
-      <div className="container grid gap-10 pb-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.1fr]">
+      <div className="container grid gap-8 pb-12 lg:grid-cols-[minmax(220px,1fr)_minmax(0,2fr)]">
         {/* Brand column */}
-        <div className="sm:col-span-2 lg:col-span-1">
+        <div className="max-w-sm">
           <Link href="/" aria-label={t.common.brandHomeAria} className="inline-block">
             <div className="footer-logo">
               <Image
@@ -48,35 +49,34 @@ export function Footer() {
           </div>
         </div>
 
-        {/* The Chamber links */}
-        <div className="footer-links">
-          <h2>{t.footer.chamberTitle}</h2>
-          <a href="/#about">{t.footer.about}</a>
-          <a href="/#mission">{t.footer.mission}</a>
-          <a href="/#membership">{t.footer.becomeMember}</a>
-          <a href="/#register-form">{t.nav.registration}</a>
-          <a href="/#infotep">{t.footer.infotep}</a>
-          <a href="/#events">{t.nav.events}</a>
-        </div>
+        <div className="grid gap-x-5 gap-y-6 sm:grid-cols-2 lg:w-full lg:max-w-[850px] lg:justify-self-end lg:grid-cols-3">
+          {navigationGroups.map(group => (
+            <div key={group.id}>
+              <nav className="footer-links" aria-labelledby={`footer-${group.id}`}>
+                <h2 id={`footer-${group.id}`}>{t.nav[group.label]}</h2>
+                {group.id === 'chamber' && <Link href={homeLink.href}>{t.nav[homeLink.label]}</Link>}
+                {group.links.map(link => <Link key={link.href} href={link.href}>{t.nav[link.label]}</Link>)}
+              </nav>
+              {group.id === 'participate' && <div className="mt-6"><FooterAccount /></div>}
+            </div>
+          ))}
 
-        {/* Let's connect links */}
-        <div className="footer-links">
-          <h2>{t.footer.connectTitle}</h2>
-          <a href={`mailto:${site.email}`}>{site.email}</a>
-          <a href={`tel:${site.phoneHref}`}>{site.phone}</a>
-          <a href={site.directionsUrl} target="_blank" rel="noreferrer">
-            {site.address.street}<br />{site.address.city}, {site.address.region} {site.address.postalCode}
-          </a>
-          <Link href="/contact" className="flex items-center gap-3">
-            <span>{t.footer.contactTeam}</span>
-            <ArrowUpRight size={14} aria-hidden="true" />
-          </Link>
-          <span className="mt-4 flex items-center gap-2 text-xs text-slate-400">
-            <ShieldCheck size={15} aria-hidden="true" />
-            {t.footer.noPayments}
-          </span>
+          {/* Let's connect links */}
+          <div className="footer-links sm:col-span-2 lg:col-span-3">
+            <h2>{t.footer.connectTitle}</h2>
+            <a href={`mailto:${site.email}`}>{site.email}</a>
+            <a href={`tel:${site.phoneHref}`}>{site.phone}</a>
+            <a href={site.directionsUrl} target="_blank" rel="noreferrer">{site.addressLine}</a>
+            <Link href="/contact" className="flex items-center gap-3">
+              <span>{t.footer.contactTeam}</span>
+              <ArrowUpRight size={14} aria-hidden="true" />
+            </Link>
+            <span className="mt-4 flex items-center gap-2 text-xs text-slate-400">
+              <ShieldCheck size={15} aria-hidden="true" />
+              {t.footer.noPayments}
+            </span>
+          </div>
         </div>
-        <FooterAccount />
       </div>
 
       {/* Bottom bar */}
@@ -84,13 +84,12 @@ export function Footer() {
         <span>
           © {new Date().getFullYear()} {site.fullName}. {t.footer.rightsReserved}
         </span>
-        <div className="flex flex-wrap gap-5">
-          <Link className="flex min-h-11 items-center hover:text-white" href="/privacy">
-            {t.footer.privacy}
-          </Link>
-          <Link className="flex min-h-11 items-center hover:text-white" href="/terms">
-            {t.footer.terms}
-          </Link>
+        <div className="footer-actions ml-auto flex flex-wrap justify-end gap-x-2.5 gap-y-1">
+          {legalLinks.map(link => (
+            <Link key={link.href} className="flex min-h-11 items-center hover:text-white" href={link.href}>
+              {t.footer[link.label]}
+            </Link>
+          ))}
           <CookieSettings />
         </div>
       </div>

@@ -12,6 +12,17 @@ const core = {
 
     // Header & Navigation
     nav: {
+      home: 'Home',
+      chamber: 'The Chamber',
+      opportunities: 'Opportunities',
+      participate: 'Participate',
+      programs: 'Programs',
+      trade: 'Trade & Market Access',
+      resources: 'Business Resources',
+      membership: 'Membership',
+      account: 'Account',
+      mainNavigation: 'Main navigation',
+      mobileNavigation: 'Mobile navigation',
       membersCart: 'Members: Registration Cart',
       membersOnly: 'Members',
       cartOnly: 'Registration Cart',
@@ -549,6 +560,17 @@ const core = {
 
     // Header & Navigation
     nav: {
+      home: 'Inicio',
+      chamber: 'La Cámara',
+      opportunities: 'Oportunidades',
+      participate: 'Participa',
+      programs: 'Programas',
+      trade: 'Comercio y Acceso a Mercados',
+      resources: 'Recursos Empresariales',
+      membership: 'Membresía',
+      account: 'Cuenta',
+      mainNavigation: 'Navegación principal',
+      mobileNavigation: 'Navegación móvil',
       membersCart: 'Miembros: Carrito para registrar',
       membersOnly: 'Miembros',
       cartOnly: 'Carrito para registrar',

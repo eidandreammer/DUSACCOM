@@ -7,6 +7,17 @@ export const pt: TranslationShape = {
 
     // Header & Navigation
     nav: {
+      home: 'Início',
+      chamber: 'A Câmara',
+      opportunities: 'Oportunidades',
+      participate: 'Participe',
+      programs: 'Programas',
+      trade: 'Comércio e Acesso a Mercados',
+      resources: 'Recursos Empresariais',
+      membership: 'Associação',
+      account: 'Conta',
+      mainNavigation: 'Navegação principal',
+      mobileNavigation: 'Navegação móvel',
       membersCart: 'Membros: Carrinho de Inscrição',
       membersOnly: 'Membros',
       cartOnly: 'Carrinho de Inscrição',

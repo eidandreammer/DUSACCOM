@@ -1,0 +1,14 @@
+{
+  "domain": "dusaccnj.org",
+  "resendDomainId": "a8fb4359-9e9a-450d-be8b-fb5c62d8a498",
+  "records": [
+    {
+      "type": "TXT",
+      "name": "resend._domainkey",
+      "content": "p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDQouAbtd992JnbRJnl+XR70j7db2FF0VSTrqvprp0xs++5KkJrrXE1EkPZHPuu/2nQSl/gULOTG288Il59zpQIjgbQ0GpNye0n/T3ONxIjWLjXUp06HKD6J0aJixZm74PXBQ0VzospdXbvjo6rsHKvuheaZN743N0vSXtbgx5W3wIDAQAB"
+    },
+    { "type": "CNAME", "name": "rsend", "content": "rsend.forge.rmta.net", "proxied": false },
+    { "type": "CNAME", "name": "send", "content": "send.forge.rmta.net", "proxied": false }
+  ],
+  "note": "Copied from this domain's Resend setup screen. Preserve all root Google MX/SPF and existing DMARC records; keep receiving disabled."
+}

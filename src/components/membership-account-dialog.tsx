@@ -35,7 +35,7 @@ export function MembershipAccountDialog({ email, name, onCancel, onComplete }: {
       auth.languageCode = FIREBASE_LANG[lang];
       if (mode === 'signup') {
         await createMembershipAccount({ agreeToCreateAccount: true, email: email.trim(), password,
-          name: String(data.get('name')), confirmation: String(data.get('confirmation')) });
+          name: String(data.get('name')), confirmation: String(data.get('confirmation')) }, lang);
       } else await signInForMembership(email, password, String(data.get('username') || ''));
       onComplete(mode === 'signup');
     } catch (error) {
