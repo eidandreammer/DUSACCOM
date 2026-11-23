@@ -1,2 +1,10 @@
+'use client';
 import { ButtonLink } from '@/components/ui';
-export default function NotFound() { return <section className="section"><div className="container max-w-2xl! py-12"><p className="mb-5 font-mid text-xs font-semibold tracking-widest text-crimson">404 · A NEW DIRECTION</p><h1 className="section-title">Let’s get you connected.</h1><p className="mt-6 mb-8 text-sm leading-8 text-slate-600">We couldn’t find this page. Explore the Chamber or get in touch with our team.</p><ButtonLink href="/">Back to the Chamber</ButtonLink></div></section>; }
+import { useLanguage } from '@/lib/language-context';
+import { systemCopy } from '@/lib/system-copy';
+
+export default function NotFound() {
+  const { lang } = useLanguage();
+  const c = systemCopy[lang].notFound;
+  return <section className="section"><div className="container max-w-2xl! py-12"><p className="mb-5 font-mid text-xs font-semibold tracking-widest text-crimson">{c.eyebrow}</p><h1 className="section-title">{c.title}</h1><p className="mt-6 mb-8 text-sm leading-8 text-slate-600">{c.body}</p><ButtonLink href="/">{c.button}</ButtonLink></div></section>;
+}

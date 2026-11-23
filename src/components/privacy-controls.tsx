@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Script from 'next/script';
 import { Check } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { useLanguage } from '@/lib/language-context';
+import { useLanguage, type Lang } from '@/lib/language-context';
 
 type Consent = 'essential' | 'all' | null;
 type AnalyticsProperties = Record<string, string | number | boolean>;
@@ -16,6 +16,12 @@ declare global {
     gtag?: (...args: unknown[]) => void;
   }
 }
+
+const COOKIE_COPY: Record<Lang, { preferences: string; heading: string; essential: string; acceptAll: string; settings: string }> = {
+  en: { preferences: 'Cookie preferences', heading: 'A little privacy goes a long way.', essential: 'Essential only', acceptAll: 'Accept all', settings: 'Cookie Settings' },
+  es: { preferences: 'Preferencias de cookies', heading: 'Tu privacidad es fundamental.', essential: 'Solo esenciales', acceptAll: 'Aceptar todo', settings: 'Configuración de Cookies' },
+  pt: { preferences: 'Preferências de cookies', heading: 'A sua privacidade é importante.', essential: 'Apenas essenciais', acceptAll: 'Aceitar todos', settings: 'Configurações de Cookies' },
+};
 
 const Preferences = createContext<() => void>(() => {});
 
@@ -28,6 +34,7 @@ export function PrivacyProvider({ children }: { children: ReactNode }) {
   const [visible, setVisible] = useState(false);
   const pathname = usePathname();
   const { lang } = useLanguage();
+  const c = COOKIE_COPY[lang];
   const gaId = process.env.NEXT_PUBLIC_GA_ID || '';
   const validGa = /^G-[A-Z0-9]+$/.test(gaId);
 
@@ -116,12 +123,12 @@ export function PrivacyProvider({ children }: { children: ReactNode }) {
       )}
       {visible && (
         <section
-          aria-label={lang === 'en' ? 'Cookie preferences' : 'Preferencias de cookies'}
+          aria-label={c.preferences}
           className="fixed right-3 bottom-3 left-3 z-50 mx-auto flex max-w-4xl flex-col gap-4 rounded-[8px] border border-slate-200 bg-white p-5 shadow-2xl md:right-6 md:bottom-6 md:left-6 md:flex-row md:items-center md:gap-8"
         >
           <div>
             <h2 className="text-sm font-semibold">
-              {lang === 'en' ? 'A little privacy goes a long way.' : 'Tu privacidad es fundamental.'}
+              {c.heading}
             </h2>
             <p className="mt-1 text-xs leading-6 text-slate-600">
               {lang === 'en' ? (
@@ -129,6 +136,13 @@ export function PrivacyProvider({ children }: { children: ReactNode }) {
                   We save your privacy preference on this device. Optional analytics help us improve your experience.{' '}
                   <Link href="/privacy" className="underline underline-offset-2">
                     Learn more
+                  </Link>
+                </>
+              ) : lang === 'pt' ? (
+                <>
+                  Salvamos a sua preferência de privacidade neste dispositivo. As estatísticas opcionais nos ajudam a melhorar a sua experiência.{' '}
+                  <Link href="/privacy" className="underline underline-offset-2">
+                    Saiba mais
                   </Link>
                 </>
               ) : (
@@ -146,13 +160,13 @@ export function PrivacyProvider({ children }: { children: ReactNode }) {
               onClick={() => save('essential')}
               className="button button-outline flex-1 whitespace-nowrap px-4! text-xs!"
             >
-              <span>{lang === 'en' ? 'Essential only' : 'Solo esenciales'}</span>
+              <span>{c.essential}</span>
             </button>
             <button
               onClick={() => save('all')}
               className="button flex-1 whitespace-nowrap gap-2! px-4! text-xs!"
             >
-              <span>{lang === 'en' ? 'Accept all' : 'Aceptar todo'}</span>
+              <span>{c.acceptAll}</span>
               <Check size={16} className="shrink-0" aria-hidden="true" />
             </button>
           </div>
@@ -167,7 +181,7 @@ export function CookieSettings() {
   const { lang } = useLanguage();
   return (
     <button onClick={open} className="min-h-11 text-left font-sans hover:text-white">
-      {lang === 'en' ? 'Cookie Settings' : 'Configuración de Cookies'}
+      {COOKIE_COPY[lang].settings}
     </button>
   );
 }

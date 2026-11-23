@@ -12,8 +12,9 @@ import { EventActions, EventEditor } from './event-actions';
 import { CalendarDays, ChevronLeft, ChevronRight, MapPin, X } from 'lucide-react';
 import { initiatives, type Initiative } from '@/lib/content';
 import { dateKey, eventDateKey, eventDescription, eventTitle, isEventRegistrationOpen, monthDays, upcomingEvents } from '@/lib/events';
-import { useLanguage } from '@/lib/language-context';
+import { useLanguage, LOCALE } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
+import { site } from '@/lib/site';
 import { InquiryForm } from './inquiry-form';
 import styles from './event-calendar.module.css';
 
@@ -40,7 +41,7 @@ export function EventCalendar({ events: initialEvents = initiatives }: { events?
     }, () => setLiveError(true));
   }, [attempt]);
   const copy = translations[lang].eventCalendar;
-  const locale = lang === 'es' ? 'es-US' : 'en-US';
+  const locale = LOCALE[lang];
   const id = useId();
   const [month, setMonth] = useState<Month | null>(null);
   const [today, setToday] = useState('');
@@ -104,7 +105,9 @@ export function EventCalendar({ events: initialEvents = initiatives }: { events?
   const selectedEvent = events.find(event => event.id === selectedEventId);
   const canRegister = selectedEvent && now > 0 ? isEventRegistrationOpen(selectedEvent, now) : false;
   const selectedIsPending = selectedEvent ? eventDateKey(selectedEvent) === null : false;
-  const monthLabel = month ? new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(month.year, month.month, 1))) : copy.loading;
+  const rawMonth = month ? new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(month.year, month.month, 1))) : '';
+  // Capitalize only the first letter ("Novembro de 2026", not "Novembro De 2026").
+  const monthLabel = month ? rawMonth.charAt(0).toLocaleUpperCase(locale) + rawMonth.slice(1) : copy.loading;
 
   function changeMonth(delta: number) {
     if (!month) return;
@@ -173,8 +176,19 @@ export function EventCalendar({ events: initialEvents = initiatives }: { events?
     );
   }
 
+  // schema.org Event data so search engines can show upcoming chamber events.
+  const structuredEvents = upcoming.slice(0, 20).map(event => ({
+    '@context': 'https://schema.org', '@type': 'Event', name: event.title, description: event.description,
+    startDate: event.schedule!.startsAt, eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    location: { '@type': 'Place', name: event.location || 'New Jersey', address: event.location || 'New Jersey' },
+    organizer: { '@type': 'Organization', name: site.fullName, url: site.url },
+    url: `${site.url}/?event=${encodeURIComponent(event.id)}#events`, inLanguage: ['en', 'es', 'pt'],
+  }));
+
   return (
     <section id="events" className={styles.section} aria-labelledby={`${id}-title`}>
+      {structuredEvents.length > 0 && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredEvents).replace(/</g, '\\u003c') }} />}
       <div className={styles.container}>
         <div className={styles.intro}>
           <p className={styles.eyebrow}>{copy.eyebrow}</p>
@@ -243,7 +257,7 @@ export function EventCalendar({ events: initialEvents = initiatives }: { events?
             {canRegister || selectedIsPending ? <>
               {selectedIsPending && <p className={styles.interestNote}>{copy.interestNote}</p>}
               {!user && !authLoading && <div className={styles.accountOptions}>
-                <p>{accountCopy[lang].guestEventHint}</p>
+                <p>{accountCopy[lang].guestEventHint} {accountCopy[lang].trackEvents}</p>
                 <a href={accountHref({ intent: 'event-registration', eventId: selectedEvent.id })}>{accountCopy[lang].signInForEvent}</a>
                 <a href={accountHref({ mode: 'signup', intent: 'event-registration', eventId: selectedEvent.id })}>{accountCopy[lang].createForEvent}</a>
               </div>}

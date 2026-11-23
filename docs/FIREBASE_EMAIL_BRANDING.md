@@ -12,7 +12,7 @@ Consequently, there is no existing third-party email service or SMTP authorizati
 
 ## Applied settings
 
-- All four existing account-management templates have sender display name `DUSACCOM team` and Reply-To `dusaccom1@gmail.com`.
+- All four existing account-management templates have sender display name `DUSACCOM team` and Reply-To `admin@dusaccnj.org`.
 - The website uses `dusaccom.web.app` as its Firebase authentication domain.
 - Password-reset requests set `https://dusaccom.web.app/account/` as their continue URL and use the visitor's selected language.
 - The old website redirects public pages to the new address. Its Firebase reserved namespace stays on the original host, including the configuration needed by previously issued authentication links (see the November 2 repair below).

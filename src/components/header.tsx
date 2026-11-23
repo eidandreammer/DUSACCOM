@@ -5,15 +5,19 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, ChevronDown, ChevronUp, Globe, Menu, X } from 'lucide-react';
 import { ProfileMenu } from './profile-menu';
-import { useLanguage } from '@/lib/language-context';
+import { LANGS, useLanguage, type Lang } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
 
-// The emblem is an image; the wordmark is live Merengue Bold text so it stays
+const LANGUAGE_NAMES: Record<Lang, string> = { en: 'English', es: 'Español', pt: 'Português' };
+
+// The emblem is the vector flag seal with the NJ medallion; the wordmark is live Merengue Bold text so it stays
 // crisp at every size and can change color with the header state.
 export function Brand() {
+  const { lang } = useLanguage();
+  const c = translations[lang].common;
   return (
-    <Link href="/" className="brand header-brand" aria-label="DUSACCOM home">
-      <Image src="/assets/dusaccom-emblem.webp" alt="" width={188} height={192} priority className="header-brand-emblem" />
+    <Link href="/" className="brand header-brand" aria-label={c.brandHomeAria}>
+      <Image src="/assets/dominican-usa-chamber-of-commerce-nj-logo.svg" alt={c.logoAlt} width={214} height={200} priority unoptimized className="header-brand-emblem" />
       <span className="header-brand-wordmark" aria-hidden="true">
         <span className="header-brand-name">DUSACCOM</span>
         <span className="header-brand-region">New Jersey</span>
@@ -22,9 +26,6 @@ export function Brand() {
   );
 }
 
-function InfotepMark() {
-  return <span className="header-infotep-mark"><Image src="/assets/infotep-nav-transparent.webp" alt="INFOTEP" width={300} height={72} className="header-infotep-image" /></span>;
-}
 
 export function Header() {
   const pathname = usePathname();
@@ -33,7 +34,7 @@ export function Header() {
   const [hidden, setHidden] = useState(false);
   const [headerHeight, setHeaderHeight] = useState(104);
   const header = useRef<HTMLElement>(null);
-  const { lang, toggleLang } = useLanguage();
+  const { lang, setLang } = useLanguage();
   const t = translations[lang];
   const [open, setOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -165,7 +166,7 @@ export function Header() {
       <div className="header-surface relative border-b">
         <div className="container flex min-h-26 items-center gap-3 sm:gap-6">
           <Brand />
-          <nav aria-label="Main navigation" className="ml-auto hidden items-center gap-2 lg:flex">
+          <nav aria-label={t.common.mainNavAria} className="ml-auto hidden items-center gap-2 lg:flex">
             <a href="/#about" className={`${navLinkClass('/about')} header-pill`}>{t.nav.about}</a>
             <div ref={registration} className="relative" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget)) setDropdownOpen(false); }}>
               <div className="header-pill header-pill-group flex items-center">
@@ -178,26 +179,30 @@ export function Header() {
                 {registrationLinks.map(({ href, label, accent }) => <a key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} data-accent={accent} className="registration-link hover-scale flex min-h-12 items-center rounded-lg px-4 py-3 text-sm font-medium leading-6">{label}</a>)}
               </div>
             </div>
-            <a href="/#infotep" className={`${navLinkClass('/infotep')} header-pill`}><InfotepMark /></a>
+            <a href="/#infotep" className={`${navLinkClass('/infotep')} header-pill`} title={t.nav.infotepTitle}>{t.nav.infotep}</a>
             <a href="/#events" onClick={closeNavigation} className={`${navLinkClass('/#events')} header-pill`}>{t.nav.events}</a>
             <Link href="/contact" aria-current={pathname === '/contact' ? 'page' : undefined} className={`${navLinkClass('/contact')} header-pill`}>{t.nav.contact}</Link>
           </nav>
           <div className="header-controls ml-auto flex shrink-0 items-center gap-2 lg:ml-0">
-            <button onClick={toggleLang} aria-label={t.nav.shiftLangAria} className="header-language header-pill hover-scale inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm font-bold hover:border-crimson">
-              <Globe size={16} aria-hidden="true" /><span>{lang === 'en' ? 'EN / ES' : 'ES / EN'}</span>
-            </button>
+            <div role="group" aria-label={t.nav.languageLabel} className="header-language header-pill lang-switch">
+              <Globe size={16} aria-hidden="true" className="lang-switch-icon" />
+              {LANGS.map(code => (
+                <button key={code} type="button" lang={code} aria-pressed={lang === code} aria-label={LANGUAGE_NAMES[code]} title={LANGUAGE_NAMES[code]}
+                  className="lang-switch-option" onClick={() => setLang(code)}>{code.toUpperCase()}</button>
+              ))}
+            </div>
             <button ref={toggle} className="icon-button header-pill hover-scale lg:hidden" aria-label={open ? t.nav.closeMenu : t.nav.openMenu} aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen(!open)}>{open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}</button>
             <ProfileMenu onOpenChange={setProfileOpen} />
           </div>
         </div>
-        <nav id="mobile-navigation" aria-label="Mobile navigation" hidden={!open} className="header-menu-panel absolute top-full right-0 left-0 max-h-[calc(100dvh-84px)] overflow-y-auto border-t px-6 py-4 lg:hidden">
+        <nav id="mobile-navigation" aria-label={t.common.mobileNavAria} hidden={!open} className="header-menu-panel absolute top-full right-0 left-0 max-h-[calc(100dvh-84px)] overflow-y-auto border-t px-6 py-4 lg:hidden">
           <a href="/#about" className={navLinkClass('/about')} onClick={closeNavigation}>{t.nav.about}</a>
           <details className="registration-details border-y py-1">
             <summary className="header-nav-link hover-scale cursor-pointer py-3 text-base font-semibold">{t.nav.registration}</summary>
             <a href="/#register-form" onClick={closeNavigation} data-accent="red" className="registration-link hover-scale flex min-h-11 items-center rounded-lg px-4 text-sm font-semibold">{t.nav.registration}<ArrowUpRight size={16} className="ml-2" aria-hidden="true" /></a>
             {registrationLinks.map(({ href, label, accent }) => <a key={href} href={href} onClick={closeNavigation} aria-current={pathname === href ? 'page' : undefined} data-accent={accent} className="registration-link hover-scale flex min-h-12 items-center rounded-lg px-4 py-2 text-sm">{label}</a>)}
           </details>
-          <a href="/#infotep" className={navLinkClass('/infotep')} onClick={closeNavigation}><InfotepMark /></a>
+          <a href="/#infotep" className={navLinkClass('/infotep')} title={t.nav.infotepTitle} onClick={closeNavigation}>{t.nav.infotep}</a>
           <a href="/#events" className={navLinkClass('/#events')} onClick={closeNavigation}>{t.nav.events}</a>
           <Link href="/contact" className={navLinkClass('/contact')} onClick={closeNavigation}>{t.nav.contact}</Link>
         </nav>

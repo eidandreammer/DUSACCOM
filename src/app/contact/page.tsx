@@ -1,10 +1,12 @@
 'use client';
 import Link from 'next/link';
-import { Mail, Phone, ArrowUpRight, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Mail, Phone, MapPin, ArrowUpRight, ArrowRight, ShieldCheck } from 'lucide-react';
 import { PageIntro, Eyebrow, ClosingCTA } from '@/components/ui';
 import { InquiryForm } from '@/components/inquiry-form';
+import { VisitUs } from '@/components/visit-us';
 import { site } from '@/lib/site';
 import { resources } from '@/lib/content';
+import { resourceCopy } from '@/lib/resources-copy';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
 
@@ -33,6 +35,7 @@ export default function Contact() {
             {[
               { Icon: Mail, label: c.writeUs, text: site.email, href: `mailto:${site.email}` },
               { Icon: Phone, label: c.callUs, text: site.phone, href: `tel:${site.phoneHref}` },
+              { Icon: MapPin, label: c.visitUs, text: site.addressLine, href: '#visit' },
             ].map(({ Icon, label, text, href }) => (
               <a key={label} href={href} className="group flex items-center gap-4 border-b border-slate-200 py-6">
                 <span className="flex size-12 shrink-0 items-center justify-center rounded-[8px] bg-mist text-crimson">
@@ -56,12 +59,14 @@ export default function Contact() {
         </div>
       </section>
 
+      <VisitUs />
+
       <section id="resources" className="section scroll-mt-24 bg-mist">
         <div className="container">
           <Eyebrow>{c.resourcesEyebrow}</Eyebrow>
           <h2 className="section-title mb-9">{c.resourcesTitle}</h2>
           <div className="grid gap-6 md:grid-cols-3">
-            {resources.map((resource) => (
+            {resources.map((item) => { const resource = { ...item, ...resourceCopy[lang][item.slug] }; return (
               <article
                 key={resource.slug}
                 className="flex flex-col rounded-[8px] border border-slate-200 border-t-2 border-t-crimson bg-white p-7"
@@ -74,7 +79,7 @@ export default function Contact() {
                   <ArrowRight size={18} aria-hidden="true" />
                 </Link>
               </article>
-            ))}
+            ); })}
           </div>
         </div>
       </section>

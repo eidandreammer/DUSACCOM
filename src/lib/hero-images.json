@@ -1,8 +1,5 @@
 [
-  { "name": "slide-one", "file": "1.jpeg" },
-  { "name": "slide-two", "file": "2.jpeg" },
-  { "name": "slide-three", "file": "3.jpeg" },
-  { "name": "slide-four", "file": "4.jpeg" },
-  { "name": "slide-five", "file": "5.jpeg" },
-  { "name": "slide-six", "file": "6.jpeg" }
+  { "name": "paterson-dominican-parade-dancers-flag-skirts", "file": "paterson-dominican-parade-dancers-flag-skirts.jpg" },
+  { "name": "paterson-dominican-parade-carnival-queens-costumes", "file": "paterson-dominican-parade-carnival-queens-costumes.jpg" },
+  { "name": "paterson-dominican-parade-float-dominican-flags", "file": "paterson-dominican-parade-float-dominican-flags.jpg" }
 ]

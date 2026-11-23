@@ -1,6 +1,8 @@
 import { EmailAuthProvider, reauthenticateWithCredential, signOut, updatePassword, updateProfile, verifyBeforeUpdateEmail } from 'firebase/auth';
 import { getFirebase } from './firebase';
 import { site } from './site';
+import { FIREBASE_LANG } from './language-context';
+import type { Lang } from './translations';
 
 export class AccountManagementError extends Error {
   constructor(readonly code: string) { super(code); }
@@ -29,9 +31,9 @@ export async function changeAccountPassword(currentPassword: string, newPassword
   const user = await reauthenticateAccount(currentPassword);
   await updatePassword(user, newPassword);
 }
-export async function changeAccountEmail(currentPassword: string, email: string, lang: 'en' | 'es') {
+export async function changeAccountEmail(currentPassword: string, email: string, lang: Lang) {
   const user = await reauthenticateAccount(currentPassword);
-  getFirebase().auth.languageCode = lang;
+  getFirebase().auth.languageCode = FIREBASE_LANG[lang];
   await verifyBeforeUpdateEmail(user, email.trim(), { url: `${site.url}/account/` });
 }
 export async function changeAccountName(displayName: string) {

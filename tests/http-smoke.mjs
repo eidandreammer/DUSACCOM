@@ -14,7 +14,7 @@ for (const path of paths) {
   assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1, `${path}: one H1`);
   assert.match(html, /<main[^>]+id="main"/, `${path}: main landmark`);
   assert.match(html, /rel="canonical"/, `${path}: canonical`);
-  assert.match(html, /dusaccom1@gmail.com/, `${path}: official contact`);
+  assert.match(html, /admin@dusaccnj.org/, `${path}: official contact`);
   assert.doesNotMatch(html, /<script[^>]+src="https:\/\/www.googletagmanager.com/, `${path}: no analytics before consent`);
   for (const match of html.matchAll(/(?:src|href)="(\/(?:_next\/static|assets|imgs)\/[^"?]+)/g)) assets.add(match[1].replaceAll('&amp;', '&').replaceAll('&#x27;', "'"));
   if (path === '/contact') assert.match(html, /method="post"/, 'No-JavaScript forms never expose fields in a GET URL');

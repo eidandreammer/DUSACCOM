@@ -5,9 +5,11 @@ rules_version = '2';
 // (2..100), shared email (3..254), username (3..24), createdAt (server timestamp). Only the root may
 // create these roles or toggle enabled. Delegates cannot grant any roles.
 // events/{id}: title/titleEs (1..160/0..160 chars), description/descriptionEs
-// (1..2000/0..2000 chars), location (1..240), category (1..60 chars), startsAt UTC ISO
-// string, timeZone IANA string (1..80), status confirmed, registration open/closed,
-// createdBy (immutable auth UID), createdAt (immutable server timestamp).
+// (1..2000/0..2000 chars), optional titlePt/descriptionPt (0..160/0..2000), location
+// (1..240), category (1..60 chars), startsAt UTC ISO string, timeZone IANA string (1..80),
+// status confirmed, registration open/closed, createdBy (immutable auth UID), createdAt
+// (immutable server timestamp), optional translation map (machine-translation metadata,
+// server-only: clients may not add or change it).
 // Confirmed event details are public so visitors can use the chamber calendar.
 // inquiries/{UUID}: original form fields, ownerUid, reference, SHA256 payloadHash,
 // receivedAt server timestamp, status 'new'. Create-only; owner can get a receipt.
@@ -54,9 +56,9 @@ service cloud.firestore {
     }
     function validEvent(data) {
       return data.keys().hasAll(['title', 'titleEs', 'description', 'descriptionEs', 'location', 'category', 'startsAt', 'timeZone', 'status', 'registration', 'createdBy', 'createdAt'])
-        && data.keys().hasOnly(['title', 'titleEs', 'description', 'descriptionEs', 'location', 'category', 'startsAt', 'timeZone', 'status', 'registration', 'createdBy', 'createdAt'])
-        && bounded(data.title, 1, 160) && bounded(data.titleEs, 0, 160)
-        && bounded(data.description, 1, 2000) && bounded(data.descriptionEs, 0, 2000)
+        && data.keys().hasOnly(['title', 'titleEs', 'titlePt', 'description', 'descriptionEs', 'descriptionPt', 'location', 'category', 'startsAt', 'timeZone', 'status', 'registration', 'createdBy', 'createdAt', 'translation'])
+        && bounded(data.title, 1, 160) && bounded(data.titleEs, 0, 160) && bounded(data.get('titlePt', ''), 0, 160)
+        && bounded(data.description, 1, 2000) && bounded(data.descriptionEs, 0, 2000) && bounded(data.get('descriptionPt', ''), 0, 2000)
         && bounded(data.location, 1, 240) && bounded(data.timeZone, 1, 80)
         && bounded(data.category, 1, 60) && data.category.matches('.*[^\\s].*')
         && data.status == 'confirmed' && data.registration in ['open', 'closed']
@@ -144,7 +146,10 @@ service cloud.firestore {
         && (request.resource.data.kind != 'membership' || hasMembershipProfile(request.resource.data))
         && getAfter(/databases/$(database)/documents/inquiryLimits/$(request.auth.uid)).data.lastSubmission == id
         && getAfter(/databases/$(database)/documents/inquiryLimits/$(request.auth.uid)).data.updatedAt == request.time;
-      allow list, update, delete: if false;
+      // Members read their own receipts (My events); admins read event sign-ups.
+      allow list: if memberIdentity() && resource.data.ownerUid == request.auth.uid && request.query.limit <= 200;
+      allow list: if admin() && resource.data.kind in ['event', 'event-registration'] && request.query.limit <= 500;
+      allow update, delete: if false;
     }
     match /membershipProfiles/{uid} {
       allow get: if owns(uid) && memberIdentity();
@@ -193,10 +198,13 @@ service cloud.firestore {
     match /events/{id} {
       allow get: if resource.data.status == 'confirmed';
       allow list: if resource.data.status == 'confirmed' && request.query.limit <= 500;
+      // `translation` is written only by the trusted translateEvent function (Admin SDK).
       allow create: if admin() && validEvent(request.resource.data)
+        && !request.resource.data.keys().hasAny(['translation'])
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.createdAt == request.time;
       allow update: if admin() && validEvent(request.resource.data)
+        && request.resource.data.get('translation', null) == resource.data.get('translation', null)
         && request.resource.data.createdBy == resource.data.createdBy
         && request.resource.data.createdAt == resource.data.createdAt;
       allow delete: if admin();

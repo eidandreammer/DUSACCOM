@@ -2,7 +2,7 @@ import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { before, after, test } from 'node:test';
 import { initializeTestEnvironment, assertFails, assertSucceeds } from '@firebase/rules-unit-testing';
-import { collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, writeBatch, Timestamp, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, writeBatch, Timestamp, serverTimestamp, query, where, limit } from 'firebase/firestore';
 import { saveFirestoreInquiry } from '../../src/lib/firestore-inquiries.ts';
 
 let environment;
@@ -96,4 +96,21 @@ test('atomic rate limits cannot be omitted, reset, forged or bypassed after five
   await environment.withSecurityRulesDisabled(context => updateDoc(doc(context.firestore(), 'inquiryLimits', uid), { windowStart: Timestamp.fromMillis(Date.now() - 601000) }));
   assert.equal((await saveFirestoreInquiry(db, uid, sixth)).ok, true);
   assert.equal((await getDoc(doc(db, 'inquiryLimits', uid))).data().count, 1);
+});
+
+test('members list only their own receipts; admins list event sign-ups but not other inquiries', async () => {
+  const member = uid => environment.authenticatedContext(uid, { email: `${uid}@example.com`, firebase: { sign_in_provider: 'google.com' } }).firestore();
+  const mine = member('list-member');
+  await assertSucceeds(saveFirestoreInquiry(mine, 'list-member', input({ kind: 'event-registration', interest: 'inquiry-future', message: '', email: 'list-member@example.com' })));
+  await assertSucceeds(saveFirestoreInquiry(mine, 'list-member', input({ email: 'list-member@example.com' })));
+  const own = await assertSucceeds(getDocs(query(collection(mine, 'inquiries'), where('ownerUid', '==', 'list-member'), limit(200))));
+  assert.equal(own.size, 2);
+  await assertFails(getDocs(query(collection(mine, 'inquiries'), where('ownerUid', '==', 'inquiry-owner'), limit(200))));
+  await assertFails(getDocs(query(collection(mine, 'inquiries'), where('ownerUid', '==', 'list-member'), limit(201))));
+  await assertFails(getDocs(query(collection(guest('list-member'), 'inquiries'), where('ownerUid', '==', 'list-member'), limit(10))));
+  const admin = environment.authenticatedContext('inquiry-role-admin', { email: 'admin@example.com', firebase: { sign_in_provider: 'password' } }).firestore();
+  const signups = await assertSucceeds(getDocs(query(collection(admin, 'inquiries'), where('kind', 'in', ['event', 'event-registration']), where('interest', '==', 'inquiry-future'), limit(500))));
+  assert.ok(signups.size >= 1);
+  await assertFails(getDocs(query(collection(admin, 'inquiries'), where('kind', '==', 'contact'), limit(10))));
+  await assertFails(getDocs(query(collection(mine, 'inquiries'), where('kind', 'in', ['event', 'event-registration']), where('interest', '==', 'inquiry-future'), limit(500))));
 });

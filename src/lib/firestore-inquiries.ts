@@ -63,6 +63,11 @@ export async function submitFirebaseInquiry(input: Inquiry): Promise<InquiryResp
     if (!accountEmailMatches(input.email, user.email, sharedEmail)) throw new Error('membership/email-mismatch');
     return saveFirestoreInquiry(db, user.uid, input);
   }
+  // Signed-in members keep event registrations and messages in their own account.
+  const member = getFirebase();
+  await member.auth.authStateReady();
+  const memberUser = member.auth.currentUser;
+  if (memberUser && !memberUser.isAnonymous) return saveFirestoreInquiry(member.db, memberUser.uid, input);
   const { auth, db } = getInquiryFirebase();
   await auth.authStateReady();
   if (!auth.currentUser) {

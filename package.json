@@ -7,9 +7,9 @@
     "node": ">=22.16.0"
   },
   "scripts": {
-    "dev": "next dev --hostname 127.0.0.1",
-    "build": "node scripts/optimize-images.mjs && next build --webpack",
-    "build:firebase": "node scripts/optimize-images.mjs && node scripts/build-firebase.mjs",
+    "dev": "node scripts/copy-vendor.mjs && next dev --hostname 127.0.0.1",
+    "build": "node scripts/copy-vendor.mjs && node scripts/optimize-images.mjs && next build --webpack",
+    "build:firebase": "node scripts/copy-vendor.mjs && node scripts/optimize-images.mjs && node scripts/build-firebase.mjs",
     "deploy:firebase": "npm run build:firebase && node scripts/deploy-firebase.mjs",
     "deploy:hosting-only": "npm run build:firebase && node scripts/deploy-firebase.mjs --hosting-only",
     "deploy:accounts": "npm ci --prefix functions && node scripts/deploy-firebase.mjs --accounts",
@@ -28,9 +28,11 @@
     "drizzle-orm": "^0.45.2",
     "firebase": "^12.19.0",
     "lucide-react": "^1.31.0",
+    "maplibre-gl": "^6.19.0",
     "next": "16.4.3",
     "react": "19.3.1",
     "react-dom": "19.3.1",
+    "three": "^0.187.0",
     "zod": "^4.0.0"
   },
   "devDependencies": {
@@ -40,6 +42,7 @@
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@types/three": "^0.187.0",
     "drizzle-kit": "^0.31.10",
     "esbuild": "^0.25.0",
     "postcss": "^8.5.0",

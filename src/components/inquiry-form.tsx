@@ -66,7 +66,7 @@ export function InquiryForm({
   }, []);
 
   useEffect(() => {
-    if (kind !== 'membership' || !user || authLoading) return;
+    if (!user || user.isAnonymous || authLoading) return;
     setValues(current => ({ ...current, name: current.name || user.displayName || '',
       email: current.email || accountEmail || user.email || '', company: current.company || membershipProfile?.company || '' }));
   }, [kind, user, accountEmail, membershipProfile, authLoading]);
@@ -112,7 +112,7 @@ export function InquiryForm({
   function ErrorMessage({ name }: { name: keyof Values }) {
     return errors[name] ? (
       <span id={`${id}-${name}-error`} className="mt-1.5 block text-xs font-normal leading-5 text-red-800">
-        {errors[name]}
+        {(f.validation as Record<string, string>)[errors[name]!] ?? errors[name]}
       </span>
     ) : null;
   }
@@ -220,12 +220,12 @@ export function InquiryForm({
     >
       <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
       <p className="mt-2 mb-7 text-sm leading-7 text-slate-600">{desc}</p>
-      <noscript><p>{lang === 'es' ? 'Los formularios necesitan JavaScript. Contacto:' : 'Online forms require JavaScript. Contact:'} <a href={`mailto:${site.email}`}>{site.email}</a> · {site.phone}.</p></noscript>
+      <noscript><p>{{ en: 'Online forms require JavaScript. Contact:', es: 'Los formularios necesitan JavaScript. Contacto:', pt: 'Os formulários exigem JavaScript. Contato:' }[lang]} <a href={`mailto:${site.email}`}>{site.email}</a> · {site.phone}.</p></noscript>
       {kind === 'membership' && !user && <p className="mb-5 text-sm leading-7 text-slate-600">{membershipCopy.required}</p>}
       {accountNotice && <p role="status" className="mb-5 rounded-[8px] border border-emerald-300 bg-emerald-50 p-4 text-sm leading-7 text-slate-700">{accountNotice}</p>}
 
       <fieldset disabled={busy} className="min-w-0 space-y-5">
-        <legend className="sr-only">Details</legend>
+        <legend className="sr-only">{translations[lang].common.formDetails}</legend>
         <div className="grid gap-5 md:grid-cols-2">
           <label className="text-xs font-semibold" htmlFor={`${id}-name`}>
             {f.fullName} <span className="text-crimson" aria-hidden="true">*</span>
@@ -348,13 +348,21 @@ export function InquiryForm({
                   </Link>{' '}
                   and consent to being contacted about my inquiry.
                 </>
-              ) : (
+              ) : lang === 'es' ? (
                 <>
                   Acepto la{' '}
                   <Link href="/privacy" target="_blank" rel="noopener" className="underline underline-offset-2">
                     {f.privacyLinkText}
                   </Link>{' '}
                   y autorizo a ser contactado sobre mi consulta.
+                </>
+              ) : (
+                <>
+                  Concordo com a{' '}
+                  <Link href="/privacy" target="_blank" rel="noopener" className="underline underline-offset-2">
+                    {f.privacyLinkText}
+                  </Link>{' '}
+                  e autorizo o contato sobre a minha solicitação.
                 </>
               )}
             </span>
@@ -400,7 +408,7 @@ export function InquiryForm({
           ) : (
             <>
               <h3 className="font-semibold">{f.errorTitle}</h3>
-              <p className="mt-2 text-sm leading-7 text-slate-700">{result.message}</p>
+              <p className="mt-2 text-sm leading-7 text-slate-700">{(f.validation as Record<string, string>)[result.message] ?? f.errorMessage}</p>
               <a className="text-link mt-2" href={`mailto:${site.email}`}>
                 <Mail size={17} aria-hidden="true" />
                 <span>{f.emailChamber}</span>

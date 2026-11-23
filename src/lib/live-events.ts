@@ -4,6 +4,8 @@ import type { Initiative } from './content';
 export const liveEventSchema = z.object({
   title: z.string().trim().min(1).max(160), titleEs: z.string().trim().max(160),
   description: z.string().trim().min(1).max(2000), descriptionEs: z.string().trim().max(2000),
+  // Portuguese is optional: older events lack it, and the translateEvent function fills blanks.
+  titlePt: z.string().trim().max(160).default(''), descriptionPt: z.string().trim().max(2000).default(''),
   location: z.string().trim().min(1).max(240), category: z.string().trim().min(1).max(60),
   startsAt: z.iso.datetime(), timeZone: z.string().min(1).max(80).refine(value => {
     try { new Intl.DateTimeFormat('en-US', { timeZone: value }); return true; } catch { return false; }
@@ -13,7 +15,7 @@ export function liveEvent(id: string, data: unknown): Initiative | null {
   const result = liveEventSchema.safeParse(data);
   if (!result.success) return null;
   const event = result.data;
-  return { id, title: event.title, titleEs: event.titleEs, description: event.description, descriptionEs: event.descriptionEs,
+  return { id, title: event.title, titleEs: event.titleEs, titlePt: event.titlePt, description: event.description, descriptionEs: event.descriptionEs, descriptionPt: event.descriptionPt,
     category: event.category, location: event.location, status: event.status, art: 'navy', tagline: ['', ''],
     schedule: { startsAt: event.startsAt, timeZone: event.timeZone, registration: event.registration } };
 }

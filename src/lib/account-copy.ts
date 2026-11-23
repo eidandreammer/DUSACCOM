@@ -1,5 +1,13 @@
-export const accountCopy = {
+import type { Lang } from './translations';
+
+const accountBase = {
   en: {
+    google: 'Continue with Google', or: 'or',
+    myEvents: 'My events', myEventsHint: 'Events you registered for while signed in.', myEventsEmpty: 'You haven’t registered for any events yet.', browseEvents: 'Browse upcoming events',
+    registered: 'Registered', interested: 'Interest sent', reference: 'Reference', eventRemoved: 'This event is no longer listed.', pastEvent: 'Past',
+    registrations: 'Registrations', registrationsTitle: 'Registrations for', noRegistrations: 'No registrations yet.', downloadCsv: 'Download CSV', close: 'Close',
+    loadingList: 'Loading…', company: 'Company', message: 'Message', received: 'Received',
+    trackEvents: 'Sign in before registering to keep your events in your account.',
     status: 'Status', statusSignedIn: 'Signed in', statusSignedOut: 'Signed out', guest: 'Guest',
     account: 'My account', signIn: 'Sign in', signUp: 'Create account', signOut: 'Sign out', name: 'Full name', email: 'Email', password: 'Password',
     title: 'Welcome to DUSACCOM', description: 'Create your account or sign in to your community.', forgot: 'Forgot password?', reset: 'Send reset link', back: 'Back to sign in',
@@ -20,6 +28,12 @@ export const accountCopy = {
     adminHint: 'Published events appear for every visitor in real time.',
   },
   es: {
+    google: 'Continuar con Google', or: 'o',
+    myEvents: 'Mis eventos', myEventsHint: 'Eventos a los que te registraste con tu cuenta.', myEventsEmpty: 'Aún no te has registrado en ningún evento.', browseEvents: 'Ver próximos eventos',
+    registered: 'Registrado', interested: 'Interés enviado', reference: 'Referencia', eventRemoved: 'Este evento ya no está publicado.', pastEvent: 'Pasado',
+    registrations: 'Registros', registrationsTitle: 'Registros para', noRegistrations: 'Aún no hay registros.', downloadCsv: 'Descargar CSV', close: 'Cerrar',
+    loadingList: 'Cargando…', company: 'Empresa', message: 'Mensaje', received: 'Recibido',
+    trackEvents: 'Inicia sesión antes de registrarte para guardar tus eventos en tu cuenta.',
     status: 'Estado', statusSignedIn: 'Sesión iniciada', statusSignedOut: 'Sin iniciar sesión', guest: 'Visitante',
     account: 'Mi cuenta', signIn: 'Iniciar sesión', signUp: 'Crear cuenta', signOut: 'Cerrar sesión', name: 'Nombre completo', email: 'Correo electrónico', password: 'Contraseña',
     title: 'Bienvenido a DUSACCOM', description: 'Crea tu cuenta o inicia sesión en tu comunidad.', forgot: '¿Olvidaste tu contraseña?', reset: 'Enviar enlace', back: 'Volver al inicio de sesión',
@@ -41,10 +55,42 @@ export const accountCopy = {
   },
 };
 
-export function accountError(error: unknown, lang: 'en' | 'es') {
+type AccountBaseShape = Record<keyof typeof accountBase.en, string>;
+// Parity: Record<Lang, Shape> makes a missing or extra key in any language a compile error.
+export const accountCopy: Record<Lang, AccountBaseShape> = {
+  ...accountBase,
+  pt: {
+    google: 'Continuar com o Google', or: 'ou',
+    myEvents: 'Meus eventos', myEventsHint: 'Eventos em que você se inscreveu com a sua conta.', myEventsEmpty: 'Você ainda não se inscreveu em nenhum evento.', browseEvents: 'Ver próximos eventos',
+    registered: 'Inscrito', interested: 'Interesse enviado', reference: 'Referência', eventRemoved: 'Este evento não está mais publicado.', pastEvent: 'Encerrado',
+    registrations: 'Inscrições', registrationsTitle: 'Inscrições para', noRegistrations: 'Ainda não há inscrições.', downloadCsv: 'Baixar CSV', close: 'Fechar',
+    loadingList: 'Carregando…', company: 'Empresa', message: 'Mensagem', received: 'Recebido',
+    trackEvents: 'Entre na sua conta antes de se inscrever para manter seus eventos salvos nela.',
+    status: 'Status', statusSignedIn: 'Conectado', statusSignedOut: 'Desconectado', guest: 'Visitante',
+    account: 'Minha conta', signIn: 'Entrar', signUp: 'Criar conta', signOut: 'Sair', name: 'Nome completo', email: 'E-mail', password: 'Senha',
+    title: 'Bem-vindo à DUSACCOM', description: 'Crie a sua conta ou entre para fazer parte da comunidade.', forgot: 'Esqueceu a senha?', reset: 'Enviar link de redefinição', back: 'Voltar para o login',
+    resetSent: 'Se existir uma conta com esse e-mail, enviaremos um link para redefinir a senha.', working: 'Aguarde um momento…', member: 'Membro', admin: 'Administrador',
+    signedIn: 'Você está conectado.', calendar: 'Ir para o calendário de eventos', unavailable: 'O acesso às contas está sendo configurado. Tente novamente mais tarde.',
+    signInForEvent: 'Entrar para este evento', createForEvent: 'Criar uma conta para este evento', guestEventHint: 'Você pode enviar este formulário como visitante ou entrar na sua conta.',
+    failed: 'Não foi possível concluir a solicitação. Tente novamente.', invalid: 'Confira o seu e-mail e a sua senha e tente novamente.', exists: 'Já existe uma conta com este e-mail. Entre ou redefina a sua senha.',
+    weak: 'Use uma senha mais forte, com pelo menos 8 caracteres.', limited: 'Muitas tentativas. Aguarde e tente novamente.', network: 'Verifique a sua conexão e tente novamente.',
+    addEvent: 'Criar um evento', publish: 'Publicar evento', publishing: 'Publicando…', published: 'Evento publicado. O calendário está atualizado.',
+    addCategory: '+ Adicionar uma nova categoria', newCategory: 'Nome da nova categoria',
+    editEvent: 'Editar evento', deleteEvent: 'Excluir evento', saveEvent: 'Salvar alterações', saving: 'Salvando…', updated: 'Evento atualizado. O calendário está atualizado.',
+    deleteQuestion: 'Excluir', deleteHint: 'Isto remove o evento do calendário de forma permanente.', confirmDelete: 'Confirmar exclusão', deleting: 'Excluindo…', deleted: 'Evento excluído.', cancel: 'Cancelar',
+    registration: 'Inscrições', registrationOpen: 'Abertas', registrationClosed: 'Encerradas', validDate: 'Escolha uma data, um horário e um fuso horário válidos.',
+    allEvents: 'Todos os eventos', includePast: 'Incluir eventos passados', showAll: 'Ver todos os eventos',
+    eventTitle: 'Título', eventTitleEs: 'Título em espanhol (opcional)', descriptionLabel: 'Descrição', descriptionEs: 'Descrição em espanhol (opcional)', location: 'Local', date: 'Data e hora', zone: 'Fuso horário', category: 'Categoria',
+    signInHint: 'Entre com a sua conta de administrador para publicar eventos.', memberHint: 'Somente administradores da câmara podem publicar eventos.',
+    future: 'Escolha uma data futura, um horário e um fuso horário válidos.', liveError: 'Os eventos ao vivo não estão disponíveis. Tente novamente.', retry: 'Tentar novamente',
+    adminHint: 'Os eventos publicados aparecem para todos os visitantes em tempo real.',
+  },
+};
+
+export function accountError(error: unknown, lang: Lang) {
   const t = accountCopy[lang];
   const code = (error as { code?: string })?.code;
-  if (code === 'auth/email-already-in-use') return t.exists;
+  if (code === 'auth/email-already-in-use' || code === 'auth/account-exists-with-different-credential') return t.exists;
   if (['auth/weak-password', 'auth/password-does-not-meet-requirements'].includes(code || '')) return t.weak;
   if (['auth/invalid-credential', 'auth/wrong-password', 'auth/user-not-found', 'auth/invalid-email'].includes(code || '')) return t.invalid;
   if (code === 'auth/too-many-requests') return t.limited;

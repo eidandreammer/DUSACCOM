@@ -7,7 +7,7 @@
 .layout { display: grid; grid-template-columns: 1.15fr 1fr; gap: 40px; align-items: start; }
 .calendar { min-width: 0; padding: 24px; background: var(--color-white); border: 1px solid #d5dce1; border-radius: 8px; }
 .monthBar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 24px; }
-.monthBar h3 { font-size: var(--type-h3); font-weight: 600; text-transform: capitalize; }
+.monthBar h3 { font-size: var(--type-h3); font-weight: 600; }
 .monthBar > div { display: flex; align-items: center; flex-shrink: 0; gap: 4px; }
 .monthBar button { display: grid; place-items: center; min-width: 40px; min-height: 44px; border: 1px solid #e2e8ed; }
 .monthBar .todayButton { font-size: var(--type-caption); padding-inline: 10px; }
@@ -90,3 +90,12 @@
 .editorDialog { margin: auto; padding: 0; width: min(680px, calc(100% - 40px)); max-height: calc(100dvh - 40px); border: 1px solid #d5dce1; border-radius: 8px; background: var(--color-white); color: var(--color-navy); overflow-y: auto; }
 .editorDialog::backdrop { background: transparent; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
 .editorDialog .creator { border: 0; }
+
+/* Admin: registrations list */
+.registrationsPanel { display: grid; gap: 16px; padding: clamp(20px, 3vw, 32px); min-width: min(760px, 90vw); }
+.registrationsPanel h2 { margin: 0; font-family: var(--font-mid); font-size: 1.25rem; }
+.registrationsTable { max-height: 55vh; overflow: auto; border: 1px solid #dde4ea; border-radius: 8px; }
+.registrationsTable table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.registrationsTable th, .registrationsTable td { padding: 10px 12px; border-bottom: 1px solid #eef2f5; text-align: left; vertical-align: top; }
+.registrationsTable th { position: sticky; top: 0; background: #f4f6f7; font-family: var(--font-mid); font-weight: 600; }
+.registrationsTable small { color: #6b7a88; }

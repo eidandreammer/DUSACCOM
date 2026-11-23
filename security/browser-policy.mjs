@@ -10,10 +10,10 @@ export function contentSecurityPolicy({ nonce, hashes = [], development = false 
   const scripts = ["'self'", ...hashes.map(hash => `'sha256-${hash}'`), ...(nonce ? [`'nonce-${nonce}'`] : []), ...(development ? ["'unsafe-eval'"] : []), 'https://www.googletagmanager.com'];
   return [
     "default-src 'none'", `script-src ${scripts.join(' ')}`, "script-src-attr 'none'",
-    "style-src 'self'", "style-src-attr 'unsafe-inline'", "img-src 'self' data: https://www.google-analytics.com",
+    "style-src 'self'", "style-src-attr 'unsafe-inline'", "img-src 'self' data: blob: https://www.google-analytics.com",
     "font-src 'self'", "object-src 'none'", "base-uri 'none'", "form-action 'self'", "frame-ancestors 'none'",
-    "frame-src 'none'", "manifest-src 'self'", "worker-src 'self'", "media-src 'self'",
-    `connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.google-analytics.com https://region1.google-analytics.com${development ? ' http://127.0.0.1:* http://localhost:* ws://127.0.0.1:* ws://localhost:*' : ''}`,
+    "frame-src 'none'", "manifest-src 'self'", "worker-src 'self' blob:", "media-src 'self'",
+    `connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.google-analytics.com https://region1.google-analytics.com https://tiles.openfreemap.org${development ? ' http://127.0.0.1:* http://localhost:* ws://127.0.0.1:* ws://localhost:*' : ''}`,
     ...(development ? [] : ['upgrade-insecure-requests']),
   ].join('; ');
 }

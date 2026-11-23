@@ -13,13 +13,15 @@ See [email branding status](FIREBASE_EMAIL_BRANDING.md) for the Firebase restric
 Use Node.js 22.16+ with the public Firebase web configuration from `.env.example` in the ignored `.env.local` file. Never include service-account keys.
 
 ```sh
-npm ci
-npm ci --prefix functions
+npm ci --include=dev
+npm ci --include=dev --prefix functions
 npm run typecheck
 npm test
 npm run test:rules
 npm run deploy:firebase
 ```
+
+> **Dev dependencies:** always install with `--include=dev`. If your shell has `NODE_ENV=production` set (it is on the main Mac), plain `npm ci` / `npm install` silently skips devDependencies (TypeScript, Tailwind, test tools) and builds/typechecks fail. Run the dev server with `NODE_ENV=development npm run dev`.
 
 Use `npm run deploy:accounts` when updating the function, then the normal website deployment command. Do not use the historical `deploy:hosting-only` fallback on the active deployment: it removes the account API route and makes deletion unavailable.
 
@@ -56,6 +58,58 @@ node tests/http-smoke.mjs https://dusaccom.web.app --static
 ```
 
 This checks public pages, images/scripts, metadata, 404 behavior, and that legacy server APIs remain absent. Account deletion uses the protected `/api/account-management/**` function route. Other Auth and Firestore operations run through their Firebase SDKs. Use the usage dashboards to monitor the active Blaze project.
+
+## Event auto-translation
+
+Admin-created events (`events/{id}`) are machine-translated from English into Spanish (`es`) and Brazilian Portuguese (`pt-BR`) by the `translateEvent` Cloud Function (v2 Firestore `onDocumentWritten`, `us-east4`, `retry: false`, codebase `account-management`, source `functions/src/event-translation.ts`). It calls Cloud Translation Basic v2 (`format: text`, `source: en`) with an access token from the function's own credentials; no API key is stored.
+
+- Fills `titleEs`/`descriptionEs` and `titlePt`/`descriptionPt` only when they are blank or still hold the text the function wrote. Anything an admin types in "More options" is kept; clearing a field hands it back to the translator. Location and category are not translated.
+- `translation` = `{ sourceHash, es, pt, fields, translatedAt }`: `sourceHash` is the SHA-256 of the English title/description, `es`/`pt` are `auto`/`manual`/`mixed`, and `fields` holds the hash of each machine-written value. Editing the English re-translates machine fields only. The function's own write converges to a no-op on its next trigger, so it cannot loop. Updates use a `lastUpdateTime` precondition so a concurrent admin save is never overwritten.
+- If the API fails, the event is left unchanged and the site shows English for that language; the warning is logged and nothing retries. The next save retries.
+- Firestore rules let admins write `titlePt`/`descriptionPt` (0..160 / 0..2000). Clients may not create, change or delete `translation`; only the function (Admin SDK) writes it.
+- Machine text is truncated to the same limits so later admin edits still pass the rules.
+
+### One-time setup (project owner)
+
+The function runs as the dedicated service account `dusaccom-translator`. Like `dusaccom-accounts`, it is referenced by full email in `functions/src/index.ts` (`TRANSLATOR_SERVICE_ACCOUNT`):
+
+```sh
+PROJECT=dusaccom-community-2026
+gcloud services enable translate.googleapis.com eventarc.googleapis.com --project "$PROJECT"
+gcloud iam service-accounts create dusaccom-translator --display-name="DUSACCOM event translator" --project "$PROJECT"
+SA=$(gcloud iam service-accounts list --project "$PROJECT" --filter="email ~ ^dusaccom-translator@" --format="value(email)")
+echo "$SA"   # must equal TRANSLATOR_SERVICE_ACCOUNT in functions/src/index.ts; update the constant if it differs
+for ROLE in roles/cloudtranslate.user roles/datastore.user roles/eventarc.eventReceiver; do
+  gcloud projects add-iam-policy-binding "$PROJECT" --member="serviceAccount:$SA" --role="$ROLE" --condition=None
+done
+# Only if the deploying account is not Owner/Editor:
+# gcloud iam service-accounts add-iam-policy-binding "$SA" --member="user:DEPLOYER_EMAIL" --role=roles/iam.serviceAccountUser --project "$PROJECT"
+```
+
+Deploy only the new function and the rules:
+
+```sh
+npm ci --include=dev --prefix functions
+npx --yes --package=firebase-tools@latest -- firebase deploy --only functions:account-management:translateEvent,firestore:rules --project dusaccom-community-2026
+# If the first event write logs a Cloud Run authentication error, allow the trigger identity to invoke the service:
+gcloud run services add-iam-policy-binding translateevent --region us-east4 --member="serviceAccount:$SA" --role=roles/run.invoker --project dusaccom-community-2026
+```
+
+On the first deploy of a Firestore trigger, the Firebase CLI may also enable Eventarc, Pub/Sub and Cloud Run APIs. To use the default compute account instead (`969342544667-compute@developer.gserviceaccount.com`), remove `serviceAccount` from `translateEvent` and grant that account `roles/cloudtranslate.user`.
+
+Cost: Cloud Translation charges $20 per million characters sent, after a free 500,000 characters/month ($10 monthly credit). Each translation request sends the English title and description once per language. A typical event (≈60-character title + ≈500-character description) uses about 1,100 characters, so roughly 450 event saves a month stay free. Beyond that, each save that changes the English costs about $0.02. Saves that do not change the English cost nothing.
+
+### Tests
+
+- `node --import tsx --test tests/event-translation.test.ts` (also part of `npm test`): translator logic with the HTTP call mocked.
+- `tests/firebase/firestore.test.mjs`: the rules for the new fields.
+- End-to-end trigger in the emulators against a local mock (never the paid API). In emulators, the function does nothing unless `EVENT_TRANSLATION_ENDPOINT` is set:
+
+  ```sh
+  npm --prefix functions run build && EVENT_TRANSLATION_ENDPOINT=http://127.0.0.1:5999/translate \
+    npx --yes --package=firebase-tools@latest -- firebase emulators:exec --only firestore,functions --project demo-dusaccom \
+    "node --test tests/firebase/event-translation-trigger.test.mjs"
+  ```
 
 ## Legacy authentication host
 

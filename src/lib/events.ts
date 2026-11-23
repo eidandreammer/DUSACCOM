@@ -1,4 +1,5 @@
 import type { Initiative } from './content';
+import type { Lang } from './translations';
 
 export function dateKey(date: Date, timeZone: string): string {
   const parts = new Intl.DateTimeFormat('en-US', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(date);
@@ -31,5 +32,7 @@ export function monthDays(year: number, month: number): Array<number | null> {
   return Array.from({ length: Math.ceil((offset + count) / 7) * 7 }, (_, index) => index >= offset && index < offset + count ? index - offset + 1 : null);
 }
 
-export function eventTitle(event: Initiative, lang: 'en' | 'es') { return lang === 'es' ? event.titleEs || event.title : event.title; }
-export function eventDescription(event: Initiative, lang: 'en' | 'es') { return lang === 'es' ? event.descriptionEs || event.description : event.description; }
+// Spanish/Portuguese fall back to English while an event has no text in that language
+// (e.g. before the translateEvent function has filled it in, or if translation failed).
+export function eventTitle(event: Initiative, lang: Lang) { return lang === 'es' ? event.titleEs || event.title : lang === 'pt' ? event.titlePt || event.title : event.title; }
+export function eventDescription(event: Initiative, lang: Lang) { return lang === 'es' ? event.descriptionEs || event.description : lang === 'pt' ? event.descriptionPt || event.description : event.description; }

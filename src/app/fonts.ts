@@ -1,5 +1,5 @@
 import localFont from 'next/font/local';
-import { Bricolage_Grotesque, Noto_Sans } from 'next/font/google';
+import { Bricolage_Grotesque, Noto_Sans, Tomorrow } from 'next/font/google';
 
 /*
  * Type roles (wired into Tailwind in globals.css):
@@ -26,6 +26,15 @@ export const merengue = localFont({
   variable: '--typeface-merengue',
 });
 
+// Merengue Black: a heavier cut of Merengue Bold (≈30% thicker stems), used only
+// for the homepage hero title. Same glyph coverage as Bold.
+export const merengueBlack = localFont({
+  src: [{ path: '../../public/fonts/Merengue-Black.woff2', weight: '900', style: 'italic' }],
+  display: 'swap',
+  adjustFontFallback: false,
+  variable: '--typeface-merengue-black',
+});
+
 export const bricolage = Bricolage_Grotesque({
   subsets: ['latin', 'latin-ext'],
   axes: ['opsz'],
@@ -39,4 +48,13 @@ export const notoSans = Noto_Sans({
   variable: '--typeface-noto-sans',
 });
 
-export const fontVariables = `${merengue.variable} ${bricolage.variable} ${notoSans.variable}`;
+// Tomorrow is the BiteSites wordmark's family, used only for the footer's "Made by" label.
+export const tomorrow = Tomorrow({
+  subsets: ['latin'],
+  weight: '700',
+  display: 'swap',
+  preload: false,
+  variable: '--bitesites-credit-eyebrow-font',
+});
+
+export const fontVariables = `${merengue.variable} ${merengueBlack.variable} ${bricolage.variable} ${notoSans.variable} ${tomorrow.variable}`;

@@ -1,4 +1,6 @@
-export const membershipAccountCopy = {
+import type { Lang } from './translations';
+
+const membershipBase = {
   en: {
     title: 'Continue your membership journey',
     question: 'Do you already have a DUSACCOM account with this email? Sign in to continue. If you do not, would you like to create one?',
@@ -28,5 +30,26 @@ export const membershipAccountCopy = {
     required: 'Inicia sesión o crea una cuenta para enviar tu solicitud de membresía.',
     cancel: 'Ahora no', useAnother: 'Usar otro correo',
     organization: 'Empresa u organización', pathway: 'Vía de membresía', applicationStatus: 'Estado de la solicitud', submitted: 'Solicitud enviada',
+  },
+};
+
+type MembershipBaseShape = Record<keyof typeof membershipBase.en, string>;
+// Parity: Record<Lang, Shape> makes a missing or extra key in any language a compile error.
+export const membershipAccountCopy: Record<Lang, MembershipBaseShape> = {
+  ...membershipBase,
+  pt: {
+    title: 'Continue a sua jornada de associação',
+    question: 'Você já tem uma conta da DUSACCOM com este e-mail? Entre para continuar. Se não tiver, quer criar uma?',
+    create: 'Sim, criar uma conta', signIn: 'Já tenho uma conta',
+    signupTitle: 'Crie a sua conta da DUSACCOM', signinTitle: 'Entre para continuar',
+    hint: 'O seu formulário de associação continua preenchido. Depois de entrar ou criar a sua conta, revise-o e envie a sua solicitação.',
+    confirmPassword: 'Confirmar senha', mismatch: 'As senhas não coincidem.',
+    createSubmit: 'Criar conta e continuar', signinSubmit: 'Entrar e continuar',
+    created: 'Sua conta está pronta. Revise e envie a sua solicitação de associação abaixo.',
+    signedIn: 'Você está conectado. Revise e envie a sua solicitação de associação abaixo.',
+    matchingEmail: 'Use o e-mail da conta em que você está conectado ou saia para solicitar com outra conta.',
+    required: 'Entre ou crie uma conta para enviar a sua solicitação de associação.',
+    cancel: 'Agora não', useAnother: 'Usar outro e-mail',
+    organization: 'Empresa ou organização', pathway: 'Tipo de associação', applicationStatus: 'Status da solicitação', submitted: 'Solicitação enviada',
   },
 };

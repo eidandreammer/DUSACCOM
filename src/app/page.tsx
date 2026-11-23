@@ -6,10 +6,17 @@ import { ArrowDown, ArrowRight } from 'lucide-react';
 import { InquiryForm } from '@/components/inquiry-form';
 import { MembershipCards } from '@/components/ui';
 import { HeroCarousel } from '@/components/hero-carousel';
+import { ParallaxVideoBand } from '@/components/parallax-video-band';
+import { ParadeGallery } from '@/components/parade-gallery';
+import dynamic from 'next/dynamic';
+
+// WebGL flag table loads on the client only.
+const FlagTable = dynamic(() => import('@/components/flag-table'), { ssr: false });
 import { EventCalendar } from '@/components/event-calendar';
 import { useLanguage } from '@/lib/language-context';
 import { translations } from '@/lib/translations';
 import { site } from '@/lib/site';
+import { VisitUs } from '@/components/visit-us';
 import styles from './home.module.css';
 
 export default function Home() {
@@ -31,7 +38,8 @@ export default function Home() {
           <div className={`surface ${styles.heroCopy}`}>
             <p className={styles.label}>{copy.aboutEyebrow}</p>
             <h1 id="about-title" className={styles.heroTitle}>
-              <span className={styles.heroBrand} aria-label="DUSACCOM"><span className={styles.brandBlue}>DUS</span><span className={styles.brandWhite}>AC</span><span className={styles.brandRed}>COM</span></span>
+              <span className={styles.brandBlue}>Dominican</span> <span className={styles.brandWhite}>U.S.A</span>{' '}
+              <span className={styles.heroTitleLine}><span className={styles.brandRed}>Chamber of Commerce</span></span>
             </h1>
             <p className={styles.statement}>{copy.aboutStatement}</p>
             <p className={`${styles.body} ${styles.heroDescription}`}>{t.aboutPage.description}</p>
@@ -65,6 +73,30 @@ export default function Home() {
         </div>
       </section>
 
+      <section id="president" className={styles.president} aria-labelledby="president-title">
+        <div className={`${styles.container} ${styles.presidentGrid}`}>
+          <figure className={styles.presidentPortrait}>
+            <Image src="/assets/heidy-hernandez-president-dominican-usa-chamber-of-commerce.jpg"
+              alt={copy.presidentAlt} width={1200} height={1607} sizes="(max-width: 900px) 100vw, 460px" />
+          </figure>
+          <div className={styles.presidentCopy}>
+            <p className={`${styles.label} ${styles.accent}`}>{copy.presidentEyebrow}</p>
+            <h2 id="president-title" className={styles.sectionTitle}>Heidy Hernández</h2>
+            <p className={styles.presidentRole}>{copy.presidentRole}</p>
+            <p className={styles.body}>{copy.presidentBio}</p>
+            <a href="/contact" className={`${styles.link} ${styles.aboutLink}`}>
+              {copy.presidentCta}<ArrowRight size={18} aria-hidden="true" />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <ParallaxVideoBand id="heritage" video="juan-pablo-duarte-statue-dominican-founding-father"
+        videoTitle={t.common.heritageVideoTitle}
+        eyebrow={copy.heritageEyebrow} title={copy.heritageTitle} caption={copy.heritageCaption} focus="center 8%">
+        <p className={styles.videoBandText}>{copy.heritageText}</p>
+      </ParallaxVideoBand>
+
       <section id="mission" className={styles.purpose} aria-labelledby="purpose-title">
         <div className={styles.container}>
           <div className={styles.sectionIntro}>
@@ -85,6 +117,34 @@ export default function Home() {
             </article>
           </div>
         </div>
+      </section>
+
+      <section id="community" className={styles.community} aria-labelledby="community-title">
+        <div className={styles.container}>
+          <div className={styles.sectionIntro}>
+            <div>
+              <p className={`${styles.label} ${styles.accent}`}>{copy.communityEyebrow}</p>
+              <h2 id="community-title" className={styles.sectionTitle}>{copy.communityTitle}</h2>
+            </div>
+            <p className={`${styles.body} ${styles.purposeIntro}`}>{copy.communityText}</p>
+          </div>
+          <ParadeGallery lang={lang} />
+          <p className={styles.galleryCaption}>{copy.communityCaption}</p>
+        </div>
+      </section>
+
+      <section id="every-flag" className={styles.flags} aria-labelledby="flags-title">
+        <div className={`${styles.container} ${styles.flagsIntro}`}>
+          <p className={`${styles.label} ${styles.accent}`}>{copy.flagsEyebrow}</p>
+          <h2 id="flags-title" className={styles.sectionTitle}>{copy.flagsTitle}</h2>
+          <p className={`${styles.body} ${styles.purposeIntro}`}>{copy.flagsText}</p>
+        </div>
+        <div className={styles.flagsStage}>
+          <FlagTable label={copy.flagsLabel} lang={lang} />
+        </div>
+        <p className={`${styles.container} ${styles.flagsSeat}`}>
+          {copy.flagsSeatText} <a href="#register-form" className={styles.flagsSeatLink}>{copy.flagsSeatLink}</a>
+        </p>
       </section>
 
       <section id="membership" className={styles.involvement} aria-labelledby="membership-title">
@@ -135,6 +195,15 @@ export default function Home() {
         </div>
       </section>
 
+      <ParallaxVideoBand id="both-sides" video="george-washington-bridge-night-lights-timelapse"
+        videoTitle={t.common.bridgeVideoTitle}
+        eyebrow={copy.bridgeEyebrow} title={copy.bridgeTitle}>
+        <p className={styles.videoBandText}>{copy.bridgeText}</p>
+        <a href="#register-form" className={`${styles.primaryAction} ${styles.videoBandAction} hover-scale`}>
+          {copy.startMembership}<ArrowRight size={18} aria-hidden="true" />
+        </a>
+      </ParallaxVideoBand>
+
       <section id="infotep" className={styles.training} aria-labelledby="training-title">
         <div className={styles.container}>
           <div className={styles.trainingIntro}>
@@ -179,6 +248,8 @@ export default function Home() {
           <InquiryForm kind="membership" initialInterest={selectedTier} onInterestChange={setSelectedTier} />
         </div>
       </section>
+
+      <VisitUs tone="mist" />
     </div>
   );
 }

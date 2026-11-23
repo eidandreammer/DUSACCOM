@@ -4,81 +4,83 @@ import { useState } from 'react';
 import { ArrowRight, CalendarDays, TrendingUp, Search, X } from 'lucide-react';
 import { initiatives, type Initiative } from '@/lib/content';
 import { eventDateKey } from '@/lib/events';
-import { useLanguage } from '@/lib/language-context';
+import { useLanguage, LOCALE, type Lang } from '@/lib/language-context';
+
+type ListCopy = {
+  categories: Record<string, string>; taglines: Record<string, [string, string]>; titles: Record<string, string>; descriptions: Record<string, string>;
+  proposedDate: string; requestRegistration: string; expressInterest: string; footer: string;
+  all: string; workshops: string; filterAria: string; searchLabel: string; searchPlaceholder: string;
+  found: (count: number) => string; noMatch: string; tryAnother: string; clear: string; disclaimer: string;
+};
+
+// Record<Lang, ListCopy> keeps all three languages in sync at compile time.
+const COPY: Record<Lang, ListCopy> = {
+  en: {
+    categories: { Networking: 'Networking', Workshop: 'Workshop', 'Cross-border': 'Cross-Border' },
+    taglines: { 'business-connection': ['Stronger connections.', 'Bigger possibilities.'], 'next-chapter': ['Small steps.', 'Big ambitions.'], 'beyond-borders': ['Two markets.', 'One conversation.'] },
+    titles: { 'business-connection': 'The Business Connection', 'next-chapter': 'Ready for Your Next Chapter', 'beyond-borders': 'Business Beyond Borders' },
+    descriptions: {
+      'business-connection': 'Introductions, shared ideas, and meaningful conversations with fellow business owners.',
+      'next-chapter': 'Practical conversations for entrepreneurs ready to move their business forward.',
+      'beyond-borders': 'Explore doing business between the Dominican Republic and the United States.',
+    },
+    proposedDate: 'PROPOSED · DATE TO BE ANNOUNCED', requestRegistration: 'Request Registration', expressInterest: 'Express Your Interest', footer: 'DUSACCOM · CONNECTIONS THAT COUNT',
+    all: 'All Initiatives', workshops: 'Workshops', filterAria: 'Filter initiatives', searchLabel: 'Search initiatives', searchPlaceholder: 'Search initiatives…',
+    found: n => `${n} ${n === 1 ? 'initiative' : 'initiatives'} found`,
+    noMatch: 'No initiatives match your search.', tryAnother: 'Try another keyword or explore all initiatives.', clear: 'Clear filters',
+    disclaimer: 'The initiatives shown are proposed concepts. Our team will confirm dates, venues, availability, and registration separately.',
+  },
+  es: {
+    categories: { Networking: 'Redes y Contactos', Workshop: 'Taller Práctico', 'Cross-border': 'Transfronterizo' },
+    taglines: { 'business-connection': ['Conexiones más fuertes.', 'Mayores posibilidades.'], 'next-chapter': ['Pequeños pasos.', 'Grandes ambiciones.'], 'beyond-borders': ['Dos mercados.', 'Una conversación.'] },
+    titles: { 'business-connection': 'La Conexión Empresarial', 'next-chapter': 'Listos para Tu Próximo Capítulo', 'beyond-borders': 'Negocios Más Allá de las Fronteras' },
+    descriptions: {
+      'business-connection': 'Presentaciones, ideas compartidas y conversaciones significativas con otros empresarios.',
+      'next-chapter': 'Conversaciones prácticas para emprendedores listos para impulsar su negocio.',
+      'beyond-borders': 'Explora hacer negocios entre la República Dominicana y los Estados Unidos.',
+    },
+    proposedDate: 'PROPUESTO · FECHA POR ANUNCIAR', requestRegistration: 'Solicitar Registro', expressInterest: 'Expresar Tu Interés', footer: 'DUSACCOM · CONEXIONES QUE CUENTAN',
+    all: 'Todas las Iniciativas', workshops: 'Talleres', filterAria: 'Filtrar iniciativas', searchLabel: 'Buscar iniciativas', searchPlaceholder: 'Buscar iniciativas…',
+    found: n => `${n} ${n === 1 ? 'iniciativa encontrada' : 'iniciativas encontradas'}`,
+    noMatch: 'No hay iniciativas que coincidan con tu búsqueda.', tryAnother: 'Prueba con otra palabra clave o explora todas las iniciativas.', clear: 'Limpiar filtros',
+    disclaimer: 'Las iniciativas mostradas son conceptos propuestos. Nuestro equipo confirmará fechas, sedes, disponibilidad y registro por separado.',
+  },
+  pt: {
+    categories: { Networking: 'Networking', Workshop: 'Oficina Prática', 'Cross-border': 'Sem Fronteiras' },
+    taglines: { 'business-connection': ['Conexões mais fortes.', 'Mais possibilidades.'], 'next-chapter': ['Pequenos passos.', 'Grandes ambições.'], 'beyond-borders': ['Dois mercados.', 'Uma conversa.'] },
+    titles: { 'business-connection': 'A Conexão Empresarial', 'next-chapter': 'Prontos para o Seu Próximo Capítulo', 'beyond-borders': 'Negócios Além das Fronteiras' },
+    descriptions: {
+      'business-connection': 'Apresentações, ideias compartilhadas e conversas significativas com outros empresários.',
+      'next-chapter': 'Conversas práticas para empreendedores prontos para levar o negócio adiante.',
+      'beyond-borders': 'Explore como fazer negócios entre a República Dominicana e os Estados Unidos.',
+    },
+    proposedDate: 'PROPOSTO · DATA A SER ANUNCIADA', requestRegistration: 'Solicitar Inscrição', expressInterest: 'Manifeste Seu Interesse', footer: 'DUSACCOM · CONEXÕES QUE CONTAM',
+    all: 'Todas as Iniciativas', workshops: 'Oficinas', filterAria: 'Filtrar iniciativas', searchLabel: 'Buscar iniciativas', searchPlaceholder: 'Buscar iniciativas…',
+    found: n => `${n} ${n === 1 ? 'iniciativa encontrada' : 'iniciativas encontradas'}`,
+    noMatch: 'Nenhuma iniciativa corresponde à sua busca.', tryAnother: 'Tente outra palavra-chave ou veja todas as iniciativas.', clear: 'Limpar filtros',
+    disclaimer: 'As iniciativas exibidas são conceitos propostos. Nossa equipe vai confirmar datas, locais, disponibilidade e inscrição separadamente.',
+  },
+};
 
 export function InitiativeCard({ initiative }: { initiative: Initiative }) {
   const { lang } = useLanguage();
   const { art, tagline } = initiative;
 
-  const categoryTranslations: Record<string, { en: string; es: string }> = {
-    Networking: { en: 'Networking', es: 'Redes y Contactos' },
-    Workshop: { en: 'Workshop', es: 'Taller Práctico' },
-    'Cross-border': { en: 'Cross-Border', es: 'Transfronterizo' },
-  };
-
-  const taglineTranslations: Record<string, { en: [string, string]; es: [string, string] }> = {
-    'business-connection': {
-      en: ['Stronger connections.', 'Bigger possibilities.'],
-      es: ['Conexiones más fuertes.', 'Mayores posibilidades.'],
-    },
-    'next-chapter': {
-      en: ['Small steps.', 'Big ambitions.'],
-      es: ['Pequeños pasos.', 'Grandes ambiciones.'],
-    },
-    'beyond-borders': {
-      en: ['Two markets.', 'One conversation.'],
-      es: ['Dos mercados.', 'Una conversación.'],
-    },
-  };
-
-  const titleTranslations: Record<string, { en: string; es: string }> = {
-    'business-connection': { en: 'The Business Connection', es: 'La Conexión Empresarial' },
-    'next-chapter': { en: 'Ready for Your Next Chapter', es: 'Listos para Tu Próximo Capítulo' },
-    'beyond-borders': { en: 'Business Beyond Borders', es: 'Negocios Más Allá de las Fronteras' },
-  };
-
-  const descTranslations: Record<string, { en: string; es: string }> = {
-    'business-connection': {
-      en: 'Introductions, shared ideas, and meaningful conversations with fellow business owners.',
-      es: 'Presentaciones, ideas compartidas y conversaciones significativas con otros empresarios.',
-    },
-    'next-chapter': {
-      en: 'Practical conversations for entrepreneurs ready to move their business forward.',
-      es: 'Conversaciones prácticas para emprendedores listos para impulsar su negocio.',
-    },
-    'beyond-borders': {
-      en: 'Explore doing business between the Dominican Republic and the United States.',
-      es: 'Explora hacer negocios entre la República Dominicana y los Estados Unidos.',
-    },
-  };
-
-  const category = categoryTranslations[initiative.category]?.[lang] || initiative.category;
-  const tag = taglineTranslations[initiative.id]?.[lang] || tagline;
-  const title = titleTranslations[initiative.id]?.[lang] || initiative.title;
-  const desc = descTranslations[initiative.id]?.[lang] || initiative.description;
+  const c = COPY[lang];
+  const category = c.categories[initiative.category] || initiative.category;
+  const tag = c.taglines[initiative.id] || tagline;
+  const title = c.titles[initiative.id] || initiative.title;
+  const desc = c.descriptions[initiative.id] || initiative.description;
 
   const dateText =
     eventDateKey(initiative)
-      ? new Intl.DateTimeFormat(lang === 'es' ? 'es-US' : 'en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: initiative.schedule!.timeZone }).format(new Date(initiative.schedule!.startsAt))
+      ? new Intl.DateTimeFormat(LOCALE[lang], { dateStyle: 'medium', timeStyle: 'short', timeZone: initiative.schedule!.timeZone }).format(new Date(initiative.schedule!.startsAt))
       : initiative.status === 'confirmed' && initiative.date
       ? initiative.date
-      : lang === 'en'
-      ? 'PROPOSED · DATE TO BE ANNOUNCED'
-      : 'PROPUESTO · FECHA POR ANUNCIAR';
+      : c.proposedDate;
 
-  const actionText =
-    initiative.status === 'confirmed'
-      ? lang === 'en'
-        ? 'Request Registration'
-        : 'Solicitar Registro'
-      : lang === 'en'
-      ? 'Express Your Interest'
-      : 'Expresar Tu Interés';
-
-  const footerText =
-    lang === 'en'
-      ? 'DUSACCOM · CONNECTIONS THAT COUNT'
-      : 'DUSACCOM · CONEXIONES QUE CUENTAN';
+  const actionText = initiative.status === 'confirmed' ? c.requestRegistration : c.expressInterest;
+  const footerText = c.footer;
 
   return (
     <article className="flex flex-col overflow-hidden rounded-[8px] border border-slate-200 bg-white">
@@ -130,11 +132,12 @@ export function ProgramList() {
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
 
+  const c = COPY[lang];
   const filterOptions = [
-    { id: 'all', label: lang === 'en' ? 'All Initiatives' : 'Todas las Iniciativas', category: 'All' },
-    { id: 'Networking', label: 'Networking', category: 'Networking' },
-    { id: 'Workshop', label: lang === 'en' ? 'Workshops' : 'Talleres', category: 'Workshop' },
-    { id: 'Cross-border', label: lang === 'en' ? 'Cross-Border' : 'Transfronterizo', category: 'Cross-border' },
+    { id: 'all', label: c.all, category: 'All' },
+    { id: 'Networking', label: c.categories.Networking, category: 'Networking' },
+    { id: 'Workshop', label: c.workshops, category: 'Workshop' },
+    { id: 'Cross-border', label: c.categories['Cross-border'], category: 'Cross-border' },
   ];
 
   const visible = initiatives.filter(
@@ -146,7 +149,7 @@ export function ProgramList() {
   return (
     <>
       <div className="mb-7 flex flex-col justify-between gap-5 lg:flex-row">
-        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter initiatives">
+        <div className="flex flex-wrap gap-2" role="group" aria-label={c.filterAria}>
           {filterOptions.map((opt) => (
             <button
               key={opt.id}
@@ -162,22 +165,20 @@ export function ProgramList() {
         </div>
 
         <label className="relative w-full lg:max-w-65">
-          <span className="sr-only">{lang === 'en' ? 'Search initiatives' : 'Buscar iniciativas'}</span>
+          <span className="sr-only">{c.searchLabel}</span>
           <Search size={16} className="absolute top-3.5 left-3 text-slate-500" aria-hidden="true" />
           <input
             type="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder={lang === 'en' ? 'Search initiatives…' : 'Buscar iniciativas…'}
+            placeholder={c.searchPlaceholder}
             className="form-field m-0! min-h-11! pl-10!"
           />
         </label>
       </div>
 
       <p className="mb-5 text-xs text-slate-600" role="status">
-        {lang === 'en'
-          ? `${visible.length} ${visible.length === 1 ? 'initiative' : 'initiatives'} found`
-          : `${visible.length} ${visible.length === 1 ? 'iniciativa encontrada' : 'iniciativas encontradas'}`}
+        {c.found(visible.length)}
       </p>
 
       {visible.length ? (
@@ -190,14 +191,10 @@ export function ProgramList() {
         <div className="rounded-[8px] border border-dashed border-slate-300 bg-white px-7 py-14 text-center">
           <Search className="mx-auto mb-5 text-slate-500" aria-hidden="true" />
           <h3 className="text-xl font-semibold">
-            {lang === 'en'
-              ? 'No initiatives match your search.'
-              : 'No hay iniciativas que coincidan con tu búsqueda.'}
+            {c.noMatch}
           </h3>
           <p className="mt-3 text-sm text-slate-600">
-            {lang === 'en'
-              ? 'Try another keyword or explore all initiatives.'
-              : 'Prueba con otra palabra clave o explora todas las iniciativas.'}
+            {c.tryAnother}
           </p>
           <button
             className="text-link mt-4"
@@ -206,16 +203,14 @@ export function ProgramList() {
               setFilter('all');
             }}
           >
-            <span>{lang === 'en' ? 'Clear filters' : 'Limpiar filtros'}</span>
+            <span>{c.clear}</span>
             <X size={16} aria-hidden="true" />
           </button>
         </div>
       )}
 
       <p className="mt-6 text-xs leading-6 text-slate-600">
-        {lang === 'en'
-          ? 'The initiatives shown are proposed concepts. Our team will confirm dates, venues, availability, and registration separately.'
-          : 'Las iniciativas mostradas son conceptos propuestos. Nuestro equipo confirmará fechas, sedes, disponibilidad y registro por separado.'}
+        {c.disclaimer}
       </p>
     </>
   );
